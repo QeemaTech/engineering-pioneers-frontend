@@ -19,7 +19,7 @@ function Classes() {
           <select
             value={query.status}
             onChange={(e) => setQuery((prev) => ({ ...prev, status: e.target.value, page: 1 }))}
-            className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-nihao-red-normal"
+            className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-pioneer-orange-normal"
           >
             <option value="">{t("dashboard.instructor.classes.allStatuses")}</option>
             <option value="UPCOMING">{t("dashboard.instructor.classes.upcoming")}</option>

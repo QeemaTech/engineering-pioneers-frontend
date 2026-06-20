@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Sparkles, X } from "lucide-react";
 
 /**
- * Listens for `nihao:subscription-quota` (dispatched from axios on 403 + SUBSCRIPTION_QUOTA).
+ * Listens for `pioneer:subscription-quota` (dispatched from axios on 403 + SUBSCRIPTION_QUOTA).
  * Light mode only — no dark: variants.
  */
 export default function QuotaUpgradeModalHost() {
@@ -17,8 +17,8 @@ export default function QuotaUpgradeModalHost() {
       setDetail(typeof e.detail?.message === "string" ? e.detail.message : "");
       setOpen(true);
     };
-    window.addEventListener("nihao:subscription-quota", onQuota);
-    return () => window.removeEventListener("nihao:subscription-quota", onQuota);
+    window.addEventListener("pioneer:subscription-quota", onQuota);
+    return () => window.removeEventListener("pioneer:subscription-quota", onQuota);
   }, []);
 
   if (!open) return null;
@@ -34,8 +34,8 @@ export default function QuotaUpgradeModalHost() {
         >
           <X className="h-5 w-5" />
         </button>
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-nihao-yellow-light">
-          <Sparkles className="h-6 w-6 text-nihao-yellow-dark" />
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-pioneer-teal-light">
+          <Sparkles className="h-6 w-6 text-pioneer-teal-dark" />
         </div>
         <h2 className="mt-4 text-xl font-bold text-slate-900">{t("quotaModal.title")}</h2>
         <p className="mt-2 text-sm leading-relaxed text-slate-600">{t("quotaModal.body")}</p>
@@ -50,7 +50,7 @@ export default function QuotaUpgradeModalHost() {
           </button>
           <Link
             to="/subscription"
-            className="inline-flex flex-1 items-center justify-center rounded-xl bg-nihao-red-normal px-4 py-2.5 text-sm font-bold text-white hover:bg-nihao-red-hover"
+            className="inline-flex flex-1 items-center justify-center rounded-xl bg-pioneer-orange-normal px-4 py-2.5 text-sm font-bold text-white hover:bg-pioneer-orange-hover"
           >
             {t("quotaModal.cta")}
           </Link>

@@ -4,10 +4,10 @@ import { ArrowRight } from "lucide-react";
 
 const YellowIcon = ({ children }) => (
   <div
-    className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-amber-50 to-nihao-yellow-light/90 text-nihao-yellow-dark shadow-sm ring-1 ring-amber-200/60 transition duration-300 group-hover:scale-105 group-hover:shadow-md group-hover:ring-amber-300/80"
+    className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-amber-50 to-pioneer-teal-light/90 text-pioneer-teal-dark shadow-sm ring-1 ring-amber-200/60 transition duration-300 group-hover:scale-105 group-hover:shadow-md group-hover:ring-amber-300/80"
     aria-hidden
   >
-    <span className="flex text-nihao-yellow-normal transition group-hover:text-[#b45309]">{children}</span>
+    <span className="flex text-pioneer-teal-normal transition group-hover:text-[#b45309]">{children}</span>
   </div>
 );
 
@@ -60,13 +60,13 @@ export default function Features() {
           <div className="flex flex-col justify-center md:col-span-4 lg:col-span-4">
             <h2 className="text-start text-3xl font-bold tracking-tight text-slate-900 md:text-4xl lg:text-[2.5rem] lg:leading-tight">
               {t("features.titlePrefix")}{" "}
-              <span className="text-nihao-red-normal">{t("features.titleBrand")}</span>
+              <span className="text-pioneer-orange-normal">{t("features.titleBrand")}</span>
               <span className="text-slate-900">?</span>
             </h2>
             <p className="mt-5 max-w-md text-start text-base leading-relaxed text-slate-600 md:text-[17px]">
               {t("features.subtitle")}
             </p>
-            <span className="mt-8 hidden h-px w-16 rounded-full bg-gradient-to-r from-nihao-red-normal/50 to-transparent md:block" aria-hidden />
+            <span className="mt-8 hidden h-px w-16 rounded-full bg-gradient-to-r from-pioneer-orange-normal/50 to-transparent md:block" aria-hidden />
           </div>
 
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:col-span-8 lg:col-span-8 md:gap-6">
@@ -74,19 +74,19 @@ export default function Features() {
               <Link
                 key={key}
                 to={to}
-                className="group relative block rounded-2xl border border-slate-200/90 bg-white/80 p-6 text-start shadow-[0_1px_2px_rgba(15,23,42,0.04)] outline-none ring-slate-900/5 transition duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-white hover:shadow-[0_12px_40px_-12px_rgba(15,23,42,0.12)] focus-visible:ring-2 focus-visible:ring-nihao-red-normal focus-visible:ring-offset-2 sm:p-7"
+                className="group relative block rounded-2xl border border-slate-200/90 bg-white/80 p-6 text-start shadow-[0_1px_2px_rgba(15,23,42,0.04)] outline-none ring-slate-900/5 transition duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-white hover:shadow-[0_12px_40px_-12px_rgba(15,23,42,0.12)] focus-visible:ring-2 focus-visible:ring-pioneer-orange-normal focus-visible:ring-offset-2 sm:p-7"
               >
                 <article className="flex h-full flex-col">
                   <YellowIcon>
                     <Icon />
                   </YellowIcon>
-                  <h3 className="text-lg font-bold tracking-tight text-slate-900 transition group-hover:text-nihao-red-normal">
+                  <h3 className="text-lg font-bold tracking-tight text-slate-900 transition group-hover:text-pioneer-orange-normal">
                     {t(`features.items.${key}.title`)}
                   </h3>
                   <p className="mt-2 flex-1 text-[15px] leading-relaxed text-slate-600">
                     {t(`features.items.${key}.description`)}
                   </p>
-                  <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-nihao-red-normal">
+                  <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-pioneer-orange-normal">
                     {t("features.learnMore")}
                     <ArrowRight className="h-4 w-4 transition duration-300 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" aria-hidden />
                   </span>

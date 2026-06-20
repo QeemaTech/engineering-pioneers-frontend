@@ -50,7 +50,7 @@ function Exams() {
         action={
           <Link
             to="/admin/exams/new"
-            className="inline-flex items-center gap-2 rounded-lg bg-[#B91C1C] px-4 py-2 text-sm font-bold text-white"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white"
           >
             <PlusCircle className="h-4 w-4" />
             {t("adminPages.assessments.add", { defaultValue: "Add Exam" })}
@@ -60,7 +60,7 @@ function Exams() {
 
       <div className="grid gap-4 md:grid-cols-3">
         <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-[#1A1A22]">
-          <div className="mb-2 inline-flex rounded-lg bg-[#B91C1C]/10 p-2 text-[#B91C1C]">
+          <div className="mb-2 inline-flex rounded-lg bg-[#EE7C11]/10 p-2 text-[#EE7C11]">
             <FileBarChart2 className="h-5 w-5" />
           </div>
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">
@@ -95,12 +95,12 @@ function Exams() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder={t("adminPages.assessments.search", { defaultValue: "Filter by exam, course, or type..." })}
-          className="h-11 w-full rounded-xl border border-slate-200 bg-white ps-9 pe-3 text-sm text-slate-900 outline-none focus:border-[#B91C1C] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+          className="h-11 w-full rounded-xl border border-slate-200 bg-white ps-9 pe-3 text-sm text-slate-900 outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
         />
       </div>
 
       {isLoading ? <div className="rounded-xl border border-slate-200 bg-white p-5 text-slate-500 dark:border-white/8 dark:bg-[#1A1A22]">Loading exams...</div> : null}
-      {isError ? <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">{getErrorMessage(error, "Failed to load exams.")}<button onClick={() => refetch()} className="ms-3 rounded bg-[#B91C1C] px-2 py-1 text-xs font-bold text-white">Retry</button></div> : null}
+      {isError ? <div className="rounded-xl border border-red-200 bg-[#EE7C11]/10 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-[#EE7C11]/10 dark:text-red-300">{getErrorMessage(error, "Failed to load exams.")}<button onClick={() => refetch()} className="ms-3 rounded bg-[#EE7C11] px-2 py-1 text-xs font-bold text-white">Retry</button></div> : null}
       {!isLoading && !isError ? (
         <DataTable
           columns={[
@@ -123,7 +123,7 @@ function Exams() {
               <div className="flex items-center gap-1">
                 <Link to={`/admin/exams/${row.id}/edit`} className="rounded p-1.5 text-blue-500 hover:bg-blue-500/10" title="Edit Questions"><Edit3 className="h-4 w-4" /></Link>
                 <Link to={`/admin/exams/${row.id}/submissions`} className="rounded p-1.5 text-purple-500 hover:bg-purple-500/10" title="View Submissions"><Eye className="h-4 w-4" /></Link>
-                <button onClick={() => deleteMutation.mutate(row.id)} className="rounded p-1.5 text-red-500 hover:bg-red-500/10"><Trash2 className="h-4 w-4" /></button>
+                <button onClick={() => deleteMutation.mutate(row.id)} className="rounded p-1.5 text-red-500 hover:bg-[#EE7C11]/10"><Trash2 className="h-4 w-4" /></button>
               </div>
             )},
           ]}

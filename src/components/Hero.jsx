@@ -33,7 +33,7 @@ export default function Hero() {
           <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
             {features.map((f) => (
               <span key={f} className="flex items-center gap-2 text-sm text-slate-700">
-                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-nihao-red-normal">
+                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-pioneer-orange-normal">
                   <Check className="h-3 w-3 text-white" />
                 </span>
                 {f}
@@ -44,13 +44,13 @@ export default function Hero() {
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <button
               type="button"
-              className="rounded-lg border border-nihao-red-normal px-7 py-3 text-sm font-semibold text-nihao-red-normal transition hover:bg-nihao-red-light"
+              className="rounded-lg border border-pioneer-orange-normal px-7 py-3 text-sm font-semibold text-pioneer-orange-normal transition hover:bg-pioneer-orange-light"
             >
               {t("hero.actions.startLearning")}
             </button>
             <button
               type="button"
-              className="px-4 py-3 text-sm font-bold text-[#121323] transition hover:text-nihao-red-normal"
+              className="px-4 py-3 text-sm font-bold text-[#121323] transition hover:text-pioneer-orange-normal"
             >
               {t("hero.actions.exploreClasses")}
             </button>
@@ -61,22 +61,22 @@ export default function Hero() {
         <div className="relative mx-auto flex w-full max-w-[580px] items-end justify-center lg:max-w-none">
           {/* Red circle bg */}
           <div className="relative mx-auto h-[420px] w-[420px] md:h-[500px] md:w-[500px] lg:h-[520px] lg:w-[520px]">
-            <div className="absolute inset-0 rounded-full bg-nihao-red-normal" />
+            <div className="absolute inset-0 rounded-full bg-pioneer-orange-normal" />
 
             {/* Student image */}
             <img
               src="/assets/hero-student.png"
-              alt="Nihao Student"
+              alt="Engineering Pioneers Student"
               className="absolute bottom-0 left-1/2 z-10 h-[105%] w-auto -translate-x-1/2 object-contain"
             />
 
             {/* Lightbulb decoration — top right of circle */}
-            <div className="absolute -top-2 end-4 z-20 flex h-12 w-12 items-center justify-center rounded-full border-2 border-nihao-yellow-normal/40 bg-white/90 shadow-md">
-              <Lightbulb className="h-5 w-5 text-nihao-yellow-normal" />
+            <div className="absolute -top-2 end-4 z-20 flex h-12 w-12 items-center justify-center rounded-full border-2 border-pioneer-teal-normal/40 bg-white/90 shadow-md">
+              <Lightbulb className="h-5 w-5 text-pioneer-teal-normal" />
             </div>
 
             {/* "Our daily new students" card — right side */}
-            <div className="absolute -end-4 top-[28%] z-20 w-[200px] rounded-2xl bg-nihao-yellow-normal p-4 shadow-xl md:-end-6">
+            <div className="absolute -end-4 top-[28%] z-20 w-[200px] rounded-2xl bg-pioneer-teal-normal p-4 shadow-xl md:-end-6">
               <p className="text-xs font-semibold text-white">{t("hero.floating.dailyStudentsTitle")}</p>
               <div className="mt-2.5 flex items-center">
                 <div className="flex -space-x-2.5">
@@ -91,7 +91,7 @@ export default function Hero() {
             {/* "Congratulations" card — bottom left */}
             <div className="absolute -start-4 bottom-10 z-20 w-[230px] rounded-2xl bg-white px-4 py-3 shadow-xl md:-start-6">
               <div className="flex items-center gap-3">
-                <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-nihao-yellow-normal">
+                <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-pioneer-teal-normal">
                   <Mail className="h-4 w-4 text-white" />
                 </span>
                 <div>

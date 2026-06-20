@@ -15,13 +15,13 @@ function NavGroup({ group, isCollapsed = false }: { group: NavGroupType; isColla
   );
 
   const [open, setOpen] = useState(() => {
-    const saved = localStorage.getItem(`nihao-nav-${group.labelKey}`);
+    const saved = localStorage.getItem(`pioneer-nav-${group.labelKey}`);
     if (saved !== null) return saved === "true";
     return isAnyChildActive;
   });
 
   useEffect(() => {
-    localStorage.setItem(`nihao-nav-${group.labelKey}`, String(open));
+    localStorage.setItem(`pioneer-nav-${group.labelKey}`, String(open));
   }, [group.labelKey, open]);
 
   const Icon = group.icon;
@@ -33,7 +33,7 @@ function NavGroup({ group, isCollapsed = false }: { group: NavGroupType; isColla
         title={t(group.labelKey)}
         className={`mx-1 flex items-center justify-center rounded-md px-2 py-2 transition-all duration-150 ${
           isAnyChildActive
-            ? "border-s-2 border-[#B91C1C] bg-red-50 text-[#B91C1C] dark:bg-white/10 dark:text-white"
+            ? "border-s-2 border-pioneer-orange bg-pioneer-orange/10 text-pioneer-orange dark:bg-white/10 dark:text-white"
             : "text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
         }`}
       >
@@ -48,7 +48,7 @@ function NavGroup({ group, isCollapsed = false }: { group: NavGroupType; isColla
         onClick={() => setOpen((prev) => !prev)}
         className={`flex w-full items-center justify-between gap-2 rounded-md px-3 py-2 text-[13px] transition-all duration-150 ${
           isAnyChildActive
-            ? "text-[#B91C1C] dark:text-white"
+            ? "text-pioneer-orange dark:text-white"
             : "text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
         }`}
       >

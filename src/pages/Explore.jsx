@@ -43,8 +43,8 @@ function CourseCard({ course }) {
   const isOneToOne = course.displayCategory === "oneToOne";
 
   const palette = [
-    ["bg-nihao-red-light", "bg-nihao-red-normal"],
-    ["bg-nihao-yellow-light", "bg-nihao-yellow-normal"],
+    ["bg-pioneer-orange-light", "bg-pioneer-orange-normal"],
+    ["bg-pioneer-teal-light", "bg-pioneer-teal-normal"],
     ["bg-blue-50", "bg-blue-500"],
     ["bg-green-50", "bg-green-500"],
     ["bg-purple-50", "bg-purple-500"],
@@ -64,7 +64,7 @@ function CourseCard({ course }) {
         </span>
 
         {isOneToOne ? (
-          <span className="absolute end-3 top-3 rounded-full bg-nihao-yellow-normal px-2.5 py-0.5 text-xs font-semibold text-white shadow-sm">
+          <span className="absolute end-3 top-3 rounded-full bg-pioneer-teal-normal px-2.5 py-0.5 text-xs font-semibold text-white shadow-sm">
             {t("explore.badge.oneToOne")}
           </span>
         ) : null}
@@ -74,7 +74,7 @@ function CourseCard({ course }) {
         <h3 className="line-clamp-2 text-base font-bold leading-snug text-slate-900">{course.title}</h3>
         <p className="mt-1.5 line-clamp-2 text-sm text-slate-500">{course.description || "—"}</p>
 
-        <p className="mt-2 text-xs font-medium text-nihao-red-normal">{course.instructorName}</p>
+        <p className="mt-2 text-xs font-medium text-pioneer-orange-normal">{course.instructorName}</p>
 
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
           <span className="flex items-center gap-1">
@@ -101,7 +101,7 @@ function CourseCard({ course }) {
           </span>
           <Link
             to={`/courses/${course.id}`}
-            className="rounded-lg bg-nihao-red-normal px-4 py-2 text-sm font-semibold text-white transition hover:bg-nihao-red-hover"
+            className="rounded-lg bg-pioneer-orange-normal px-4 py-2 text-sm font-semibold text-white transition hover:bg-pioneer-orange-hover"
           >
             {t("explore.enroll")}
           </Link>
@@ -173,7 +173,7 @@ export default function Explore() {
         <div className="text-center">
           <h1 className="text-3xl font-bold text-slate-900 md:text-4xl lg:text-5xl">
             {t("explore.titlePrefix")}{" "}
-            <span className="text-nihao-red-normal">{t("explore.titleAccent")}</span>
+            <span className="text-pioneer-orange-normal">{t("explore.titleAccent")}</span>
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-base text-slate-500">{t("explore.subtitle")}</p>
         </div>
@@ -186,7 +186,7 @@ export default function Explore() {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder={t("explore.searchPlaceholder")}
-              className="w-full rounded-xl border border-slate-200 bg-white py-3 pe-4 ps-10 text-sm text-slate-900 outline-none transition focus:border-nihao-red-normal focus:ring-2 focus:ring-nihao-red-light placeholder:text-slate-400"
+              className="w-full rounded-xl border border-slate-200 bg-white py-3 pe-4 ps-10 text-sm text-slate-900 outline-none transition focus:border-pioneer-orange-normal focus:ring-2 focus:ring-pioneer-orange-light placeholder:text-slate-400"
             />
           </div>
 
@@ -194,7 +194,7 @@ export default function Explore() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="w-full appearance-none rounded-xl border border-slate-200 bg-white py-3 pe-10 ps-4 text-sm text-slate-700 outline-none focus:border-nihao-red-normal focus:ring-2 focus:ring-nihao-red-light"
+              className="w-full appearance-none rounded-xl border border-slate-200 bg-white py-3 pe-10 ps-4 text-sm text-slate-700 outline-none focus:border-pioneer-orange-normal focus:ring-2 focus:ring-pioneer-orange-light"
             >
               <option value="popular">{t("explore.sort.popular")}</option>
               <option value="rating">{t("explore.sort.rating")}</option>
@@ -213,8 +213,8 @@ export default function Explore() {
               onClick={() => setActiveCategory(cat)}
               className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
                 activeCategory === cat
-                  ? "bg-nihao-red-normal text-white shadow-sm"
-                  : "border border-slate-200 bg-white text-slate-600 hover:border-nihao-red-normal hover:text-nihao-red-normal"
+                  ? "bg-pioneer-orange-normal text-white shadow-sm"
+                  : "border border-slate-200 bg-white text-slate-600 hover:border-pioneer-orange-normal hover:text-pioneer-orange-normal"
               }`}
             >
               {t(`explore.categories.${cat}`)}
@@ -275,7 +275,7 @@ export default function Explore() {
                 setActiveCategory("all");
                 setPage(1);
               }}
-              className="text-sm font-medium text-nihao-red-normal hover:underline"
+              className="text-sm font-medium text-pioneer-orange-normal hover:underline"
             >
               {t("explore.clearFilters")}
             </button>

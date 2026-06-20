@@ -3,10 +3,8 @@ import type { ReactElement, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import {
-  BadgeCheck,
   BookOpenCheck,
   Check,
-  Clock3,
   DollarSign,
   Edit3,
   Eye,
@@ -15,8 +13,6 @@ import {
   Plus,
   Sparkles,
   Trash2,
-  Users,
-  Video,
 } from "lucide-react";
 import PageHeader from "../../components/ui/PageHeader";
 import SlideOver from "../../components/ui/SlideOver";
@@ -29,46 +25,16 @@ import {
   useDeleteAdminPackage,
   useUpdateAdminPackage,
 } from "../../features/admin/packages/hooks";
-import type { AdminPackage, PackageLevel } from "../../features/admin/packages/types";
-
-/** Turn stored feature data into plain lines for non-technical editors. */
-function featuresToLines(features: unknown): string {
-  if (features == null) return "";
-  if (Array.isArray(features)) {
-    return features.map((x) => (typeof x === "string" ? x : JSON.stringify(x))).join("\n");
-  }
-  if (typeof features === "object") {
-    return featuresToList(features).join("\n");
-  }
-  return String(features);
-}
-
-function linesToFeatureArray(text: string): unknown[] {
-  return text
-    .split(/\r?\n/)
-    .map((l) => l.trim())
-    .filter((l) => l.length > 0);
-}
-
-function featuresToList(features: unknown): string[] {
-  if (features == null) return [];
-  if (Array.isArray(features)) {
-    return features.map((x) => (typeof x === "string" ? x : JSON.stringify(x))).filter(Boolean);
-  }
-  if (typeof features === "object") {
-    return Object.entries(features as Record<string, unknown>)
-      .map(([key, value]) => {
-        if (typeof value === "boolean") return value ? key : "";
-        if (typeof value === "string" || typeof value === "number") return `${key}: ${value}`;
-        return key;
-      })
-      .filter(Boolean);
-  }
-  return [String(features)];
-}
+import type { AdminPackage } from "../../features/admin/packages/types";
 
 function currency(value: number | string | null | undefined) {
   return `$${Number(value ?? 0).toFixed(2)}`;
+}
+
+function durationLabel(months?: number) {
+  const n = Number(months || 0);
+  if (!n) return "-";
+  return n === 1 ? "1 month" : `${n} months`;
 }
 
 function PackageCard({
@@ -81,32 +47,25 @@ function PackageCard({
   onEdit: () => void;
   onDelete: () => void;
   labels: {
-    tier: string;
     packagePrice: string;
-    liveCap: string;
-    recCap: string;
-    privateCap: string;
     active: string;
-    recommended: string;
     edit: string;
     delete: string;
     inactive: string;
     oneTimePurchase: string;
-    features: string;
-    noFeatures: string;
-    featureItems: string;
+    description: string;
+    recommended: string;
   };
 }) {
-  const features = featuresToList(pkg.features);
   const borderTone = pkg.isRecommended
     ? "border-amber-300 ring-4 ring-amber-100/70 dark:border-amber-400/60 dark:ring-amber-400/10"
     : "border-slate-200 dark:border-white/10";
 
   return (
     <article
-      className={`group relative overflow-hidden rounded-3xl border bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:bg-[#1A1A22] ${borderTone}`}
+      className={`group relative overflow-hidden rounded-3xl border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:bg-[#1A1A22] ${borderTone}`}
     >
-      <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-nihao-red-normal via-amber-400 to-nihao-yellow-normal" />
+      <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#EE7C11] via-amber-400 to-[#0D9488]" />
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -118,8 +77,8 @@ function PackageCard({
               </span>
             ) : null}
           </div>
-          <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">
-            {labels.tier}: {pkg.level}
+          <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-[#0D9488]">
+            {durationLabel(pkg.durationMonths)}
           </p>
         </div>
         <span
@@ -137,71 +96,43 @@ function PackageCard({
       <div className="mt-5">
         <div className="rounded-2xl bg-slate-50 p-4 dark:bg-white/[0.04]">
           <p className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">{labels.packagePrice}</p>
-          <p className="mt-1 text-3xl font-black text-slate-950 dark:text-white">{currency(pkg.priceMonthly)}</p>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{labels.oneTimePurchase}</p>
+          <p className="mt-1 text-3xl font-black text-slate-950 dark:text-white">{currency(pkg.price)}</p>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            {labels.oneTimePurchase}
+          </p>
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-3 gap-2">
-        <LimitPill icon={<Users className="h-4 w-4" />} label={labels.liveCap} value={pkg.liveCohortsLimit ?? 0} />
-        <LimitPill icon={<Video className="h-4 w-4" />} label={labels.recCap} value={pkg.recordedCohortsLimit ?? 0} />
-        <LimitPill icon={<Clock3 className="h-4 w-4" />} label={labels.privateCap} value={pkg.privateSessionsLimit ?? 0} />
-      </div>
-
-      <div className="mt-5 min-h-24 rounded-2xl border border-slate-100 p-4 dark:border-white/10">
-        <p className="mb-3 text-xs font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">{labels.features}</p>
-        {features.length > 0 ? (
-          <ul className="space-y-2">
-            {features.slice(0, 5).map((feature) => (
-              <li key={feature} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
-                <span className="mt-0.5 rounded-full bg-emerald-50 p-0.5 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
-                  <Check className="h-3.5 w-3.5" />
-                </span>
-                <span className="line-clamp-2">{feature}</span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-sm text-slate-400 dark:text-slate-500">{labels.noFeatures}</p>
-        )}
-      </div>
-
-      <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-100 pt-4 dark:border-white/10">
-        <div className="text-xs text-slate-500 dark:text-slate-400">
-          {labels.featureItems.replace("{{count}}", String(features.length))}
+      {pkg.description ? (
+        <div className="mt-5 min-h-[100px] rounded-2xl border border-slate-100 p-4 dark:border-white/10">
+          <p className="mb-2 text-xs font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">{labels.description}</p>
+          <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 whitespace-pre-wrap">{pkg.description}</p>
         </div>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={onEdit}
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-slate-100 px-3 text-sm font-bold text-slate-700 transition hover:bg-slate-200 dark:bg-white/10 dark:text-slate-200 dark:hover:bg-white/15"
-          >
-            <Edit3 className="h-4 w-4" />
-            {labels.edit}
-          </button>
-          <button
-            type="button"
-            onClick={onDelete}
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-red-50 px-3 text-sm font-bold text-red-600 transition hover:bg-red-100 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/20"
-          >
-            <Trash2 className="h-4 w-4" />
-            {labels.delete}
-          </button>
+      ) : (
+        <div className="mt-5 min-h-[100px] flex items-center justify-center rounded-2xl border border-dashed border-slate-200 p-4 dark:border-white/10">
+          <p className="text-xs text-slate-400 dark:text-slate-500">No description provided</p>
         </div>
+      )}
+
+      <div className="mt-5 flex items-center justify-end gap-2 border-t border-slate-100 pt-4 dark:border-white/10">
+        <button
+          type="button"
+          onClick={onEdit}
+          className="inline-flex h-10 items-center gap-2 rounded-xl bg-slate-100 px-3 text-sm font-bold text-slate-700 transition hover:bg-slate-200 dark:bg-white/10 dark:text-slate-200 dark:hover:bg-white/15"
+        >
+          <Edit3 className="h-4 w-4" />
+          {labels.edit}
+        </button>
+        <button
+          type="button"
+          onClick={onDelete}
+          className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#EE7C11]/10 px-3 text-sm font-bold text-red-600 transition hover:bg-red-100 dark:bg-[#EE7C11]/10 dark:text-red-300 dark:hover:bg-[#EE7C11]/20"
+        >
+          <Trash2 className="h-4 w-4" />
+          {labels.delete}
+        </button>
       </div>
     </article>
-  );
-}
-
-function LimitPill({ icon, label, value }: { icon: ReactElement; label: string; value: number }) {
-  return (
-    <div className="rounded-2xl border border-slate-100 bg-white p-3 text-center shadow-sm dark:border-white/10 dark:bg-white/[0.03]">
-      <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-300">
-        {icon}
-      </div>
-      <p className="mt-2 text-xl font-black text-slate-950 dark:text-white">{value}</p>
-      <p className="mt-0.5 line-clamp-2 text-[10px] font-bold uppercase tracking-wide text-slate-400 dark:text-slate-500">{label}</p>
-    </div>
   );
 }
 
@@ -224,7 +155,7 @@ function StatCard({
           <p className="mt-1 text-2xl font-black text-slate-950 dark:text-white">{value}</p>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{hint}</p>
         </div>
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-nihao-red-normal/10 text-nihao-red-normal">
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-pioneer-orange-normal/10 text-pioneer-orange-normal">
           {icon}
         </div>
       </div>
@@ -246,7 +177,7 @@ function FormSection({
   return (
     <section className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.03]">
       <div className="mb-4 flex gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-nihao-red-normal/10 text-nihao-red-normal">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-pioneer-orange-normal/10 text-pioneer-orange-normal">
           {icon}
         </div>
         <div>
@@ -287,13 +218,13 @@ function ToggleCard({
       onClick={() => onChange(!checked)}
       className={`flex items-start gap-3 rounded-2xl border p-4 text-start transition ${
         checked
-          ? "border-nihao-red-normal bg-nihao-red-normal/5 ring-4 ring-nihao-red-normal/10"
+          ? "border-pioneer-orange-normal bg-pioneer-orange-normal/5 ring-4 ring-pioneer-orange-normal/10"
           : "border-slate-200 bg-white hover:border-slate-300 dark:border-white/10 dark:bg-white/[0.03]"
       }`}
     >
       <span
         className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
-          checked ? "bg-nihao-red-normal text-white" : "bg-slate-100 text-slate-500 dark:bg-white/10"
+          checked ? "bg-pioneer-orange-normal text-white" : "bg-slate-100 text-slate-500 dark:bg-white/10"
         }`}
       >
         {icon}
@@ -304,7 +235,7 @@ function ToggleCard({
       </span>
       <span
         className={`mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
-          checked ? "border-nihao-red-normal bg-nihao-red-normal text-white" : "border-slate-300 dark:border-white/20"
+          checked ? "border-pioneer-orange-normal bg-pioneer-orange-normal text-white" : "border-slate-300 dark:border-white/20"
         }`}
       >
         {checked ? <Check className="h-3.5 w-3.5" /> : null}
@@ -315,33 +246,29 @@ function ToggleCard({
 
 function PackageSkeleton() {
   return (
-    <div className="h-[430px] animate-pulse rounded-3xl border border-slate-200 bg-white p-5 dark:border-white/10 dark:bg-[#1A1A22]">
+    <div className="h-[350px] animate-pulse rounded-3xl border border-slate-200 bg-white p-6 dark:border-white/10 dark:bg-[#1A1A22]">
       <div className="h-6 w-1/2 rounded bg-slate-100 dark:bg-white/10" />
       <div className="mt-3 h-4 w-1/3 rounded bg-slate-100 dark:bg-white/10" />
-      <div className="mt-6 grid grid-cols-2 gap-3">
-        <div className="h-28 rounded-2xl bg-slate-100 dark:bg-white/10" />
-        <div className="h-28 rounded-2xl bg-slate-100 dark:bg-white/10" />
+      <div className="mt-6 h-24 rounded-2xl bg-slate-100 dark:bg-white/10" />
+      <div className="mt-5 h-20 rounded-2xl bg-slate-100 dark:bg-white/10" />
+      <div className="mt-5 flex justify-end gap-2">
+        <div className="h-10 w-20 rounded-xl bg-slate-100 dark:bg-white/10" />
+        <div className="h-10 w-20 rounded-xl bg-slate-100 dark:bg-white/10" />
       </div>
-      <div className="mt-5 grid grid-cols-3 gap-2">
-        <div className="h-24 rounded-2xl bg-slate-100 dark:bg-white/10" />
-        <div className="h-24 rounded-2xl bg-slate-100 dark:bg-white/10" />
-        <div className="h-24 rounded-2xl bg-slate-100 dark:bg-white/10" />
-      </div>
-      <div className="mt-5 h-24 rounded-2xl bg-slate-100 dark:bg-white/10" />
     </div>
   );
 }
 
 const inputClass =
-  "h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-nihao-red-normal focus:ring-4 focus:ring-nihao-red-normal/10 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white";
+  "h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-pioneer-orange-normal focus:ring-4 focus:ring-pioneer-orange-normal/10 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white";
 
 const textareaClass =
-  "rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-nihao-red-normal focus:ring-4 focus:ring-nihao-red-normal/10 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white";
+  "rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-pioneer-orange-normal focus:ring-4 focus:ring-pioneer-orange-normal/10 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white";
 
 function EmptyState({ onCreate, title, body, action }: { onCreate: () => void; title: string; body: string; action: string }) {
   return (
     <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center dark:border-white/15 dark:bg-[#1A1A22]">
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-nihao-red-normal/10 text-nihao-red-normal">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-pioneer-orange-normal/10 text-pioneer-orange-normal">
         <Layers3 className="h-7 w-7" />
       </div>
       <h3 className="mt-4 text-lg font-black text-slate-950 dark:text-white">{title}</h3>
@@ -351,7 +278,7 @@ function EmptyState({ onCreate, title, body, action }: { onCreate: () => void; t
       <button
         type="button"
         onClick={onCreate}
-        className="mt-5 inline-flex h-11 items-center gap-2 rounded-xl bg-nihao-red-normal px-4 text-sm font-black text-white transition hover:bg-nihao-red-hover"
+        className="mt-5 inline-flex h-11 items-center gap-2 rounded-xl bg-pioneer-orange-normal px-4 text-sm font-black text-white transition hover:bg-pioneer-orange-hover"
       >
         <Plus className="h-4 w-4" />
         {action}
@@ -359,6 +286,7 @@ function EmptyState({ onCreate, title, body, action }: { onCreate: () => void; t
     </div>
   );
 }
+
 export default function AdminPackagesPage() {
   const { t } = useTranslation();
   const { data: packages = [], isLoading } = useAdminPackages();
@@ -370,14 +298,11 @@ export default function AdminPackagesPage() {
   const { data: pkgDetail } = useAdminPackage(editingId);
 
   const [name, setName] = useState("");
-  const [level, setLevel] = useState<PackageLevel>("BASIC");
+  const [description, setDescription] = useState("");
   const [packagePrice, setPackagePrice] = useState("");
-  const [featuresLines, setFeaturesLines] = useState("");
-  const [liveLimit, setLiveLimit] = useState("0");
-  const [recordedLimit, setRecordedLimit] = useState("0");
-  const [privateLimit, setPrivateLimit] = useState("0");
-  const [isRecommended, setIsRecommended] = useState(false);
+  const [durationMonths, setDurationMonths] = useState("1");
   const [isActive, setIsActive] = useState(true);
+  const [isRecommended, setIsRecommended] = useState(false);
 
   const createMutation = useCreateAdminPackage();
   const updateMutation = useUpdateAdminPackage();
@@ -387,47 +312,37 @@ export default function AdminPackagesPage() {
     if (!panelOpen) return;
     if (!editingId) {
       setName("");
-      setLevel("BASIC");
+      setDescription("");
       setPackagePrice("");
-      setFeaturesLines("");
-      setLiveLimit("0");
-      setRecordedLimit("0");
-      setPrivateLimit("0");
-      setIsRecommended(false);
+      setDurationMonths("1");
       setIsActive(true);
+      setIsRecommended(false);
       return;
     }
     const p = pkgDetail;
     if (!p) return;
     setName(p.name ?? "");
-    setLevel(p.level);
-    setPackagePrice(String(p.priceMonthly ?? ""));
-    setFeaturesLines(featuresToLines(p.features));
-    setLiveLimit(String(p.liveCohortsLimit ?? 0));
-    setRecordedLimit(String(p.recordedCohortsLimit ?? 0));
-    setPrivateLimit(String(p.privateSessionsLimit ?? 0));
-    setIsRecommended(!!p.isRecommended);
+    setDescription(p.description ?? "");
+    setPackagePrice(String(p.price ?? ""));
+    setDurationMonths(String(p.durationMonths ?? 1));
     setIsActive(p.isActive !== false);
+    setIsRecommended(p.isRecommended === true);
   }, [panelOpen, editingId, pkgDetail]);
 
   const handleSubmit = async () => {
     const price = Number(packagePrice);
-    if (!name.trim() || Number.isNaN(price) || price <= 0) {
-      toast.error(t("dashboard.common.validation", { defaultValue: "Check prices and name." }));
+    const duration = Number(durationMonths);
+    if (!name.trim() || Number.isNaN(price) || price <= 0 || Number.isNaN(duration) || duration <= 0) {
+      toast.error(t("dashboard.common.validation", { defaultValue: "Check values, name, and duration." }));
       return;
     }
-    const features = linesToFeatureArray(featuresLines);
     const body = {
       name: name.trim(),
-      level,
-      priceMonthly: price,
-      priceYearly: price,
-      features,
-      isRecommended,
+      description: description.trim(),
+      price,
+      durationMonths: duration,
       isActive,
-      liveCohortsLimit: Number(liveLimit) || 0,
-      recordedCohortsLimit: Number(recordedLimit) || 0,
-      privateSessionsLimit: Number(privateLimit) || 0,
+      isRecommended,
     };
     try {
       if (editingId) {
@@ -456,20 +371,14 @@ export default function AdminPackagesPage() {
   };
 
   const tableLabels = {
-    tier: t("adminPages.packages.table.level"),
     packagePrice: t("adminPages.packages.table.packagePrice"),
-    liveCap: t("adminPages.packages.table.liveCap"),
-    recCap: t("adminPages.packages.table.recCap"),
-    privateCap: t("adminPages.packages.table.privateCap"),
     active: t("adminPages.packages.table.active"),
-    recommended: t("adminPages.packages.table.recommended"),
+    recommended: t("adminPages.packages.table.recommended", { defaultValue: "Recommended" }),
     edit: t("adminPages.packages.table.edit"),
     delete: t("adminPages.packages.table.delete"),
     inactive: t("adminPages.packages.card.inactive"),
     oneTimePurchase: t("adminPages.packages.card.oneTimePurchase"),
-    features: t("adminPages.packages.card.features"),
-    noFeatures: t("adminPages.packages.card.noFeatures"),
-    featureItems: t("adminPages.packages.card.featureItems"),
+    description: t("adminPages.packages.card.description", { defaultValue: "Description" }),
   };
 
   const openCreatePanel = () => {
@@ -481,7 +390,7 @@ export default function AdminPackagesPage() {
     const activeCount = packages.filter((pkg) => pkg.isActive).length;
     const recommendedCount = packages.filter((pkg) => pkg.isRecommended).length;
     const lowestPrice = packages.length
-      ? Math.min(...packages.map((pkg) => Number(pkg.priceMonthly ?? 0)).filter((price) => price > 0))
+      ? Math.min(...packages.map((pkg) => Number(pkg.price ?? 0)).filter((price) => price > 0))
       : 0;
 
     return {
@@ -501,7 +410,7 @@ export default function AdminPackagesPage() {
           <button
             type="button"
             onClick={openCreatePanel}
-            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-nihao-red-normal px-4 text-sm font-black text-white shadow-lg shadow-nihao-red-normal/20 transition hover:-translate-y-0.5 hover:bg-nihao-red-hover sm:w-auto"
+            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-pioneer-orange-normal px-4 text-sm font-black text-white shadow-lg shadow-pioneer-orange-normal/20 transition hover:-translate-y-0.5 hover:bg-pioneer-orange-hover sm:w-auto"
           >
             <Plus className="h-4 w-4" />
             {t("adminPages.packages.addPackage")}
@@ -517,7 +426,7 @@ export default function AdminPackagesPage() {
           hint={t("adminPages.packages.stats.totalHint")}
         />
         <StatCard
-          icon={<BadgeCheck className="h-5 w-5" />}
+          icon={<Check className="h-5 w-5" />}
           label={t("adminPages.packages.stats.active")}
           value={stats.active}
           hint={t("adminPages.packages.stats.activeHint")}
@@ -577,7 +486,7 @@ export default function AdminPackagesPage() {
       >
         <div className="flex min-h-full flex-col">
           <div className="space-y-5 p-5">
-            <div className="rounded-3xl bg-gradient-to-br from-nihao-red-normal to-[#7f1d1d] p-5 text-white">
+            <div className="rounded-3xl bg-gradient-to-br from-pioneer-orange-normal to-[#093443] p-5 text-white">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/70">
                 {editingId ? t("adminPages.packages.formHero.update") : t("adminPages.packages.formHero.create")}
               </p>
@@ -601,12 +510,15 @@ export default function AdminPackagesPage() {
                     className={inputClass}
                   />
                 </FieldLabel>
-                <FieldLabel label={t("adminPages.packages.form.level")}>
-                  <select value={level} onChange={(e) => setLevel(e.target.value as PackageLevel)} className={inputClass}>
-                    <option value="BASIC">BASIC</option>
-                    <option value="PROFESSIONAL">PROFESSIONAL</option>
-                    <option value="PREMIUM">PREMIUM</option>
-                  </select>
+                <FieldLabel label={t("adminPages.packages.form.durationMonths", { defaultValue: "Duration (Months)" })}>
+                  <input
+                    type="number"
+                    min={1}
+                    value={durationMonths}
+                    onChange={(e) => setDurationMonths(e.target.value)}
+                    placeholder="e.g., 6"
+                    className={inputClass}
+                  />
                 </FieldLabel>
               </div>
             </FormSection>
@@ -634,50 +546,19 @@ export default function AdminPackagesPage() {
             </FormSection>
 
             <FormSection
-              icon={<Users className="h-5 w-5" />}
-              title={t("adminPages.packages.sections.limits.title")}
-              description={t("adminPages.packages.sections.limits.description")}
-            >
-              <div className="grid gap-3 sm:grid-cols-3">
-                <FieldLabel label={t("adminPages.packages.form.liveLimit")}>
-                  <input type="number" min={0} value={liveLimit} onChange={(e) => setLiveLimit(e.target.value)} className={inputClass} />
-                </FieldLabel>
-                <FieldLabel label={t("adminPages.packages.form.recordedLimit")}>
-                  <input
-                    type="number"
-                    min={0}
-                    value={recordedLimit}
-                    onChange={(e) => setRecordedLimit(e.target.value)}
-                    className={inputClass}
-                  />
-                </FieldLabel>
-                <FieldLabel label={t("adminPages.packages.form.privateLimit")}>
-                  <input
-                    type="number"
-                    min={0}
-                    value={privateLimit}
-                    onChange={(e) => setPrivateLimit(e.target.value)}
-                    className={inputClass}
-                  />
-                </FieldLabel>
-              </div>
-            </FormSection>
-
-            <FormSection
               icon={<Sparkles className="h-5 w-5" />}
-              title={t("adminPages.packages.sections.features.title")}
-              description={t("adminPages.packages.sections.features.description")}
+              title={t("adminPages.packages.sections.description.title", { defaultValue: "Description" })}
+              description={t("adminPages.packages.sections.description.description", { defaultValue: "Add details about the plan" })}
             >
-              <FieldLabel label={t("adminPages.packages.form.featuresLines")}>
+              <FieldLabel label={t("adminPages.packages.form.description", { defaultValue: "Plan Description" })}>
                 <textarea
-                  value={featuresLines}
-                  onChange={(e) => setFeaturesLines(e.target.value)}
-                  rows={7}
-                  placeholder={t("adminPages.packages.form.featuresPlaceholder")}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={5}
+                  placeholder={t("adminPages.packages.form.descriptionPlaceholder", { defaultValue: "Write details here..." })}
                   className={textareaClass}
                 />
               </FieldLabel>
-              <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{t("adminPages.packages.form.featuresHint")}</p>
             </FormSection>
 
             <FormSection
@@ -689,8 +570,8 @@ export default function AdminPackagesPage() {
                 <ToggleCard
                   checked={isRecommended}
                   onChange={setIsRecommended}
-                  title={t("adminPages.packages.form.recommended")}
-                  description={t("adminPages.packages.form.recommendedDescription")}
+                  title={t("adminPages.packages.form.recommended", { defaultValue: "Recommended" })}
+                  description={t("adminPages.packages.form.recommendedDescription", { defaultValue: "Highlight this package on the dashboard" })}
                   icon={<Sparkles className="h-4 w-4" />}
                 />
                 <ToggleCard
@@ -719,7 +600,7 @@ export default function AdminPackagesPage() {
               type="button"
               disabled={createMutation.isPending || updateMutation.isPending}
               onClick={() => void handleSubmit()}
-              className="h-11 rounded-xl bg-nihao-red-normal px-5 text-sm font-black text-white shadow-lg shadow-nihao-red-normal/20 transition hover:bg-nihao-red-hover disabled:opacity-50"
+              className="h-11 rounded-xl bg-pioneer-orange-normal px-5 text-sm font-black text-white shadow-lg shadow-pioneer-orange-normal/20 transition hover:bg-pioneer-orange-hover disabled:opacity-50"
             >
               {t("adminPages.packages.form.save")}
             </button>
@@ -739,3 +620,4 @@ export default function AdminPackagesPage() {
     </section>
   );
 }
+

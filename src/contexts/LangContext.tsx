@@ -13,7 +13,7 @@ const LangContext = createContext<{
 
 export function LangProvider({ children }: { children: ReactNode }) {
   const [lang, setLang] = useState<Lang>(() => {
-    const saved = localStorage.getItem("nihao-lang");
+    const saved = localStorage.getItem("pioneer-lang");
     if (saved === "ar" || saved === "en") return saved;
     const i18nSaved = localStorage.getItem("i18nextLng");
     return i18nSaved?.startsWith("ar") ? "ar" : "en";
@@ -24,7 +24,7 @@ export function LangProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = lang;
     document.documentElement.style.removeProperty("font-family");
     document.documentElement.style.removeProperty("font-size");
-    localStorage.setItem("nihao-lang", lang);
+    localStorage.setItem("pioneer-lang", lang);
     localStorage.setItem("i18nextLng", lang);
     i18n.changeLanguage(lang);
   }, [lang]);

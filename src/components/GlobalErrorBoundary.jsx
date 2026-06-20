@@ -30,13 +30,13 @@ class GlobalErrorBoundaryInner extends Component {
             <button
               type="button"
               onClick={this.handleRetry}
-              className="rounded-xl bg-nihao-red-normal px-6 py-3 text-sm font-semibold text-white hover:bg-nihao-red-hover"
+              className="rounded-xl bg-pioneer-orange-normal px-6 py-3 text-sm font-semibold text-white hover:bg-pioneer-orange-hover"
             >
               {t("errorBoundary.retry")}
             </button>
             <a
               href="/"
-              className="rounded-xl border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 hover:border-nihao-red-normal hover:text-nihao-red-normal"
+              className="rounded-xl border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 hover:border-pioneer-orange-normal hover:text-pioneer-orange-normal"
             >
               {t("errorBoundary.home")}
             </a>

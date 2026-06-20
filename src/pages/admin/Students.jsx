@@ -110,7 +110,7 @@ function Students() {
               setModalEmail("");
               setModalPassword("");
             }}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#B91C1C] px-4 py-2 text-sm font-bold text-white"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white"
           >
             <Plus className="h-4 w-4" />
             {t("adminPages.students.addStudent")}
@@ -157,9 +157,9 @@ function Students() {
       {isLoading ? (
         <div className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-500 dark:border-white/8 dark:bg-[#1A1A22] dark:text-slate-400">Loading students...</div>
       ) : isError ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+        <div className="rounded-xl border border-red-200 bg-[#EE7C11]/10 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-[#EE7C11]/10 dark:text-red-300">
           {getErrorMessage(error, "Failed to load students.")}
-          <button onClick={() => refetch()} className="ms-3 rounded bg-[#B91C1C] px-2 py-1 text-xs font-bold text-white">Retry</button>
+          <button onClick={() => refetch()} className="ms-3 rounded bg-[#EE7C11] px-2 py-1 text-xs font-bold text-white">Retry</button>
         </div>
       ) : filtered.length ? (
         <DataTable
@@ -170,7 +170,7 @@ function Students() {
               {Array.from({ length: Math.max(1, Math.ceil((data?.meta?.total || filtered.length) / 8)) }).map((_, idx) => {
                 const p = idx + 1;
                 return (
-                <button key={p} onClick={() => setPage(p)} className={`rounded-md px-3 py-1 text-sm ${page === p ? "bg-[#B91C1C] text-white" : "border border-slate-200 text-slate-600 dark:border-white/10 dark:text-slate-300"}`}>
+                <button key={p} onClick={() => setPage(p)} className={`rounded-md px-3 py-1 text-sm ${page === p ? "bg-[#EE7C11] text-white" : "border border-slate-200 text-slate-600 dark:border-white/10 dark:text-slate-300"}`}>
                   {p}
                 </button>
               )})}
@@ -190,7 +190,7 @@ function Students() {
                 setModalEmail("");
                 setModalPassword("");
               }}
-              className="rounded-lg bg-[#B91C1C] px-4 py-2 text-sm font-bold text-white"
+              className="rounded-lg bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white"
             >
               {t("adminPages.students.addFirst")}
             </button>
@@ -252,7 +252,7 @@ function Students() {
                       toast.error(getErrorMessage(err, "Failed to create student."));
                     }
                   }}
-                  className="rounded-lg bg-[#B91C1C] px-3 py-2 text-sm font-bold text-white"
+                  className="rounded-lg bg-[#EE7C11] px-3 py-2 text-sm font-bold text-white"
                 >
                   {createMutation.isPending ? "Saving..." : "Save"}
                 </button>
@@ -291,7 +291,7 @@ function Students() {
                       toast.error(getErrorMessage(err, "Failed to update student profile."));
                     }
                   }}
-                  className="rounded-lg bg-[#B91C1C] px-3 py-2 text-sm font-bold text-white"
+                  className="rounded-lg bg-[#EE7C11] px-3 py-2 text-sm font-bold text-white"
                 >
                   Save
                 </button>

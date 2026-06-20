@@ -3,8 +3,8 @@
  * Live values come from GET /public/settings via useSiteSettings().
  */
 export const SITE_SETTINGS_FALLBACK = {
-  siteName: "Nihao Academy",
-  contactEmail: import.meta.env.VITE_CONTACT_EMAIL || "hello@nihaoacademy.com",
+  siteName: "Engineering Pioneers",
+  contactEmail: import.meta.env.VITE_CONTACT_EMAIL || "hello@engineeringpioneers.com",
   phoneNumber: import.meta.env.VITE_SUPPORT_PHONE || "",
   social: {
     facebook: import.meta.env.VITE_SOCIAL_FACEBOOK_URL || "",

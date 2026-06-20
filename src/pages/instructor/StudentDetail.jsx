@@ -78,17 +78,17 @@ function InstructorStudentDetail() {
       <div className="space-y-4">
         <Link
           to="/instructor/students"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-[#B91C1C] hover:underline"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-[#EE7C11] hover:underline"
         >
           <ArrowLeft className="h-4 w-4" />
           {t("dashboard.instructor.pages.studentDetail.backLink")}
         </Link>
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+        <div className="rounded-xl border border-red-200 bg-[#EE7C11]/10 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-[#EE7C11]/10 dark:text-red-300">
           {isForbidden ? t("dashboard.instructor.pages.studentDetail.forbidden") : msg}
           <button
             type="button"
             onClick={() => perfQuery.refetch()}
-            className="ms-3 rounded bg-[#B91C1C] px-2 py-1 text-xs font-bold text-white"
+            className="ms-3 rounded bg-[#EE7C11] px-2 py-1 text-xs font-bold text-white"
           >
             {t("dashboard.common.refresh")}
           </button>
@@ -126,7 +126,7 @@ function InstructorStudentDetail() {
     <section className="space-y-6">
       <Link
         to="/instructor/students"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-[#B91C1C] hover:underline"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-[#EE7C11] hover:underline"
       >
         <ArrowLeft className="h-4 w-4" />
         {t("dashboard.instructor.pages.studentDetail.backLink")}
@@ -156,7 +156,7 @@ function InstructorStudentDetail() {
               onClick={() => setActiveTab(tab.id)}
               className={`rounded-lg px-3 py-1.5 text-sm font-semibold ${
                 activeTab === tab.id
-                  ? "bg-[#B91C1C] text-white"
+                  ? "bg-[#EE7C11] text-white"
                   : "border border-slate-200 bg-white text-slate-600 dark:border-white/10 dark:bg-[#0F0F13] dark:text-slate-300"
               }`}
             >
@@ -229,7 +229,7 @@ function InstructorStudentDetail() {
                 <div className="h-48" dir="ltr">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
-                      <Pie data={pieData} dataKey="value" nameKey="name" outerRadius={70} fill="#B91C1C">
+                      <Pie data={pieData} dataKey="value" nameKey="name" outerRadius={70} fill="#EE7C11">
                         {pieData.map((entry, i) => (
                           <Cell key={i} fill={i === 0 ? "#10B981" : "#6366F1"} />
                         ))}

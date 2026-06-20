@@ -62,7 +62,7 @@ function Students() {
             render: (_, row) => (
               <Link
                 to={`/instructor/students/${row.id}`}
-                className="font-semibold text-[#B91C1C] hover:underline"
+                className="font-semibold text-[#EE7C11] hover:underline"
               >
                 {t("dashboard.instructor.pages.studentDetail.viewProgress")}
               </Link>

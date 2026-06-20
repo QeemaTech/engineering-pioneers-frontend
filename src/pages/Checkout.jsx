@@ -20,6 +20,12 @@ function formatDate(iso) {
   return Number.isNaN(d.getTime()) ? "—" : d.toLocaleDateString();
 }
 
+function durationLabel(months) {
+  const n = Number(months || 0);
+  if (!n) return "-";
+  return n === 1 ? "1 month" : `${n} months`;
+}
+
 export default function Checkout() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -79,8 +85,8 @@ export default function Checkout() {
 
   const packageAmount = useMemo(() => {
     if (!pkg) return 0;
-    return yearly ? Number(pkg.priceYearly) : Number(pkg.priceMonthly);
-  }, [pkg, yearly]);
+    return Number(pkg.price);
+  }, [pkg]);
 
   if (!hydrated) {
     return (
@@ -106,7 +112,7 @@ export default function Checkout() {
         <AlertCircle className="mx-auto h-12 w-12 text-amber-500" />
         <h1 className="mt-4 text-xl font-bold text-slate-900">{t("checkout.invalid.title")}</h1>
         <p className="mt-2 text-sm text-slate-600">{t("checkout.invalid.body")}</p>
-        <Link to="/explore" className="mt-6 inline-block font-semibold text-nihao-red-normal hover:underline">
+        <Link to="/explore" className="mt-6 inline-block font-semibold text-pioneer-orange-normal hover:underline">
           {t("checkout.backExplore")}
         </Link>
       </div>
@@ -227,7 +233,7 @@ export default function Checkout() {
         paymentMethod,
         receiptUrl: url,
         amount: packageAmount,
-        isYearly: yearly,
+        isYearly: false,
       });
       toast.success(t("checkout.package.successToast"));
       navigate("/subscription", { replace: true });
@@ -264,7 +270,7 @@ export default function Checkout() {
           <AlertCircle className="mx-auto h-12 w-12 text-amber-500" />
           <h1 className="mt-4 text-xl font-bold text-slate-900">{t("checkout.package.notFoundTitle")}</h1>
           <p className="mt-2 text-sm text-slate-600">{t("checkout.package.notFoundBody")}</p>
-          <Link to="/subscription" className="mt-6 inline-block font-semibold text-nihao-red-normal hover:underline">
+          <Link to="/subscription" className="mt-6 inline-block font-semibold text-pioneer-orange-normal hover:underline">
             {t("checkout.package.backPlans")}
           </Link>
         </div>
@@ -275,7 +281,7 @@ export default function Checkout() {
       <div className="min-h-screen bg-slate-50 py-12 md:py-16">
         <div className="mx-auto max-w-2xl px-4 md:px-6">
           <nav className="mb-6 text-sm text-slate-500">
-            <Link to="/subscription" className="font-medium text-nihao-red-normal hover:underline">
+            <Link to="/subscription" className="font-medium text-pioneer-orange-normal hover:underline">
               {t("checkout.breadcrumbSubscription")}
             </Link>
             <span className="mx-2">/</span>
@@ -283,7 +289,7 @@ export default function Checkout() {
           </nav>
 
           <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div className="border-b border-slate-100 bg-gradient-to-r from-nihao-red-light/40 to-white px-6 py-5">
+            <div className="border-b border-slate-100 bg-gradient-to-r from-pioneer-orange-light/40 to-white px-6 py-5">
               <h1 className="text-2xl font-bold text-slate-900">{t("checkout.package.title")}</h1>
               <p className="mt-1 text-sm text-slate-600">{t("checkout.package.subtitle")}</p>
             </div>
@@ -292,10 +298,10 @@ export default function Checkout() {
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("checkout.package.planLabel")}</p>
                 <p className="mt-1 text-lg font-bold text-slate-900">{pkg.name}</p>
-                <p className="mt-1 text-2xl font-extrabold text-nihao-red-normal">
+                <p className="mt-1 text-2xl font-extrabold text-pioneer-orange-normal">
                   ${packageAmount.toFixed(0)}{" "}
                   <span className="text-sm font-medium text-slate-500">
-                    / {yearly ? t("subscription.billing.yearly") : t("subscription.billing.monthly")}
+                    / {durationLabel(pkg.durationMonths)}
                   </span>
                 </p>
               </div>
@@ -353,7 +359,7 @@ export default function Checkout() {
               </div>
 
               {localError ? (
-                <div className="flex items-start gap-2 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-800">
+                <div className="flex items-start gap-2 rounded-xl border border-red-100 bg-[#EE7C11]/10 px-4 py-3 text-sm text-red-800">
                   <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                   <span>{localError}</span>
                 </div>
@@ -370,7 +376,7 @@ export default function Checkout() {
                   type="button"
                   disabled={packageSubmitting}
                   onClick={() => void handlePackageSubmit()}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-nihao-red-normal px-5 py-3 text-sm font-bold text-white transition hover:bg-nihao-red-hover disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-pioneer-orange-normal px-5 py-3 text-sm font-bold text-white transition hover:bg-pioneer-orange-hover disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {packageSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
                   {t("checkout.package.submit")}
@@ -388,7 +394,7 @@ export default function Checkout() {
     <div className="min-h-screen bg-slate-50 py-12 md:py-16">
       <div className="mx-auto max-w-2xl px-4 md:px-6">
         <nav className="mb-6 text-sm text-slate-500">
-          <Link to="/explore" className="font-medium text-nihao-red-normal hover:underline">
+          <Link to="/explore" className="font-medium text-pioneer-orange-normal hover:underline">
             {t("checkout.breadcrumbExplore")}
           </Link>
           <span className="mx-2">/</span>
@@ -396,7 +402,7 @@ export default function Checkout() {
         </nav>
 
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <div className="border-b border-slate-100 bg-gradient-to-r from-nihao-red-light/40 to-white px-6 py-5">
+          <div className="border-b border-slate-100 bg-gradient-to-r from-pioneer-orange-light/40 to-white px-6 py-5">
             <h1 className="text-2xl font-bold text-slate-900">
               {cohortFlow === "success"
                 ? t("checkout.cohort.successTitle")
@@ -424,7 +430,7 @@ export default function Checkout() {
                 <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
                   <Link
                     to="/my-classes"
-                    className="inline-flex items-center justify-center rounded-xl bg-nihao-red-normal px-5 py-3 text-sm font-bold text-white transition hover:bg-nihao-red-hover"
+                    className="inline-flex items-center justify-center rounded-xl bg-pioneer-orange-normal px-5 py-3 text-sm font-bold text-white transition hover:bg-pioneer-orange-hover"
                   >
                     {t("checkout.goToClasses")}
                   </Link>
@@ -467,7 +473,7 @@ export default function Checkout() {
             ) : null}
 
             {cohortFlow !== "success" && cohortMismatch ? (
-              <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-800">
+              <div className="rounded-xl border border-red-100 bg-[#EE7C11]/10 px-4 py-3 text-sm text-red-800">
                 {t("checkout.cohortMismatch")}
               </div>
             ) : null}
@@ -491,7 +497,7 @@ export default function Checkout() {
                         {t("checkout.instructor")}: {cohort.instructor.fullName}
                       </li>
                     ) : null}
-                    <li className="text-lg font-extrabold text-nihao-red-normal">${Number(cohort.price).toFixed(0)}</li>
+                    <li className="text-lg font-extrabold text-pioneer-orange-normal">${Number(cohort.price).toFixed(0)}</li>
                   </ul>
                 ) : (
                   <p className="mt-2 text-sm text-slate-600">{t("checkout.cohortIdOnly", { id: cohortId })}</p>
@@ -502,7 +508,7 @@ export default function Checkout() {
             {cohortFlow !== "success" && cohortFlow === "direct" ? (
               <div className="rounded-xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-950">
                 <p>{t("checkout.cohort.directIntro")}</p>
-                <p className="mt-3 text-base font-extrabold text-nihao-red-normal">
+                <p className="mt-3 text-base font-extrabold text-pioneer-orange-normal">
                   {t("checkout.cohort.payCohort", { price: `$${cohortDirectAmount.toFixed(0)}` })}
                 </p>
               </div>
@@ -539,7 +545,7 @@ export default function Checkout() {
                   />
                   <p className="mt-1 text-xs text-slate-500">{t("checkout.package.receiptHint")}</p>
                 </div>
-                <Link to="/subscription" className="inline-block text-sm font-semibold text-nihao-red-normal hover:underline">
+                <Link to="/subscription" className="inline-block text-sm font-semibold text-pioneer-orange-normal hover:underline">
                   {t("checkout.cohort.upgradeLink")}
                 </Link>
               </>
@@ -569,14 +575,14 @@ export default function Checkout() {
             ) : null}
 
             {cohortFlow !== "success" && localError ? (
-              <div className="flex items-start gap-2 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-800">
+              <div className="flex items-start gap-2 rounded-xl border border-red-100 bg-[#EE7C11]/10 px-4 py-3 text-sm text-red-800">
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                 <span>{localError}</span>
               </div>
             ) : null}
 
             {cohortFlow !== "success" && alreadyEnrolled ? (
-              <Link to="/my-classes" className="inline-block text-sm font-semibold text-nihao-red-normal hover:underline">
+              <Link to="/my-classes" className="inline-block text-sm font-semibold text-pioneer-orange-normal hover:underline">
                 {t("checkout.goToClasses")}
               </Link>
             ) : null}
@@ -594,7 +600,7 @@ export default function Checkout() {
                     type="button"
                     disabled={!canCohortDirectPay || cohortDirectSubmitting}
                     onClick={() => void handleCohortDirectPurchase()}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-nihao-red-normal px-5 py-3 text-sm font-bold text-white transition hover:bg-nihao-red-hover disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-pioneer-orange-normal px-5 py-3 text-sm font-bold text-white transition hover:bg-pioneer-orange-hover disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {cohortDirectSubmitting ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -608,7 +614,7 @@ export default function Checkout() {
                     type="button"
                     disabled={!canCohortConfirm || enroll.isPending}
                     onClick={handleCohortConfirm}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-nihao-red-normal px-5 py-3 text-sm font-bold text-white transition hover:bg-nihao-red-hover disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-pioneer-orange-normal px-5 py-3 text-sm font-bold text-white transition hover:bg-pioneer-orange-hover disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {enroll.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
                     {t("checkout.confirm")}

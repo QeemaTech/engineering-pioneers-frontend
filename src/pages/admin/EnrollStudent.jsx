@@ -68,11 +68,11 @@ function EnrollStudent() {
       <PageHeader title={t("adminPages.enrollStudent.title")} subtitle={t("adminPages.enrollStudent.subtitle")} />
 
       <ol className="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-400">
-        <li className={step >= 1 ? "text-nihao-red-normal" : ""}>1. {t("adminPages.enrollStudent.stepCourse", { defaultValue: "Course" })}</li>
+        <li className={step >= 1 ? "text-pioneer-orange-normal" : ""}>1. {t("adminPages.enrollStudent.stepCourse", { defaultValue: "Course" })}</li>
         <span aria-hidden>→</span>
-        <li className={step >= 2 ? "text-nihao-red-normal" : ""}>2. {t("adminPages.enrollStudent.stepCohort", { defaultValue: "Cohort" })}</li>
+        <li className={step >= 2 ? "text-pioneer-orange-normal" : ""}>2. {t("adminPages.enrollStudent.stepCohort", { defaultValue: "Cohort" })}</li>
         <span aria-hidden>→</span>
-        <li className={step >= 3 ? "text-nihao-red-normal" : ""}>3. {t("adminPages.enrollStudent.stepStudent", { defaultValue: "Student" })}</li>
+        <li className={step >= 3 ? "text-pioneer-orange-normal" : ""}>3. {t("adminPages.enrollStudent.stepStudent", { defaultValue: "Student" })}</li>
       </ol>
 
       <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-[#1A1A22]">
@@ -182,7 +182,7 @@ function EnrollStudent() {
             type="button"
             disabled={!studentId || !cohortId || !courseId || createMutation.isPending}
             onClick={onSubmit}
-            className="rounded-lg bg-[#B91C1C] px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
+            className="rounded-lg bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
           >
             {createMutation.isPending ? t("dashboard.common.loading", { defaultValue: "Submitting…" }) : t("adminPages.enrollStudent.submit")}
           </button>

@@ -9,6 +9,20 @@
 }
 
 @layer base {
+  :root {
+    --pioneer-orange: #EE7C11;
+    --pioneer-orange-hover: #d9700e;
+    --pioneer-orange-light: rgba(238, 124, 17, 0.1);
+    --pioneer-navy: #093443;
+    --pioneer-teal: #0D9488;
+    --pioneer-teal-hover: #0f766e;
+    --pioneer-teal-light: rgba(13, 148, 136, 0.1);
+    --pioneer-dark-bg: #0f172a;
+    --pioneer-dark-card: #1e293b;
+    --pioneer-dark-text-primary: #f1f5f9;
+    --pioneer-dark-text-secondary: #94a3b8;
+  }
+
   html {
     --font-app: Inter, "Helvetica Neue", Helvetica, Arial, ui-sans-serif, system-ui, sans-serif;
     font-family: var(--font-app);
@@ -18,7 +32,7 @@
 
   /* Matches ar, ar-EG, etc. */
   html[lang|="ar"] {
-    --font-app: "Alexandria", sans-serif;
+    --font-app: "Cairo", "Alexandria", sans-serif;
     font-size: 112.5%;
     letter-spacing: 0;
   }
@@ -52,7 +66,7 @@
 
 
 @layer components {
-  /* Figma brush-stroke: thick yellow underline below "Chinese Language" */
+  /* Figma brush-stroke: thick orange underline below "Engineering Pioneers" */
   .hero-brush {
     @apply relative;
   }
@@ -64,26 +78,26 @@
     right: -4px;
     bottom: -6px;
     height: 12px;
-    background: #ca9a1a;
+    background: #EE7C11;
     border-radius: 40% 60% 55% 45% / 50% 50% 70% 60%;
     transform: rotate(-1.5deg);
     z-index: -1;
     opacity: 0.85;
   }
 
-  @keyframes pulse-red {
+  @keyframes pulse-orange {
     0%, 100% {
       transform: scale(1);
-      box-shadow: 0 0 0 0 rgba(185, 28, 28, 0.7);
+      box-shadow: 0 0 0 0 rgba(238, 124, 17, 0.7);
     }
     50% {
       transform: scale(1.2);
-      box-shadow: 0 0 0 8px rgba(185, 28, 28, 0);
+      box-shadow: 0 0 0 8px rgba(238, 124, 17, 0);
     }
   }
 
-  .animate-pulse-red {
-    animation: pulse-red 2s infinite;
+  .animate-pulse-orange {
+    animation: pulse-orange 2s infinite;
   }
 
   @keyframes gradient-border {
@@ -96,8 +110,64 @@
   }
 
   .animated-gradient-border {
-    background: linear-gradient(90deg, #B91C1C, #F59E0B, #B91C1C);
+    background: linear-gradient(90deg, #EE7C11, #0D9488, #093443);
     background-size: 200% 200%;
     animation: gradient-border 3s ease infinite;
+  }
+}
+
+@layer utilities {
+  /* Dynamic layout fallbacks to keep other components fully stylized and compliantly branded */
+  .bg-pioneer-orange-normal, .bg-pioneer-orange {
+    background-color: #EE7C11 !important;
+  }
+  .bg-pioneer-orange-hover:hover {
+    background-color: #d9700e !important;
+  }
+  .bg-pioneer-orange-light {
+    background-color: rgba(238, 124, 17, 0.1) !important;
+  }
+  .text-pioneer-orange-normal, .text-pioneer-orange {
+    color: #EE7C11 !important;
+  }
+  .text-pioneer-orange-hover:hover {
+    color: #d9700e !important;
+  }
+  .text-pioneer-orange-dark {
+    color: #093443 !important;
+  }
+  .text-pioneer-orange-light {
+    color: rgba(238, 124, 17, 0.8) !important;
+  }
+  .border-pioneer-orange-normal, .border-pioneer-orange {
+    border-color: #EE7C11 !important;
+  }
+  .border-pioneer-orange-light {
+    border-color: rgba(238, 124, 17, 0.3) !important;
+  }
+  .focus\:border-pioneer-orange-normal:focus {
+    border-color: #EE7C11 !important;
+  }
+  .focus\:ring-pioneer-orange-light:focus {
+    --tw-ring-color: rgba(13, 148, 136, 0.3) !important;
+  }
+
+  .bg-pioneer-teal-normal, .bg-pioneer-teal {
+    background-color: #0D9488 !important;
+  }
+  .bg-pioneer-teal-hover:hover {
+    background-color: #0f766e !important;
+  }
+  .text-pioneer-teal-normal, .text-pioneer-teal {
+    color: #0D9488 !important;
+  }
+  .text-pioneer-teal-hover:hover {
+    color: #0f766e !important;
+  }
+  .text-pioneer-teal-dark {
+    color: #093443 !important;
+  }
+  .bg-pioneer-teal-light {
+    background-color: rgba(13, 148, 136, 0.1) !important;
   }
 }

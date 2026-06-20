@@ -9,14 +9,22 @@ import {
 import { useTranslation } from "react-i18next";
 import {
   useAdminCourse, useUpdateAdminCourse,
-  useCreateAdminUnit, useUpdateAdminUnit, useDeleteAdminUnit,
+  useAddCourseStaff, useCourseStaff, useCreateAdminUnit, useRemoveCourseStaff, useUpdateAdminUnit, useDeleteAdminUnit,
   useCreateAdminLesson, useUpdateAdminLesson, useDeleteAdminLesson,
 } from "../../features/admin/courses/hooks";
+import {
+  useCreateAdminSection,
+  useUpdateAdminSection,
+  useDeleteAdminSection,
+} from "../../features/admin/sections/hooks";
+import { useAdminCategories } from "../../features/admin/categories/hooks";
+import { useAdminInstructors } from "../../features/admin/instructors/hooks";
 import { getErrorMessage } from "../../api/error";
 import { 
   useAdminExams, useUpdateAdminExam, useCreateAdminExam, 
   useAdminExamById, useAddAdminExamQuestion, useUpdateAdminExamQuestion, useDeleteAdminExamQuestion 
 } from "../../features/admin/exams/hooks";
+import { useAdminUsers } from "../../features/admin/users/hooks";
 import toast from "react-hot-toast";
 
 /* ─── Question Card (For Drawer) ─── */
@@ -52,7 +60,7 @@ function QuestionCard({ question, examId, index }) {
         </span>
         <div className="flex gap-2">
           {dirty && (
-            <button onClick={save} disabled={updateMutation.isPending} className="text-[10px] font-bold text-[#B91C1C] hover:underline">
+            <button onClick={save} disabled={updateMutation.isPending} className="text-[10px] font-bold text-[#EE7C11] hover:underline">
               {updateMutation.isPending
                 ? t("adminPages.courseEditor.actions.saving", { defaultValue: "Saving..." })
                 : t("adminPages.courseEditor.actions.saveChanges", { defaultValue: "Save changes" })}
@@ -69,7 +77,7 @@ function QuestionCard({ question, examId, index }) {
       <textarea 
         value={text} 
         onChange={(e) => markDirty(setText)(e.target.value)} 
-        className="mb-3 w-full rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm outline-none focus:border-[#B91C1C]/30 dark:border-white/5 dark:bg-[#1A1A22] dark:text-white"
+        className="mb-3 w-full rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm outline-none focus:border-[#EE7C11]/30 dark:border-white/5 dark:bg-[#1A1A22] dark:text-white"
         placeholder={t("adminPages.courseEditor.exam.questionTextPlaceholder", { defaultValue: "Question text..." })}
         rows={2}
       />
@@ -126,7 +134,7 @@ function ExamEditorDrawer({ examId, onClose }) {
 
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
           {isLoading ? (
-            <div className="flex py-20 justify-center"><Loader2 className="h-6 w-6 animate-spin text-[#B91C1C]" /></div>
+            <div className="flex py-20 justify-center"><Loader2 className="h-6 w-6 animate-spin text-[#EE7C11]" /></div>
           ) : (
             <>
               <div className="flex items-center justify-between">
@@ -136,7 +144,7 @@ function ExamEditorDrawer({ examId, onClose }) {
                     defaultValue: "Questions ({{count}})",
                   })}
                 </span>
-                <button onClick={handleAdd} className="text-[10px] font-bold text-[#B91C1C] hover:underline">
+                <button onClick={handleAdd} className="text-[10px] font-bold text-[#EE7C11] hover:underline">
                   {t("adminPages.courseEditor.exam.addQuestion", { defaultValue: "+ Add question" })}
                 </button>
               </div>
@@ -283,7 +291,7 @@ function InContextExamBuilder({ targetId, targetType, onClose }) {
                     {...register("title", { required: t("adminPages.courseEditor.validation.titleRequired", { defaultValue: "Title is required" }) })}
                     placeholder={t("adminPages.courseEditor.exam.titlePlaceholder", { defaultValue: "e.g. Midterm assessment" })} 
                     className={`h-11 w-full rounded-xl border px-4 text-sm font-medium outline-none transition-all ${
-                      errors.title ? "border-red-500 bg-red-50" : "border-slate-200 bg-slate-50 focus:border-[#B91C1C]"
+                      errors.title ? "border-red-500 bg-[#EE7C11]/10" : "border-slate-200 bg-slate-50 focus:border-[#EE7C11]"
                     } dark:border-white/10 dark:bg-[#0F0F13] dark:text-white`}
                   />
                   {errors.title && <p className="text-[10px] font-bold text-red-500 uppercase">{errors.title.message}</p>}
@@ -296,7 +304,7 @@ function InContextExamBuilder({ targetId, targetType, onClose }) {
                     <input 
                       type="number"
                       {...register("durationMinutes", { required: true })}
-                      className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none focus:border-[#B91C1C] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" 
+                      className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" 
                     />
                   </label>
                   <label className="block space-y-1.5">
@@ -306,7 +314,7 @@ function InContextExamBuilder({ targetId, targetType, onClose }) {
                     <input 
                       type="number"
                       {...register("passingScore", { required: true })}
-                      className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none focus:border-[#B91C1C] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" 
+                      className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" 
                     />
                   </label>
                 </div>
@@ -323,7 +331,7 @@ function InContextExamBuilder({ targetId, targetType, onClose }) {
                   <button 
                     type="button"
                     onClick={() => append({ questionText: "", type: "MULTIPLE_CHOICE", points: 10, options: ["", "", "", ""], correctAnswer: "0" })}
-                    className="text-[10px] font-bold text-[#B91C1C] hover:underline"
+                    className="text-[10px] font-bold text-[#EE7C11] hover:underline"
                   >
                     {t("adminPages.courseEditor.exam.addNewQuestion", { defaultValue: "+ Add new question" })}
                   </button>
@@ -340,7 +348,7 @@ function InContextExamBuilder({ targetId, targetType, onClose }) {
                         <Trash2 className="h-4 w-4" />
                       </button>
                       <div className="mb-4 flex items-center gap-2">
-                        <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#B91C1C] text-[10px] font-bold text-white">{index + 1}</span>
+                        <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#EE7C11] text-[10px] font-bold text-white">{index + 1}</span>
                         <input 
                           {...register(`questions.${index}.questionText`, {
                             required: t("adminPages.courseEditor.validation.questionRequired", {
@@ -377,7 +385,7 @@ function InContextExamBuilder({ targetId, targetType, onClose }) {
                                 type="radio" 
                                 value={String(optIndex)} 
                                 {...register(`questions.${index}.correctAnswer`)}
-                                className="accent-[#B91C1C]"
+                                className="accent-[#EE7C11]"
                               />
                               <input 
                                 {...register(`questions.${index}.options.${optIndex}`, {
@@ -390,7 +398,7 @@ function InContextExamBuilder({ targetId, targetType, onClose }) {
                                   defaultValue: "Option {{n}}",
                                 })}
                                 className={`h-8 flex-1 rounded-lg border px-3 text-[11px] outline-none transition-all ${
-                                  errors.questions?.[index]?.options?.[optIndex] ? "border-red-500 bg-red-50" : "border-slate-200 bg-white dark:border-white/5 dark:bg-[#0F0F13] dark:text-white"
+                                  errors.questions?.[index]?.options?.[optIndex] ? "border-red-500 bg-[#EE7C11]/10" : "border-slate-200 bg-white dark:border-white/5 dark:bg-[#0F0F13] dark:text-white"
                                 }`}
                               />
                             </div>
@@ -408,7 +416,7 @@ function InContextExamBuilder({ targetId, targetType, onClose }) {
                               key={label}
                               className={`flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 py-3 transition-all ${
                                 watch(`questions.${index}.correctAnswer`) === String(optIndex)
-                                  ? "border-[#B91C1C] bg-[#B91C1C]/5 font-bold text-[#B91C1C]"
+                                  ? "border-[#EE7C11] bg-[#EE7C11]/5 font-bold text-[#EE7C11]"
                                   : "border-slate-200 bg-white text-slate-500 hover:border-slate-300 dark:border-white/10 dark:bg-[#0F0F13]"
                               }`}
                             >
@@ -455,7 +463,7 @@ function InContextExamBuilder({ targetId, targetType, onClose }) {
                   <button 
                     type="button" 
                     onClick={() => setStep(2)} 
-                    className="rounded-xl bg-[#B91C1C] px-8 py-2.5 text-xs font-bold text-white shadow-lg shadow-red-500/20 hover:bg-[#991B1B]"
+                    className="rounded-xl bg-[#EE7C11] px-8 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#EE7C11]/20 hover:bg-[#d9700e]"
                   >
                     {t("adminPages.courseEditor.exam.nextBuildQuestions", { defaultValue: "Next: build questions" })}
                   </button>
@@ -463,7 +471,7 @@ function InContextExamBuilder({ targetId, targetType, onClose }) {
                   <button 
                     type="submit" 
                     disabled={isPending}
-                    className="inline-flex items-center gap-2 rounded-xl bg-[#B91C1C] px-10 py-2.5 text-xs font-bold text-white shadow-lg shadow-red-500/20 hover:bg-[#991B1B] disabled:opacity-50"
+                    className="inline-flex items-center gap-2 rounded-xl bg-[#EE7C11] px-10 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#EE7C11]/20 hover:bg-[#d9700e] disabled:opacity-50"
                   >
                     {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                     {t("adminPages.courseEditor.exam.saveAndLink", { defaultValue: "Save & link exam" })}
@@ -552,7 +560,7 @@ function ExamManager({ targetId, targetType, linkedExams, onRefresh }) {
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-50 text-purple-600 dark:bg-purple-500/10">
                   <Layout className="h-4 w-4" />
                 </div>
-                <button onClick={() => handleUnlink(exam.id)} className="rounded-lg p-1 text-slate-400 hover:bg-red-50 hover:text-red-500">
+                <button onClick={() => handleUnlink(exam.id)} className="rounded-lg p-1 text-slate-400 hover:bg-[#EE7C11]/10 hover:text-red-500">
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               </div>
@@ -602,7 +610,7 @@ function ExamManager({ targetId, targetType, linkedExams, onRefresh }) {
           <div className="mt-5 grid grid-cols-2 gap-2">
             <button 
               onClick={() => setShowCreate(true)}
-              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#B91C1C] py-2 text-[11px] font-bold text-white hover:bg-[#991B1B]"
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#EE7C11] py-2 text-[11px] font-bold text-white hover:bg-[#d9700e]"
             >
               <PlusCircle className="h-3.5 w-3.5" /> {t("adminPages.courseEditor.exam.createNew", { defaultValue: "Create new" })}
             </button>
@@ -664,7 +672,7 @@ function LessonRow({ lesson, isSelected, onSelect, onDelete }) {
     <div
       className={`group flex w-full items-center gap-2 rounded-lg transition-all ${
         isSelected
-          ? "bg-[#B91C1C]/10 text-[#B91C1C] font-bold dark:bg-[#B91C1C]/20 dark:text-red-300"
+          ? "bg-[#EE7C11]/10 text-[#EE7C11] font-bold dark:bg-[#EE7C11]/20 dark:text-red-300"
           : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-white/5"
       }`}
     >
@@ -688,14 +696,30 @@ function LessonRow({ lesson, isSelected, onSelect, onDelete }) {
   );
 }
 
-/* ─── Unit Accordion ─── */
-function UnitAccordion({ unit, isSelected, onSelect, selectedLessonId, onSelectLesson, onDeleteUnit, onDeleteLesson, onAddLesson, onRenameUnit, isAddingLesson }) {
+/* ─── Unit Accordion (Unit → Section → Lesson) ─── */
+function UnitAccordion({
+  unit,
+  isSelected,
+  onSelect,
+  selectedLessonId,
+  onSelectLesson,
+  onDeleteUnit,
+  onDeleteLesson,
+  onDeleteSection,
+  onAddLesson,
+  onAddSection,
+  onRenameUnit,
+  onRenameSection,
+  isAddingLesson,
+}) {
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(true);
   const ClosedChevron = i18n.dir() === "rtl" ? ChevronLeft : ChevronRight;
+  const sections = unit.sections || [];
+  const totalLessons = sections.reduce((sum, sec) => sum + (sec.lessons?.length || 0), 0);
 
   return (
-    <div className={`rounded-xl border transition-all ${isSelected ? 'border-[#B91C1C]/30 bg-[#B91C1C]/5 ring-1 ring-[#B91C1C]/10' : 'border-slate-200 bg-white dark:border-white/8 dark:bg-[#1A1A22]'}`}>
+    <div className={`rounded-xl border transition-all ${isSelected ? 'border-[#EE7C11]/30 bg-[#EE7C11]/5 ring-1 ring-[#EE7C11]/10' : 'border-slate-200 bg-white dark:border-white/8 dark:bg-[#1A1A22]'}`}>
       <div 
         onClick={() => onSelect(unit)}
         className="flex cursor-pointer items-center gap-2 p-3"
@@ -706,16 +730,16 @@ function UnitAccordion({ unit, isSelected, onSelect, selectedLessonId, onSelectL
         >
           {open ? <ChevronDown className="h-4 w-4" /> : <ClosedChevron className="h-4 w-4" />}
         </button>
-        <Layers className={`h-4 w-4 shrink-0 ${isSelected ? 'text-[#B91C1C]' : 'text-slate-400'}`} />
+        <Layers className={`h-4 w-4 shrink-0 ${isSelected ? 'text-[#EE7C11]' : 'text-slate-400'}`} />
         <InlineEdit
           value={unit.title}
           onSave={(v) => onRenameUnit(unit.id, v)}
           placeholder={t("adminPages.courseEditor.empty.untitledUnit", { defaultValue: "Untitled unit" })}
-          className={`min-w-0 flex-1 text-sm font-bold ${isSelected ? 'text-[#B91C1C]' : 'text-slate-900 dark:text-white'}`}
+          className={`min-w-0 flex-1 text-sm font-bold ${isSelected ? 'text-[#EE7C11]' : 'text-slate-900 dark:text-white'}`}
         />
         <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500 dark:bg-white/10 dark:text-slate-400">
           {t("adminPages.courseEditor.stats.lessonsCount", {
-            count: unit.lessons?.length || 0,
+            count: totalLessons,
             defaultValue: "{{count}} lessons",
           })}
         </span>
@@ -729,25 +753,61 @@ function UnitAccordion({ unit, isSelected, onSelect, selectedLessonId, onSelectL
       </div>
 
       {open && (
-        <div className="border-t border-slate-100 px-3 pb-3 pt-1 dark:border-white/5">
-          <div className="space-y-0.5">
-            {(unit.lessons || []).map((lesson) => (
-              <LessonRow
-                key={lesson.id}
-                lesson={lesson}
-                isSelected={selectedLessonId === lesson.id}
-                onSelect={onSelectLesson}
-                onDelete={onDeleteLesson}
-              />
-            ))}
-          </div>
+        <div className="border-t border-slate-100 px-3 pb-3 pt-2 dark:border-white/5">
+          {sections.length === 0 ? (
+            <p className="py-2 text-xs text-slate-400">
+              {t("adminPages.courseEditor.empty.noSections", { defaultValue: "No sections yet" })}
+            </p>
+          ) : (
+            sections.map((section) => (
+              <div key={section.id} className="mb-2 rounded-lg border border-slate-100 bg-slate-50/50 p-2 dark:border-white/5 dark:bg-white/[0.02]">
+                <div className="mb-1 flex items-center gap-2">
+                  <Layout className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+                  <InlineEdit
+                    value={section.title}
+                    onSave={(v) => onRenameSection(section.id, v)}
+                    placeholder={t("adminPages.courseEditor.empty.untitledSection", { defaultValue: "Untitled section" })}
+                    className="min-w-0 flex-1 text-xs font-bold text-slate-700 dark:text-slate-200"
+                  />
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onDeleteSection(section.id); }}
+                    aria-label={t("adminPages.courseEditor.actions.deleteSection", { defaultValue: "Delete section" })}
+                    className="shrink-0 rounded p-0.5 text-slate-400 hover:text-red-500"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </button>
+                </div>
+                <div className="space-y-0.5 ps-2">
+                  {(section.lessons || []).map((lesson) => (
+                    <LessonRow
+                      key={lesson.id}
+                      lesson={lesson}
+                      isSelected={selectedLessonId === lesson.id}
+                      onSelect={onSelectLesson}
+                      onDelete={onDeleteLesson}
+                    />
+                  ))}
+                </div>
+                <button
+                  disabled={isAddingLesson}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAddLesson(section, (section.lessons?.length || 0) + 1);
+                  }}
+                  className="mt-1.5 inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-bold text-[#EE7C11] hover:bg-[#EE7C11]/10 disabled:opacity-50"
+                >
+                  {isAddingLesson ? <Loader2 className="h-3 w-3 animate-spin" /> : <Plus className="h-3 w-3" />}
+                  {t("adminPages.courseEditor.actions.addLesson", { defaultValue: "Add lesson" })}
+                </button>
+              </div>
+            ))
+          )}
           <button
-            disabled={isAddingLesson}
-            onClick={(e) => { e.stopPropagation(); onAddLesson(unit.id, (unit.lessons?.length || 0) + 1); }}
-            className="mt-2 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold text-[#B91C1C] transition-colors hover:bg-[#B91C1C]/10 disabled:opacity-50"
+            onClick={(e) => { e.stopPropagation(); onAddSection(unit); }}
+            className="mt-1 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/5"
           >
-            {isAddingLesson ? <Loader2 className="h-3 w-3 animate-spin" /> : <Plus className="h-3 w-3" />}
-            {t("adminPages.courseEditor.actions.addLesson", { defaultValue: "Add lesson" })}
+            <Plus className="h-3 w-3" />
+            {t("adminPages.courseEditor.actions.addSection", { defaultValue: "Add section" })}
           </button>
         </div>
       )}
@@ -783,7 +843,7 @@ function InlineEdit({ value, onSave, placeholder, className = "" }) {
       onBlur={commit}
       onClick={(e) => e.stopPropagation()}
       onKeyDown={(e) => { if (e.key === "Enter") commit(); if (e.key === "Escape") { setDraft(value || ""); setEditing(false); } }}
-      className={`rounded border border-[#B91C1C]/40 bg-transparent px-2 py-0.5 outline-none ring-1 ring-[#B91C1C]/20 ${className}`}
+      className={`rounded border border-[#EE7C11]/40 bg-transparent px-2 py-0.5 outline-none ring-1 ring-[#EE7C11]/20 ${className}`}
     />
   );
 }
@@ -794,12 +854,28 @@ function DetailEditor({ node, onClose }) {
   const updateCourseMutation = useUpdateAdminCourse();
   const updateUnitMutation = useUpdateAdminUnit();
   const updateLessonMutation = useUpdateAdminLesson();
+  const { data: staff = [] } = useCourseStaff(node?.type === "course" ? node?.id : null);
+  const addStaffMutation = useAddCourseStaff();
+  const removeStaffMutation = useRemoveCourseStaff();
+  const { data: usersData } = useAdminUsers({ page: 1, limit: 200 });
+  const { data: categoriesData } = useAdminCategories({ page: 1, limit: 100 });
+  const { data: instructorsData } = useAdminInstructors({ page: 1, limit: 100 });
+  const categories = categoriesData?.categories || [];
+  const instructors = instructorsData?.instructors || [];
+  const [staffUserId, setStaffUserId] = useState("");
+  const [staffRole, setStaffRole] = useState("TEACHING_ASSISTANT");
   
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     videoUrl: "",
     thumbnail: "",
+    introVideoUrl: "",
+    price: "",
+    isLifetimePurchasable: true,
+    isActive: false,
+    categoryId: "",
+    instructorId: "",
   });
   const [isPending, setIsPending] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -811,6 +887,12 @@ function DetailEditor({ node, onClose }) {
         description: node.data.description || "",
         videoUrl: node.data.videoUrl || "",
         thumbnail: node.data.thumbnail || "",
+        introVideoUrl: node.data.introVideoUrl || "",
+        price: node.data.price != null ? String(node.data.price) : "",
+        isLifetimePurchasable: node.data.isLifetimePurchasable !== false,
+        isActive: node.data.isActive === true,
+        categoryId: node.data.categoryId || node.data.category?.id || "",
+        instructorId: node.data.instructorId || node.data.instructor?.id || "",
       });
     }
     setSaved(false);
@@ -821,12 +903,19 @@ function DetailEditor({ node, onClose }) {
     setIsPending(true);
     try {
       if (node.type === "course") {
+        const price = formData.price === "" ? undefined : Number(formData.price);
         await updateCourseMutation.mutateAsync({ 
           id: node.id, 
           body: { 
             title: formData.title, 
             description: formData.description || undefined, 
-            thumbnail: formData.thumbnail || undefined 
+            thumbnail: formData.thumbnail.trim() || undefined,
+            introVideoUrl: formData.introVideoUrl.trim() || null,
+            price: price != null && !Number.isNaN(price) ? price : undefined,
+            isLifetimePurchasable: formData.isLifetimePurchasable,
+            isActive: formData.isActive,
+            categoryId: formData.categoryId === "" ? null : (formData.categoryId || undefined),
+            instructorId: formData.instructorId === "" ? null : (formData.instructorId || undefined),
           } 
         });
       } else if (node.type === "unit") {
@@ -907,7 +996,7 @@ function DetailEditor({ node, onClose }) {
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder={t("adminPages.courseEditor.placeholders.title", { defaultValue: "Enter title..." })}
-              className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#B91C1C] focus:ring-1 focus:ring-[#B91C1C]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+              className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#EE7C11] focus:ring-1 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
             />
           </label>
 
@@ -922,7 +1011,7 @@ function DetailEditor({ node, onClose }) {
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={4}
                   placeholder={t("adminPages.courseEditor.placeholders.courseSummary", { defaultValue: "Course summary..." })}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition-all focus:border-[#B91C1C] focus:ring-1 focus:ring-[#B91C1C]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition-all focus:border-[#EE7C11] focus:ring-1 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
                 />
               </label>
               <label className="block space-y-1.5">
@@ -936,6 +1025,155 @@ function DetailEditor({ node, onClose }) {
                   className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
                 />
               </label>
+
+              <label className="block space-y-1.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  {t("dashboard.admin.courses.introVideoUrl", { defaultValue: "Intro video URL" })}
+                </span>
+                <input
+                  value={formData.introVideoUrl}
+                  onChange={(e) => setFormData({ ...formData, introVideoUrl: e.target.value })}
+                  placeholder="https://example.com/intro.mp4"
+                  className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                />
+              </label>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="block space-y-1.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    {t("adminPages.addCourse.price", { defaultValue: "Lifetime purchase price" })}
+                  </span>
+                  <input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={formData.price}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                  />
+                </label>
+                <label className="flex items-center gap-2 pt-6 text-sm text-slate-700 dark:text-slate-200">
+                  <input
+                    type="checkbox"
+                    checked={formData.isLifetimePurchasable}
+                    onChange={(e) => setFormData({ ...formData, isLifetimePurchasable: e.target.checked })}
+                  />
+                  {t("adminPages.addCourse.lifetimePurchasable", { defaultValue: "Allow lifetime purchase" })}
+                </label>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="block space-y-1.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    {t("adminPages.addCourse.instructor", { defaultValue: "Instructor" })}
+                  </span>
+                  <select
+                    value={formData.instructorId}
+                    onChange={(e) => setFormData({ ...formData, instructorId: e.target.value })}
+                    className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                  >
+                    <option value="">{t("dashboard.admin.courses.selectInstructor")}</option>
+                    {instructors.map((i) => (
+                      <option key={i.id} value={i.id}>{i.fullName || i.name}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="block space-y-1.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    {t("adminPages.addCourse.category", { defaultValue: "Category" })}
+                  </span>
+                  <select
+                    value={formData.categoryId}
+                    onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
+                    className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                  >
+                    <option value="">{t("adminPages.courseEditor.empty.noCategory")}</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
+                <input
+                  type="checkbox"
+                  checked={formData.isActive}
+                  onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                />
+                {t("adminPages.addCourse.publishNow", { defaultValue: "Published (active)" })}
+              </label>
+
+              <div className="rounded-xl border border-slate-200 p-3 dark:border-white/10">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  {t("adminPages.courseEditor.staff.title", { defaultValue: "Course staff" })}
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <select
+                    value={staffUserId}
+                    onChange={(e) => setStaffUserId(e.target.value)}
+                    className="h-10 min-w-[180px] rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                  >
+                    <option value="">{t("adminPages.courseEditor.staff.selectUser", { defaultValue: "Select user" })}</option>
+                    {(usersData?.users || [])
+                      .filter((u) => ["TEACHING_ASSISTANT", "CONTENT_REVIEWER"].includes(String(u?.role?.name || u?.role || "").toUpperCase()))
+                      .map((u) => (
+                        <option key={u.id} value={u.id}>
+                          {u.fullName || u.email}
+                        </option>
+                      ))}
+                  </select>
+                  <select
+                    value={staffRole}
+                    onChange={(e) => setStaffRole(e.target.value)}
+                    className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                  >
+                    <option value="TEACHING_ASSISTANT">TEACHING_ASSISTANT</option>
+                    <option value="CONTENT_REVIEWER">CONTENT_REVIEWER</option>
+                  </select>
+                  <button
+                    type="button"
+                    disabled={!staffUserId || addStaffMutation.isPending}
+                    onClick={async () => {
+                      try {
+                        await addStaffMutation.mutateAsync({ courseId: node.id, userId: staffUserId, role: staffRole });
+                        setStaffUserId("");
+                        toast.success(t("adminPages.courseEditor.staff.added", { defaultValue: "Staff added" }));
+                      } catch (err) {
+                        toast.error(getErrorMessage(err, t("adminPages.courseEditor.staff.addFailed", { defaultValue: "Failed to add staff" })));
+                      }
+                    }}
+                    className="rounded-lg bg-[#EE7C11] px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
+                  >
+                    {t("adminPages.courseEditor.staff.add", { defaultValue: "Add" })}
+                  </button>
+                </div>
+                <div className="mt-3 space-y-1">
+                  {(staff || []).map((s) => (
+                    <div key={s.id} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-xs dark:bg-white/5">
+                      <span>{s?.user?.fullName || s?.user?.email} · {s.role}</span>
+                      <button
+                        type="button"
+                        disabled={removeStaffMutation.isPending}
+                        onClick={async () => {
+                          try {
+                            await removeStaffMutation.mutateAsync({ courseId: node.id, staffId: s.id });
+                            toast.success(t("adminPages.courseEditor.staff.removed", { defaultValue: "Staff removed" }));
+                          } catch (err) {
+                            toast.error(getErrorMessage(err, t("adminPages.courseEditor.staff.removeFailed", { defaultValue: "Failed to remove staff" })));
+                          }
+                        }}
+                        className="text-red-600 hover:underline"
+                      >
+                        {t("common.remove", { defaultValue: "Remove" })}
+                      </button>
+                    </div>
+                  ))}
+                  {!staff?.length ? (
+                    <p className="text-xs text-slate-500">{t("adminPages.courseEditor.staff.empty", { defaultValue: "No staff assigned" })}</p>
+                  ) : null}
+                </div>
+              </div>
             </>
           )}
 
@@ -970,7 +1208,7 @@ function DetailEditor({ node, onClose }) {
           type="button"
           onClick={handleSave}
           disabled={isPending || !formData.title.trim()}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#B91C1C] px-4 py-2.5 text-sm font-bold text-white transition-all hover:bg-[#991B1B] disabled:opacity-50"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#EE7C11] px-4 py-2.5 text-sm font-bold text-white transition-all hover:bg-[#d9700e] disabled:opacity-50"
         >
           {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
           {saved
@@ -998,6 +1236,9 @@ export default function CourseEditor() {
   const createUnitMutation = useCreateAdminUnit();
   const updateUnitMutation = useUpdateAdminUnit();
   const deleteUnitMutation = useDeleteAdminUnit();
+  const createSectionMutation = useCreateAdminSection();
+  const updateSectionMutation = useUpdateAdminSection();
+  const deleteSectionMutation = useDeleteAdminSection();
   const createLessonMutation = useCreateAdminLesson();
   const deleteLessonMutation = useDeleteAdminLesson();
 
@@ -1039,12 +1280,45 @@ export default function CourseEditor() {
     } catch (err) { toast.error(getErrorMessage(err, t("adminPages.courseEditor.toasts.unitDeleteFailed", { defaultValue: "Failed to delete unit" }))); }
   }, [deleteUnitMutation, selectedNode, course, t]);
 
-  const handleAddLesson = useCallback(async (unitId, order) => {
+  const handleAddSection = useCallback(async (unit) => {
     try {
+      const sectionCount = unit?.sections?.length || 0;
+      await createSectionMutation.mutateAsync({
+        unitId: unit.id,
+        title: t("adminPages.courseEditor.defaults.section", { n: sectionCount + 1, defaultValue: "Section {{n}}" }),
+        order: sectionCount + 1,
+      });
+      toast.success(t("adminPages.courseEditor.toasts.sectionAdded", { defaultValue: "Section added" }));
+    } catch (err) {
+      toast.error(getErrorMessage(err, t("adminPages.courseEditor.toasts.sectionAddFailed", { defaultValue: "Failed to add section" })));
+    }
+  }, [createSectionMutation, t]);
+
+  const handleRenameSection = useCallback(async (sectionId, title) => {
+    try {
+      await updateSectionMutation.mutateAsync({ id: sectionId, body: { title } });
+    } catch (err) {
+      toast.error(getErrorMessage(err, t("adminPages.courseEditor.toasts.sectionRenameFailed", { defaultValue: "Failed to rename section" })));
+    }
+  }, [updateSectionMutation, t]);
+
+  const handleDeleteSection = useCallback(async (sectionId) => {
+    if (!confirm(t("adminPages.courseEditor.confirm.deleteSection", { defaultValue: "Delete this section and all its lessons?" }))) return;
+    try {
+      await deleteSectionMutation.mutateAsync(sectionId);
+      toast.success(t("adminPages.courseEditor.toasts.sectionDeleted", { defaultValue: "Section deleted" }));
+    } catch (err) {
+      toast.error(getErrorMessage(err, t("adminPages.courseEditor.toasts.sectionDeleteFailed", { defaultValue: "Failed to delete section" })));
+    }
+  }, [deleteSectionMutation, t]);
+
+  const handleAddLesson = useCallback(async (section, order) => {
+    try {
+      if (!section?.id) throw new Error("No section available");
       await createLessonMutation.mutateAsync({
         title: t("adminPages.courseEditor.defaults.lesson", { n: order, defaultValue: "Lesson {{n}}" }),
         order,
-        unitId,
+        sectionId: section.id,
       });
       toast.success(t("adminPages.courseEditor.toasts.lessonAdded", { defaultValue: "Lesson added" }));
     } catch (err) {
@@ -1061,19 +1335,19 @@ export default function CourseEditor() {
     } catch (err) { toast.error(getErrorMessage(err, t("adminPages.courseEditor.toasts.lessonDeleteFailed", { defaultValue: "Failed to delete lesson" }))); }
   }, [deleteLessonMutation, selectedNode, course, t]);
 
-  if (isLoading) return <div className="flex min-h-[60vh] items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-[#B91C1C]" /></div>;
+  if (isLoading) return <div className="flex min-h-[60vh] items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-[#EE7C11]" /></div>;
   if (isError || !course) return (
     <div className="mx-auto max-w-lg space-y-4 py-20 text-center">
       <p className="text-lg font-bold text-slate-900 dark:text-white">
         {t("adminPages.courseEditor.notFound", { defaultValue: "Course not found" })}
       </p>
-      <Link to="/admin/courses" className="text-sm text-[#B91C1C] hover:underline">
+      <Link to="/admin/courses" className="text-sm text-[#EE7C11] hover:underline">
         {t("adminPages.courseEditor.actions.backToCourses", { defaultValue: "Back to courses" })}
       </Link>
     </div>
   );
 
-  const totalLessons = units.reduce((sum, u) => sum + (u.lessons?.length || 0), 0);
+  const totalLessons = units.reduce((sum, u) => sum + ((u.sections || []).reduce((s, sec) => s + (sec.lessons?.length || 0), 0)), 0);
 
   return (
     <section className="space-y-6">
@@ -1107,7 +1381,7 @@ export default function CourseEditor() {
         {[
           { label: t("adminPages.courseEditor.stats.units", { defaultValue: "Units" }), value: units.length, color: "text-blue-500" },
           { label: t("adminPages.courseEditor.stats.lessons", { defaultValue: "Lessons" }), value: totalLessons, color: "text-emerald-500" },
-          { label: t("adminPages.courseEditor.stats.videos", { defaultValue: "Videos" }), value: units.reduce((s, u) => s + (u.lessons?.filter((l) => l.videoUrl)?.length || 0), 0), color: "text-purple-500" },
+          { label: t("adminPages.courseEditor.stats.videos", { defaultValue: "Videos" }), value: units.reduce((s, u) => s + ((u.sections || []).reduce((secSum, sec) => secSum + ((sec.lessons || []).filter((l) => l.videoUrl).length), 0)), 0), color: "text-purple-500" },
           { label: t("adminPages.courseEditor.stats.finalExam", { defaultValue: "Final exam" }), value: course.exams?.filter(e => e.courseId === course.id).length || 0, color: "text-amber-500" },
         ].map((s) => (
           <div key={s.label} className="rounded-xl border border-slate-200 bg-white p-4 dark:border-white/8 dark:bg-[#1A1A22]">
@@ -1124,7 +1398,7 @@ export default function CourseEditor() {
             <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">
               {t("adminPages.courseEditor.curriculum", { defaultValue: "Curriculum" })}
             </h2>
-            <button onClick={handleAddUnit} className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#B91C1C] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#991B1B]">
+            <button onClick={handleAddUnit} className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#EE7C11] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#d9700e]">
               <Plus className="h-3 w-3 shrink-0" />
               {t("adminPages.courseEditor.actions.addUnit", { defaultValue: "Add unit" })}
             </button>
@@ -1133,11 +1407,11 @@ export default function CourseEditor() {
           {/* Course Root Node */}
           <button 
             onClick={() => setSelectedNode({ type: 'course', id: course.id, data: course })}
-            className={`flex w-full items-center gap-3 rounded-xl border p-4 text-start transition-all ${selectedNode?.type === 'course' ? 'border-[#B91C1C] bg-[#B91C1C]/5 ring-1 ring-[#B91C1C]/10' : 'border-slate-200 bg-white hover:bg-slate-50 dark:border-white/8 dark:bg-[#1A1A22]'}`}
+            className={`flex w-full items-center gap-3 rounded-xl border p-4 text-start transition-all ${selectedNode?.type === 'course' ? 'border-[#EE7C11] bg-[#EE7C11]/5 ring-1 ring-[#EE7C11]/10' : 'border-slate-200 bg-white hover:bg-slate-50 dark:border-white/8 dark:bg-[#1A1A22]'}`}
           >
-            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${selectedNode?.type === 'course' ? 'bg-[#B91C1C] text-white' : 'bg-slate-100 text-slate-500 dark:bg-white/10'}`}><Info className="h-5 w-5" /></div>
+            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${selectedNode?.type === 'course' ? 'bg-[#EE7C11] text-white' : 'bg-slate-100 text-slate-500 dark:bg-white/10'}`}><Info className="h-5 w-5" /></div>
             <div className="min-w-0">
-              <p className={`text-sm font-bold ${selectedNode?.type === 'course' ? 'text-[#B91C1C]' : 'text-slate-900 dark:text-white'}`}>
+              <p className={`text-sm font-bold ${selectedNode?.type === 'course' ? 'text-[#EE7C11]' : 'text-slate-900 dark:text-white'}`}>
                 {t("adminPages.courseEditor.courseSettings", { defaultValue: "Course settings" })}
               </p>
               <p className="text-[11px] text-slate-500">
@@ -1164,8 +1438,11 @@ export default function CourseEditor() {
                 onSelectLesson={(l) => setSelectedNode({ type: 'lesson', id: l.id, data: l })}
                 onDeleteUnit={handleDeleteUnit}
                 onDeleteLesson={handleDeleteLesson}
+                onDeleteSection={handleDeleteSection}
                 onAddLesson={handleAddLesson}
+                onAddSection={handleAddSection}
                 onRenameUnit={handleRenameUnit}
+                onRenameSection={handleRenameSection}
                 isAddingLesson={createLessonMutation.isPending}
               />
             ))

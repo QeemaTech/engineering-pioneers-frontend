@@ -75,7 +75,7 @@ function Performance() {
           <div className="h-64" dir="ltr">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={studentStatus} dataKey="value" nameKey="name" outerRadius={90} fill="#B91C1C" label />
+                <Pie data={studentStatus} dataKey="value" nameKey="name" outerRadius={90} fill="#EE7C11" label />
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
@@ -102,7 +102,7 @@ function Performance() {
               <XAxis dataKey="month" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="count" fill="#B91C1C" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="count" fill="#EE7C11" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

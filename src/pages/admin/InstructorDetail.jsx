@@ -88,9 +88,9 @@ function InstructorDetail() {
   }
   if (isError || !instructor) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+      <div className="rounded-xl border border-red-200 bg-[#EE7C11]/10 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-[#EE7C11]/10 dark:text-red-300">
         {getErrorMessage(error, "Failed to load instructor.")}
-        <button onClick={() => refetch()} className="ms-3 rounded bg-[#B91C1C] px-2 py-1 text-xs font-bold text-white">
+        <button onClick={() => refetch()} className="ms-3 rounded bg-[#EE7C11] px-2 py-1 text-xs font-bold text-white">
           Retry
         </button>
       </div>
@@ -128,7 +128,7 @@ function InstructorDetail() {
               onClick={() => setActiveTab(tab.id)}
               className={`rounded-lg px-3 py-1.5 text-sm font-semibold ${
                 activeTab === tab.id
-                  ? "bg-[#B91C1C] text-white"
+                  ? "bg-[#EE7C11] text-white"
                   : "border border-slate-200 bg-white text-slate-600 dark:border-white/10 dark:bg-[#0F0F13] dark:text-slate-300"
               }`}
             >
@@ -178,7 +178,7 @@ function InstructorDetail() {
               <div className="h-48" dir="ltr">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={coursesPie} dataKey="value" nameKey="name" outerRadius={70} fill="#B91C1C" />
+                    <Pie data={coursesPie} dataKey="value" nameKey="name" outerRadius={70} fill="#EE7C11" />
                     <Tooltip />
                   </PieChart>
                 </ResponsiveContainer>
@@ -235,12 +235,12 @@ function InstructorDetail() {
               {t("dashboard.common.loading")}
             </div>
           ) : availabilityQuery.isError ? (
-            <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+            <div className="rounded-xl border border-red-200 bg-[#EE7C11]/10 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-[#EE7C11]/10 dark:text-red-300">
               {t("adminPages.instructorDetail.availabilityLoadError")}
               <button
                 type="button"
                 onClick={() => availabilityQuery.refetch()}
-                className="ms-3 rounded bg-[#B91C1C] px-2 py-1 text-xs font-bold text-white"
+                className="ms-3 rounded bg-[#EE7C11] px-2 py-1 text-xs font-bold text-white"
               >
                 {t("dashboard.common.refresh")}
               </button>
@@ -294,12 +294,12 @@ function InstructorDetail() {
               {t("dashboard.common.loading")}
             </div>
           ) : performanceQuery.isError ? (
-            <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+            <div className="rounded-xl border border-red-200 bg-[#EE7C11]/10 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-[#EE7C11]/10 dark:text-red-300">
               {t("adminPages.instructorDetail.performanceLoadError")}
               <button
                 type="button"
                 onClick={() => performanceQuery.refetch()}
-                className="ms-3 rounded bg-[#B91C1C] px-2 py-1 text-xs font-bold text-white"
+                className="ms-3 rounded bg-[#EE7C11] px-2 py-1 text-xs font-bold text-white"
               >
                 {t("dashboard.common.refresh")}
               </button>

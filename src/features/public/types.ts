@@ -6,20 +6,16 @@ export type PublicPaginationMeta = {
   totalPages: number;
 };
 
-export type PublicPackageLevel = "BASIC" | "PROFESSIONAL" | "PREMIUM";
-
 export type PublicPackage = {
   id: string;
   name: string;
-  level: PublicPackageLevel;
-  priceMonthly: number;
-  priceYearly: number;
-  features: unknown;
-  liveCohortsLimit: number;
-  recordedCohortsLimit: number;
-  privateSessionsLimit: number;
-  isRecommended: boolean;
+  description?: string | null;
+  price: number;
+  durationMonths: number;
   isActive: boolean;
+  isRecommended: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type PublicCohortSummary = {

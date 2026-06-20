@@ -42,7 +42,7 @@ function Field({ label, error, type = "text", placeholder, rightElement, ...rest
           type={type}
           placeholder={placeholder}
           className={`w-full rounded-xl border py-3 pe-10 ps-4 text-sm outline-none transition focus:ring-2
-            ${error ? "border-red-400 focus:border-red-400 focus:ring-red-100" : "border-slate-200 focus:border-nihao-red-normal focus:ring-nihao-red-light"}
+            ${error ? "border-red-400 focus:border-red-400 focus:ring-red-100" : "border-slate-200 focus:border-pioneer-orange focus:ring-pioneer-teal/30"}
           `}
           {...rest}
         />
@@ -159,7 +159,7 @@ function ProfileSection() {
         <button
           type="submit"
           disabled={!isDirty || isSubmitting || updateProfile.isPending}
-          className="flex items-center gap-2 rounded-xl bg-nihao-red-normal px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-nihao-red-hover disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex items-center gap-2 rounded-xl bg-pioneer-orange px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-opacity-90 shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Save className="h-4 w-4" />
           {isSubmitting || updateProfile.isPending ? t("settings.saving") : t("settings.save")}
@@ -200,7 +200,7 @@ function SecuritySection() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <div className="flex items-center gap-2 text-base font-bold text-slate-900">
-        <Lock className="h-4 w-4 text-nihao-red-normal" />
+        <Lock className="h-4 w-4 text-pioneer-orange" />
         {t("settings.security.changePassword")}
       </div>
       <PasswordField
@@ -226,7 +226,7 @@ function SecuritySection() {
         <button
           type="submit"
           disabled={isSubmitting || changePassword.isPending}
-          className="flex items-center gap-2 rounded-xl bg-nihao-red-normal px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-nihao-red-hover disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex items-center gap-2 rounded-xl bg-pioneer-orange px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-opacity-90 shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Save className="h-4 w-4" />
           {isSubmitting || changePassword.isPending ? t("settings.saving") : t("settings.save")}
@@ -260,8 +260,8 @@ function NotificationsSection() {
             role="switch"
             aria-checked={toggles[key]}
             onClick={() => setToggles((prev) => ({ ...prev, [key]: !prev[key] }))}
-            className={`relative h-6 w-11 shrink-0 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-nihao-red-normal focus:ring-offset-2
-              ${toggles[key] ? "bg-nihao-red-normal" : "bg-slate-300"}`}
+            className={`relative h-6 w-11 shrink-0 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-pioneer-orange focus:ring-offset-2
+              ${toggles[key] ? "bg-pioneer-orange" : "bg-slate-300"}`}
           >
             <span
               className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all duration-200
@@ -288,7 +288,7 @@ export default function Settings() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
             {t("settings.titlePrefix")}{" "}
-            <span className="text-nihao-red-normal">{t("settings.titleAccent")}</span>
+            <span className="text-pioneer-orange">{t("settings.titleAccent")}</span>
           </h1>
           <p className="mt-2 text-sm text-slate-500">{t("settings.subtitle")}</p>
         </div>
@@ -303,7 +303,7 @@ export default function Settings() {
                 onClick={() => setTab(key)}
                 className={`flex shrink-0 items-center gap-2.5 rounded-xl px-4 py-3 text-sm font-semibold transition-colors
                   ${tab === key
-                    ? "bg-nihao-red-light text-nihao-red-normal"
+                    ? "bg-pioneer-orange/10 text-pioneer-orange"
                     : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
                   }`}
               >

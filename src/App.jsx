@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import Explore from "./pages/Explore";
 import Subscription from "./pages/Subscription";
@@ -33,7 +34,7 @@ import AdminRoutes from "./routes/adminRoutes";
 import InstructorRoutes from "./routes/instructorRoutes";
 import GuardedRoute from "./routes/guardedRoute";
 import useAuthStore from "./store/authStore";
-import { APP_ROLES, normalizeRole } from "./config/permissions";
+import { APP_ROLES, normalizeRole, hasAdminAccess } from "./config/permissions";
 
 function RoleLanding() {
   const hydrated = useAuthStore((s) => s.hydrated);
@@ -43,7 +44,7 @@ function RoleLanding() {
 
   if (!hydrated) return null;
 
-  if (isAuthenticated && role === APP_ROLES.ADMIN) return <Navigate to="/admin" replace />;
+  if (isAuthenticated && hasAdminAccess(user)) return <Navigate to="/admin" replace />;
   if (isAuthenticated && role === APP_ROLES.INSTRUCTOR) return <Navigate to="/instructor" replace />;
   return <Home />;
 }
@@ -58,12 +59,14 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/access-denied" element={<AccessDenied />} />
 
         {/* Main app shell with Header + Footer */}
         <Route element={<Layout />}>
           <Route index element={<RoleLanding />} />
           <Route path="/explore" element={<Explore />} />
+          <Route path="/courses" element={<Explore />} />
           <Route path="/subscription" element={<Subscription />} />
           <Route path="/faq" element={<FaqPage />} />
           <Route path="/about" element={<AboutPage />} />
@@ -90,6 +93,7 @@ function App() {
           </Route>
         </Route>
 
+        <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
         {AdminRoutes()}
         {InstructorRoutes()}
 

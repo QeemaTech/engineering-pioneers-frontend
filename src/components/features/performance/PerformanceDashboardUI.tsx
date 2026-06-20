@@ -53,7 +53,7 @@ const tones: Record<string, string> = {
   blue: "border-blue-500/40 bg-blue-500/10 text-blue-600 dark:text-blue-400",
   green: "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
   amber: "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400",
-  red: "border-red-500/40 bg-red-500/10 text-red-600 dark:text-red-400",
+  red: "border-red-500/40 bg-[#EE7C11]/10 text-red-600 dark:text-red-400",
   violet: "border-violet-500/40 bg-violet-500/10 text-violet-600 dark:text-violet-400",
   orange: "border-orange-500/40 bg-orange-500/10 text-orange-600 dark:text-orange-400",
   teal: "border-teal-500/40 bg-teal-500/10 text-teal-600 dark:text-teal-400",
@@ -91,7 +91,7 @@ function SectionCard({ icon: Icon, title, children }: { icon: LucideIcon; title:
   return (
     <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#1A1A22] dark:shadow-none">
       <div className="mb-4 flex items-center gap-2">
-        <Icon className="h-5 w-5 text-nihao-red-normal" />
+        <Icon className="h-5 w-5 text-pioneer-orange-normal" />
         <h2 className="text-lg font-bold text-slate-900 dark:text-white">{title}</h2>
       </div>
       {children}

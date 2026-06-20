@@ -13,7 +13,7 @@ export default function BlogsPage() {
     <div className="min-h-screen bg-slate-50 py-12 md:py-16">
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
         <nav className="text-sm text-slate-500">
-          <Link to="/" className="hover:text-nihao-red-normal">
+          <Link to="/" className="hover:text-pioneer-orange-normal">
             {t("header.nav.home")}
           </Link>
           <span className="mx-2">/</span>
@@ -26,7 +26,7 @@ export default function BlogsPage() {
           <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-12 text-center text-slate-500">{t("dashboard.common.loading")}</div>
         ) : null}
         {isError ? (
-          <div className="mt-10 rounded-2xl border border-red-100 bg-red-50 p-6 text-sm text-red-800">{t("publicBlogs.loadError")}</div>
+          <div className="mt-10 rounded-2xl border border-red-100 bg-[#EE7C11]/10 p-6 text-sm text-red-800">{t("publicBlogs.loadError")}</div>
         ) : null}
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -41,12 +41,12 @@ export default function BlogsPage() {
                   <img src={post.thumbnail} alt="" className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
                 </div>
               ) : (
-                <div className="flex h-36 items-center justify-center bg-gradient-to-br from-nihao-red-light to-white">
-                  <BookOpen className="h-12 w-12 text-nihao-red-normal/40 transition group-hover:text-nihao-red-normal" />
+                <div className="flex h-36 items-center justify-center bg-gradient-to-br from-pioneer-orange-light to-white">
+                  <BookOpen className="h-12 w-12 text-pioneer-orange-normal/40 transition group-hover:text-pioneer-orange-normal" />
                 </div>
               )}
               <div className="flex flex-1 flex-col p-5">
-                <h2 className="text-base font-bold text-slate-900 group-hover:text-nihao-red-normal">{post.title}</h2>
+                <h2 className="text-base font-bold text-slate-900 group-hover:text-pioneer-orange-normal">{post.title}</h2>
                 {post.author?.fullName ? (
                   <p className="mt-1 text-xs text-slate-500">
                     {post.author.fullName}
@@ -54,7 +54,7 @@ export default function BlogsPage() {
                   </p>
                 ) : null}
                 {post.excerpt ? <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-slate-600">{post.excerpt}</p> : null}
-                <span className="mt-auto pt-4 text-sm font-semibold text-nihao-red-normal">{t("publicBlogs.readMore")} →</span>
+                <span className="mt-auto pt-4 text-sm font-semibold text-pioneer-orange-normal">{t("publicBlogs.readMore")} →</span>
               </div>
             </Link>
           ))}
@@ -64,7 +64,7 @@ export default function BlogsPage() {
           <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-10 text-center text-slate-600">
             {t("publicBlogs.empty")}
             <div className="mt-4">
-              <Link to="/explore" className="font-semibold text-nihao-red-normal hover:underline">
+              <Link to="/explore" className="font-semibold text-pioneer-orange-normal hover:underline">
                 {t("header.nav.explore")}
               </Link>
             </div>

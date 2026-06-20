@@ -2,7 +2,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-// بنعمل Import لملفات الـ JSON
+// Import translation JSON files
 import enTranslation from './locales/en.json';
 import arTranslation from './locales/ar.json';
 
@@ -20,7 +20,7 @@ i18n
     }
   });
 
-// الكود ده عشان أول ما الموقع يفتح، يظبط اتجاه الصفحة (RTL/LTR) حسب لغة البراوزر
+// Setup default document text direction and language
 document.documentElement.dir = i18n.language?.startsWith('ar') ? 'rtl' : 'ltr';
 document.documentElement.lang = i18n.language;
 

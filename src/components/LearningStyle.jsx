@@ -31,7 +31,7 @@ export default function LearningStyle() {
         <header className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl font-bold text-slate-900 md:text-4xl">
             {t("learningStyle.titlePrefix")}{" "}
-            <span className="text-nihao-red-normal">{t("learningStyle.titleAccent")}</span>
+            <span className="text-pioneer-orange-normal">{t("learningStyle.titleAccent")}</span>
           </h2>
           <p className="mt-3 text-base text-slate-500">{t("learningStyle.subtitle")}</p>
         </header>
@@ -41,7 +41,7 @@ export default function LearningStyle() {
 
           {/* Card 1 — Live cohorts */}
           <article className="flex flex-col rounded-2xl border border-slate-200 p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-            <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-nihao-red-light text-nihao-red-normal">
+            <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-pioneer-orange-light text-pioneer-orange-normal">
               <GroupIcon />
             </div>
             <h3 className="mt-6 text-2xl font-bold text-slate-900 text-start">
@@ -53,14 +53,14 @@ export default function LearningStyle() {
             <ul className="mt-5 space-y-2.5">
               {cohortFeatures.map((k) => (
                 <li key={k} className="flex items-center gap-3 text-sm text-slate-700 text-start">
-                  <Check className="h-4 w-4 shrink-0 text-nihao-red-normal" />
+                  <Check className="h-4 w-4 shrink-0 text-pioneer-orange-normal" />
                   {t(`learningStyle.cards.cohorts.features.${k}`)}
                 </li>
               ))}
             </ul>
             <Link
               to="/explore"
-              className="mt-8 w-full rounded-xl bg-nihao-red-normal py-3 text-center text-sm font-semibold text-white transition hover:bg-nihao-red-hover"
+              className="mt-8 w-full rounded-xl bg-pioneer-orange-normal py-3 text-center text-sm font-semibold text-white transition hover:bg-pioneer-orange-hover"
             >
               {t("learningStyle.cards.cohorts.button")}
             </Link>
@@ -68,7 +68,7 @@ export default function LearningStyle() {
 
           {/* Card 2 — Private sessions */}
           <article className="flex flex-col rounded-2xl border border-slate-200 p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-            <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-nihao-yellow-light text-nihao-yellow-normal">
+            <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-pioneer-teal-light text-pioneer-teal-normal">
               <UserIcon />
             </div>
             <h3 className="mt-6 text-2xl font-bold text-slate-900 text-start">
@@ -80,14 +80,14 @@ export default function LearningStyle() {
             <ul className="mt-5 space-y-2.5">
               {privateFeatures.map((k) => (
                 <li key={k} className="flex items-center gap-3 text-sm text-slate-700 text-start">
-                  <Check className="h-4 w-4 shrink-0 text-nihao-yellow-normal" />
+                  <Check className="h-4 w-4 shrink-0 text-pioneer-teal-normal" />
                   {t(`learningStyle.cards.privateSessions.features.${k}`)}
                 </li>
               ))}
             </ul>
             <Link
               to="/subscription"
-              className="mt-8 w-full rounded-xl bg-nihao-yellow-normal py-3 text-center text-sm font-semibold text-slate-900 transition hover:bg-nihao-yellow-hover"
+              className="mt-8 w-full rounded-xl bg-pioneer-teal-normal py-3 text-center text-sm font-semibold text-slate-900 transition hover:bg-pioneer-teal-hover"
             >
               {t("learningStyle.cards.privateSessions.button")}
             </Link>

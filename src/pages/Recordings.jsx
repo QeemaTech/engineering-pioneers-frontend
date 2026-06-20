@@ -8,9 +8,9 @@ import { useStudentClasses } from "../features/student/classes/hooks";
 import { getErrorMessage } from "../api/error";
 
 const THUMB_GRADIENTS = [
-  "from-nihao-red-dark to-nihao-red-normal",
+  "from-pioneer-orange-dark to-pioneer-orange-normal",
   "from-slate-700 to-slate-500",
-  "from-nihao-yellow-dark to-nihao-yellow-normal",
+  "from-pioneer-teal-dark to-pioneer-teal-normal",
 ];
 
 function formatWhen(iso, locale) {
@@ -53,13 +53,13 @@ function SessionCard({ item, gradientClass, locale }) {
       <SessionThumbnail gradientClass={gradientClass} />
 
       <div className="flex flex-1 flex-col p-5">
-        <span className="mb-2 inline-block self-start rounded-full bg-nihao-red-light px-2.5 py-0.5 text-[11px] font-semibold text-nihao-red-normal">
+        <span className="mb-2 inline-block self-start rounded-full bg-pioneer-orange-light px-2.5 py-0.5 text-[11px] font-semibold text-pioneer-orange-normal">
           {courseTitle}
         </span>
 
         <h3 className="text-base font-bold leading-snug text-slate-900 line-clamp-2">{item.title}</h3>
 
-        <p className="mt-1 text-sm text-nihao-red-normal">{instructorName}</p>
+        <p className="mt-1 text-sm text-pioneer-orange-normal">{instructorName}</p>
 
         <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-400">
           {item.status} · {item.type || "—"}
@@ -84,7 +84,7 @@ function SessionCard({ item, gradientClass, locale }) {
               href={item.meetingUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-nihao-red-normal py-2.5 text-sm font-semibold text-nihao-red-normal transition hover:bg-nihao-red-light"
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-pioneer-orange-normal py-2.5 text-sm font-semibold text-pioneer-orange-normal transition hover:bg-pioneer-orange-light"
             >
               <ExternalLink className="h-4 w-4" />
               {upcoming ? t("recordings.joinLive") : t("recordings.openMeeting")}
@@ -139,12 +139,12 @@ export default function Recordings() {
     <div className="min-h-screen bg-slate-50 py-12 md:py-16">
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
         <div className="text-center">
-          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-nihao-red-light">
-            <Video className="h-6 w-6 text-nihao-red-normal" />
+          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-pioneer-orange-light">
+            <Video className="h-6 w-6 text-pioneer-orange-normal" />
           </div>
           <h1 className="text-3xl font-bold text-slate-900 md:text-4xl lg:text-5xl">
             {t("recordings.titlePrefix")}{" "}
-            <span className="text-nihao-red-normal">{t("recordings.titleAccent")}</span>
+            <span className="text-pioneer-orange-normal">{t("recordings.titleAccent")}</span>
           </h1>
           <p className="mx-auto mt-3 max-w-lg text-base text-slate-500">{t("recordings.subtitle")}</p>
         </div>
@@ -154,7 +154,7 @@ export default function Recordings() {
             <p className="text-sm text-slate-600">{t("recordings.signInPrompt")}</p>
             <Link
               to={loginRedirect}
-              className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-nihao-red-normal py-3 text-sm font-bold text-white transition hover:bg-nihao-red-hover"
+              className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-pioneer-orange-normal py-3 text-sm font-bold text-white transition hover:bg-pioneer-orange-hover"
             >
               {t("recordings.signInCta")}
             </Link>
@@ -177,14 +177,14 @@ export default function Recordings() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder={t("recordings.searchPlaceholder")}
-                  className="w-full rounded-xl border border-slate-200 bg-white py-3 pe-4 ps-10 text-sm outline-none transition focus:border-nihao-red-normal focus:ring-2 focus:ring-nihao-red-light placeholder:text-slate-400"
+                  className="w-full rounded-xl border border-slate-200 bg-white py-3 pe-4 ps-10 text-sm outline-none transition focus:border-pioneer-orange-normal focus:ring-2 focus:ring-pioneer-orange-light placeholder:text-slate-400"
                 />
               </div>
               <div className="relative w-full sm:w-52">
                 <select
                   value={courseFilter}
                   onChange={(e) => setCourseFilter(e.target.value)}
-                  className="w-full appearance-none rounded-xl border border-slate-200 bg-white py-3 pe-10 ps-4 text-sm text-slate-700 outline-none focus:border-nihao-red-normal"
+                  className="w-full appearance-none rounded-xl border border-slate-200 bg-white py-3 pe-10 ps-4 text-sm text-slate-700 outline-none focus:border-pioneer-orange-normal"
                 >
                   {courseOptions.map((c) => (
                     <option key={c || "all"} value={c}>
@@ -206,7 +206,7 @@ export default function Recordings() {
                 <button
                   type="button"
                   onClick={() => void refetch()}
-                  className="mt-2 font-semibold text-nihao-red-normal hover:underline"
+                  className="mt-2 font-semibold text-pioneer-orange-normal hover:underline"
                 >
                   {t("takeExam.retry", { defaultValue: "Retry" })}
                 </button>

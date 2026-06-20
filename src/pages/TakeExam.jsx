@@ -74,17 +74,17 @@ function OptionRow({ label, selected, onPick }) {
       type="button"
       onClick={onPick}
       className={`flex w-full items-center gap-4 rounded-xl border-2 px-5 py-4 text-start transition-all ${
-        selected ? "border-nihao-red-normal bg-nihao-red-light" : "border-slate-200 bg-white hover:border-nihao-red-normal/40 hover:bg-slate-50"
+        selected ? "border-pioneer-orange-normal bg-pioneer-orange-light" : "border-slate-200 bg-white hover:border-pioneer-orange-normal/40 hover:bg-slate-50"
       }`}
     >
       <span
         className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
-          selected ? "border-nihao-red-normal bg-nihao-red-normal" : "border-slate-300"
+          selected ? "border-pioneer-orange-normal bg-pioneer-orange-normal" : "border-slate-300"
         }`}
       >
         {selected ? <span className="h-2 w-2 rounded-full bg-white" /> : null}
       </span>
-      <span className={`text-sm font-medium leading-snug ${selected ? "text-nihao-red-dark" : "text-slate-700"}`}>{label}</span>
+      <span className={`text-sm font-medium leading-snug ${selected ? "text-pioneer-orange-dark" : "text-slate-700"}`}>{label}</span>
     </button>
   );
 }
@@ -235,10 +235,10 @@ export default function TakeExam() {
     return (
       <div className="mx-auto max-w-lg px-4 py-20 text-center">
         <p className="text-red-600">{getErrorMessage(error, t("takeExam.errors.load"))}</p>
-        <button type="button" onClick={() => void refetch()} className="mt-4 text-nihao-red-normal hover:underline">
+        <button type="button" onClick={() => void refetch()} className="mt-4 text-pioneer-orange-normal hover:underline">
           {t("takeExam.retry", { defaultValue: "Retry" })}
         </button>
-        <Link to="/exams" className="mt-6 block text-sm text-slate-500 hover:text-nihao-red-normal">
+        <Link to="/exams" className="mt-6 block text-sm text-slate-500 hover:text-pioneer-orange-normal">
           {t("takeExam.backExams")}
         </Link>
       </div>
@@ -251,7 +251,7 @@ export default function TakeExam() {
         <AlertCircle className="mx-auto h-12 w-12 text-amber-500" />
         <h1 className="mt-4 text-xl font-bold text-slate-900">{t("takeExam.expiredIncomplete.title")}</h1>
         <p className="mt-2 text-sm text-slate-600">{t("takeExam.expiredIncomplete.body")}</p>
-        <Link to="/exams" className="mt-8 inline-block rounded-xl bg-nihao-red-normal px-6 py-3 text-sm font-bold text-white hover:bg-nihao-red-hover">
+        <Link to="/exams" className="mt-8 inline-block rounded-xl bg-pioneer-orange-normal px-6 py-3 text-sm font-bold text-white hover:bg-pioneer-orange-hover">
           {t("takeExam.backExams")}
         </Link>
       </div>
@@ -282,11 +282,11 @@ export default function TakeExam() {
             type="button"
             disabled={!canStart || startExam.isPending}
             onClick={() => void begin()}
-            className="mt-8 w-full rounded-xl bg-nihao-red-normal py-3 text-sm font-bold text-white hover:bg-nihao-red-hover disabled:opacity-50"
+            className="mt-8 w-full rounded-xl bg-pioneer-orange-normal py-3 text-sm font-bold text-white hover:bg-pioneer-orange-hover disabled:opacity-50"
           >
             {startExam.isPending ? t("takeExam.starting") : t("takeExam.begin")}
           </button>
-          <Link to={`/exams/${examId}`} className="mt-4 block text-center text-sm text-slate-500 hover:text-nihao-red-normal">
+          <Link to={`/exams/${examId}`} className="mt-4 block text-center text-sm text-slate-500 hover:text-pioneer-orange-normal">
             {t("takeExam.backDetail")}
           </Link>
         </div>
@@ -302,8 +302,8 @@ export default function TakeExam() {
     return (
       <div className="min-h-screen bg-slate-50 py-16">
         <div className="mx-auto max-w-lg px-4 text-center">
-          <div className={`mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full ${passed ? "bg-green-100" : "bg-red-50"}`}>
-            {passed ? <CheckCircle2 className="h-10 w-10 text-green-500" /> : <AlertCircle className="h-10 w-10 text-nihao-red-normal" />}
+          <div className={`mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full ${passed ? "bg-green-100" : "bg-[#EE7C11]/10"}`}>
+            {passed ? <CheckCircle2 className="h-10 w-10 text-green-500" /> : <AlertCircle className="h-10 w-10 text-pioneer-orange-normal" />}
           </div>
           <h1 className="text-2xl font-bold text-slate-900">{passed ? t("takeExam.result.passed") : t("takeExam.result.failed")}</h1>
           <p className="mt-2 text-slate-500">{exam.title}</p>
@@ -324,7 +324,7 @@ export default function TakeExam() {
             </div>
           </div>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Link to="/exams" className="rounded-xl border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-600 transition hover:border-nihao-red-normal hover:text-nihao-red-normal">
+            <Link to="/exams" className="rounded-xl border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-600 transition hover:border-pioneer-orange-normal hover:text-pioneer-orange-normal">
               {t("takeExam.result.backToExams")}
             </Link>
           </div>
@@ -356,7 +356,7 @@ export default function TakeExam() {
             <div className="flex shrink-0 items-center gap-2">
               <div
                 className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 text-sm font-bold tabular-nums transition ${
-                  isLow ? "animate-pulse border-nihao-red-normal bg-nihao-red-light text-nihao-red-normal" : "border-slate-200 bg-slate-50 text-slate-700"
+                  isLow ? "animate-pulse border-pioneer-orange-normal bg-pioneer-orange-light text-pioneer-orange-normal" : "border-slate-200 bg-slate-50 text-slate-700"
                 }`}
               >
                 <Clock3 className="h-4 w-4 shrink-0" />
@@ -365,7 +365,7 @@ export default function TakeExam() {
               <button
                 type="button"
                 onClick={() => setShowWarn(true)}
-                className="flex items-center gap-1.5 rounded-xl bg-nihao-red-normal px-4 py-2 text-sm font-bold text-white transition hover:bg-nihao-red-hover"
+                className="flex items-center gap-1.5 rounded-xl bg-pioneer-orange-normal px-4 py-2 text-sm font-bold text-white transition hover:bg-pioneer-orange-hover"
               >
                 <Flag className="h-4 w-4" />
                 <span className="hidden sm:inline">{t("takeExam.strip.submit")}</span>
@@ -374,7 +374,7 @@ export default function TakeExam() {
           </div>
         </div>
         <div className="h-1.5 w-full bg-slate-100">
-          <motion.div className="h-full bg-nihao-red-normal" animate={{ width: `${pctBar}%` }} transition={{ duration: 0.25 }} />
+          <motion.div className="h-full bg-pioneer-orange-normal" animate={{ width: `${pctBar}%` }} transition={{ duration: 0.25 }} />
         </div>
       </div>
 
@@ -428,7 +428,7 @@ export default function TakeExam() {
                   value={answers[current.id] || ""}
                   onChange={(e) => setAnswers((p) => ({ ...p, [current.id]: e.target.value }))}
                   rows={current.type === "ESSAY" ? 10 : 4}
-                  className="mt-6 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none focus:border-nihao-red-normal focus:ring-2 focus:ring-nihao-red-light"
+                  className="mt-6 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none focus:border-pioneer-orange-normal focus:ring-2 focus:ring-pioneer-orange-light"
                   placeholder={t("takeExam.shortAnswerPlaceholder")}
                 />
               )}
@@ -439,7 +439,7 @@ export default function TakeExam() {
                 onClick={() => setCurrentIdx((i) => Math.max(0, i - 1))}
                 disabled={isFirst}
                 className={`flex items-center gap-2 rounded-xl border-2 px-5 py-2.5 text-sm font-semibold ${
-                  isFirst ? "cursor-not-allowed border-slate-100 text-slate-300" : "border-slate-200 text-slate-600 hover:border-nihao-red-normal hover:text-nihao-red-normal"
+                  isFirst ? "cursor-not-allowed border-slate-100 text-slate-300" : "border-slate-200 text-slate-600 hover:border-pioneer-orange-normal hover:text-pioneer-orange-normal"
                 }`}
               >
                 <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
@@ -452,7 +452,7 @@ export default function TakeExam() {
                   else setCurrentIdx((i) => i + 1);
                 }}
                 disabled={submitExam.isPending}
-                className="flex items-center gap-2 rounded-xl bg-nihao-red-normal px-5 py-2.5 text-sm font-semibold text-white hover:bg-nihao-red-hover disabled:opacity-50"
+                className="flex items-center gap-2 rounded-xl bg-pioneer-orange-normal px-5 py-2.5 text-sm font-semibold text-white hover:bg-pioneer-orange-hover disabled:opacity-50"
               >
                 {isLast ? t("takeExam.nav.submitNow") : t("takeExam.nav.next")}
                 {!isLast ? <ArrowRight className="h-4 w-4 rtl:rotate-180" /> : <Flag className="h-4 w-4" />}
@@ -487,7 +487,7 @@ export default function TakeExam() {
                     setShowWarn(false);
                     void runSubmit();
                   }}
-                  className="flex-1 rounded-xl bg-nihao-red-normal py-2.5 text-sm font-semibold text-white hover:bg-nihao-red-hover disabled:opacity-50"
+                  className="flex-1 rounded-xl bg-pioneer-orange-normal py-2.5 text-sm font-semibold text-white hover:bg-pioneer-orange-hover disabled:opacity-50"
                 >
                   {t("takeExam.warn.confirm")}
                 </button>

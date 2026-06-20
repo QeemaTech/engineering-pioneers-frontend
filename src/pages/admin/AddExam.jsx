@@ -66,37 +66,37 @@ function AddExam() {
       <form onSubmit={onSubmit} className="space-y-6">
         <div className="space-y-5 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/8 dark:bg-[#1A1A22]">
           <label className="block space-y-1.5">
-            <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Exam Title <span className="text-[#B91C1C]">*</span></span>
-            <input required value={form.title} onChange={(e) => set("title", e.target.value)} placeholder="e.g. HSK 2 Midterm Exam" className="h-12 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#B91C1C]/50 focus:ring-2 focus:ring-[#B91C1C]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
+            <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Exam Title <span className="text-[#EE7C11]">*</span></span>
+            <input required value={form.title} onChange={(e) => set("title", e.target.value)} placeholder="e.g. HSK 2 Midterm Exam" className="h-12 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#EE7C11]/50 focus:ring-2 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
           </label>
 
           <div className="grid gap-5 sm:grid-cols-2">
             <label className="block space-y-1.5">
               <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Type</span>
-              <select value={form.type} onChange={(e) => set("type", e.target.value)} className="h-12 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition-all focus:border-[#B91C1C]/50 focus:ring-2 focus:ring-[#B91C1C]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white">
+              <select value={form.type} onChange={(e) => set("type", e.target.value)} className="h-12 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition-all focus:border-[#EE7C11]/50 focus:ring-2 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white">
                 {EXAM_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
               </select>
             </label>
             <label className="block space-y-1.5">
               <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Duration (min)</span>
-              <input type="number" min={1} value={form.durationMinutes} onChange={(e) => set("durationMinutes", e.target.value)} className="h-12 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition-all focus:border-[#B91C1C]/50 focus:ring-2 focus:ring-[#B91C1C]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
+              <input type="number" min={1} value={form.durationMinutes} onChange={(e) => set("durationMinutes", e.target.value)} className="h-12 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition-all focus:border-[#EE7C11]/50 focus:ring-2 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
             </label>
             <label className="block space-y-1.5">
               <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Total Points</span>
-              <input type="number" min={1} value={form.totalPoints} onChange={(e) => set("totalPoints", e.target.value)} className="h-12 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition-all focus:border-[#B91C1C]/50 focus:ring-2 focus:ring-[#B91C1C]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
+              <input type="number" min={1} value={form.totalPoints} onChange={(e) => set("totalPoints", e.target.value)} className="h-12 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition-all focus:border-[#EE7C11]/50 focus:ring-2 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
             </label>
             <label className="block space-y-1.5">
               <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Passing Score</span>
-              <input type="number" min={1} value={form.passingScore} onChange={(e) => set("passingScore", e.target.value)} className="h-12 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition-all focus:border-[#B91C1C]/50 focus:ring-2 focus:ring-[#B91C1C]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
+              <input type="number" min={1} value={form.passingScore} onChange={(e) => set("passingScore", e.target.value)} className="h-12 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition-all focus:border-[#EE7C11]/50 focus:ring-2 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
             </label>
           </div>
         </div>
 
-        {error ? <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">{error}</div> : null}
+        {error ? <div className="rounded-lg border border-red-200 bg-[#EE7C11]/10 px-4 py-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-[#EE7C11]/10 dark:text-red-300">{error}</div> : null}
 
         <div className="flex items-center justify-between">
           <button type="button" onClick={() => navigate("/admin/exams")} className="rounded-lg border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-white/10 dark:text-slate-300 dark:hover:bg-white/5">Cancel</button>
-          <button disabled={createMutation.isPending} type="submit" className="inline-flex items-center gap-2.5 rounded-lg bg-[#B91C1C] px-6 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-[#991B1B] disabled:opacity-60">
+          <button disabled={createMutation.isPending} type="submit" className="inline-flex items-center gap-2.5 rounded-lg bg-[#EE7C11] px-6 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-[#d9700e] disabled:opacity-60">
             <ClipboardList className="h-4 w-4" />
             {createMutation.isPending ? "Creating..." : "Create & Open Editor"}
             {!createMutation.isPending && <ArrowRight className="h-4 w-4" />}

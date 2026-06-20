@@ -1,7 +1,7 @@
 export const students = Array.from({ length: 12 }).map((_, i) => ({
   id: `std-${i + 1}`,
   name: ["Ahmed Hassan", "Sara Ali", "Mariam Adel", "Omar Tarek"][i % 4] + ` ${i + 1}`,
-  email: `student${i + 1}@nihao.com`,
+  email: `student${i + 1}@engineeringpioneers.com`,
   enrolledCourses: (i % 5) + 1,
   joinDate: `2026-04-${String((i % 28) + 1).padStart(2, "0")}`,
   status: ["Active", "Inactive", "Banned"][i % 3],
@@ -12,7 +12,7 @@ export const students = Array.from({ length: 12 }).map((_, i) => ({
 export const instructors = Array.from({ length: 8 }).map((_, i) => ({
   id: `ins-${i + 1}`,
   name: ["Lina Zhang", "Mona Salem", "Karim Fathy", "Nora Emad"][i % 4],
-  email: `instructor${i + 1}@nihao.com`,
+  email: `instructor${i + 1}@engineeringpioneers.com`,
   coursesCount: (i % 4) + 2,
   totalStudents: 120 + i * 19,
   rating: 4.2 + (i % 3) * 0.2,

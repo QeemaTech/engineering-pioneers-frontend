@@ -19,9 +19,9 @@ const TYPE_ICON = {
   default: <ClipboardCheck className="h-3.5 w-3.5" />,
 };
 const TYPE_COLOR = {
-  video: "text-nihao-red-normal bg-nihao-red-light",
+  video: "text-pioneer-orange-normal bg-pioneer-orange-light",
   pdf: "text-blue-500 bg-blue-50",
-  default: "text-nihao-yellow-dark bg-nihao-yellow-light",
+  default: "text-pioneer-teal-dark bg-pioneer-teal-light",
 };
 
 function LessonRow({ lesson, active, done, onSelect }) {
@@ -32,7 +32,7 @@ function LessonRow({ lesson, active, done, onSelect }) {
       type="button"
       onClick={() => onSelect?.(lesson)}
       className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-start transition-colors ${
-        active ? "bg-nihao-red-light font-semibold text-nihao-red-normal" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+        active ? "bg-pioneer-orange-light font-semibold text-pioneer-orange-normal" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
       }`}
     >
       <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[11px] ${TYPE_COLOR[type]}`}>{TYPE_ICON[type]}</span>
@@ -149,7 +149,7 @@ export default function CourseView() {
         <BookOpen className="mx-auto h-12 w-12 text-slate-300" />
         <h1 className="mt-4 text-xl font-bold text-slate-900">{t("courseView.needCohort.title")}</h1>
         <p className="mt-2 text-sm text-slate-600">{t("courseView.needCohort.body")}</p>
-        <Link to="/my-classes" className="mt-6 inline-block rounded-xl bg-nihao-red-normal px-6 py-3 text-sm font-bold text-white hover:bg-nihao-red-hover">
+        <Link to="/my-classes" className="mt-6 inline-block rounded-xl bg-pioneer-orange-normal px-6 py-3 text-sm font-bold text-white hover:bg-pioneer-orange-hover">
           {t("courseView.needCohort.cta")}
         </Link>
       </div>
@@ -170,11 +170,11 @@ export default function CourseView() {
           <button
             type="button"
             onClick={() => void refetchUnits()}
-            className="rounded-xl bg-nihao-red-normal px-5 py-2.5 text-sm font-bold text-white hover:bg-nihao-red-hover"
+            className="rounded-xl bg-pioneer-orange-normal px-5 py-2.5 text-sm font-bold text-white hover:bg-pioneer-orange-hover"
           >
             {t("takeExam.retry", { defaultValue: "Retry" })}
           </button>
-          <Link to="/my-classes" className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:border-nihao-red-normal">
+          <Link to="/my-classes" className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:border-pioneer-orange-normal">
             {t("courseView.needCohort.cta")}
           </Link>
         </div>
@@ -188,7 +188,7 @@ export default function CourseView() {
         <BookOpen className="mx-auto h-12 w-12 text-slate-300" />
         <h1 className="mt-4 text-xl font-bold text-slate-900">{t("courseView.emptyCurriculumTitle", { defaultValue: "No lessons yet" })}</h1>
         <p className="mt-2 text-sm text-slate-600">{t("courseView.emptyCurriculumBody", { defaultValue: "This course has no published curriculum, or you may need to refresh." })}</p>
-        <Link to="/my-classes" className="mt-6 inline-block rounded-xl bg-nihao-red-normal px-6 py-3 text-sm font-bold text-white hover:bg-nihao-red-hover">
+        <Link to="/my-classes" className="mt-6 inline-block rounded-xl bg-pioneer-orange-normal px-6 py-3 text-sm font-bold text-white hover:bg-pioneer-orange-hover">
           {t("courseView.needCohort.cta")}
         </Link>
       </div>
@@ -199,7 +199,7 @@ export default function CourseView() {
     <div className="min-h-screen bg-slate-50">
       <div className="border-b border-slate-200 bg-white px-4 py-3 md:px-6">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
-          <Link to="/my-classes" className="inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-nihao-red-normal">
+          <Link to="/my-classes" className="inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-pioneer-orange-normal">
             <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
             {t("courseView.backToClasses")}
           </Link>
@@ -218,10 +218,10 @@ export default function CourseView() {
                 <span>
                   {completedCount} {t("courseView.lessonsCompleted")}
                 </span>
-                <span className="font-semibold text-nihao-red-normal">{pct}%</span>
+                <span className="font-semibold text-pioneer-orange-normal">{pct}%</span>
               </div>
               <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
-                <div className="h-full rounded-full bg-nihao-red-normal transition-all" style={{ width: `${Math.min(100, pct)}%` }} />
+                <div className="h-full rounded-full bg-pioneer-orange-normal transition-all" style={{ width: `${Math.min(100, pct)}%` }} />
               </div>
             </div>
           </div>
@@ -297,7 +297,7 @@ export default function CourseView() {
                   type="button"
                   disabled={markComplete.isPending || doneSet.has(activeLesson.id)}
                   onClick={() => void handleMarkDone()}
-                  className="rounded-xl bg-nihao-red-normal px-4 py-2 text-sm font-semibold text-white hover:bg-nihao-red-hover disabled:opacity-50"
+                  className="rounded-xl bg-pioneer-orange-normal px-4 py-2 text-sm font-semibold text-white hover:bg-pioneer-orange-hover disabled:opacity-50"
                 >
                   {doneSet.has(activeLesson.id) ? t("courseView.markedDone") : t("courseView.markComplete", { defaultValue: "Mark complete" })}
                 </button>
@@ -305,7 +305,7 @@ export default function CourseView() {
                   <button
                     type="button"
                     onClick={() => setActiveLesson(lessonNav.next)}
-                    className="inline-flex items-center gap-1 rounded-xl border border-nihao-red-normal bg-nihao-red-light px-4 py-2 text-sm font-bold text-nihao-red-normal hover:bg-nihao-red-light/80"
+                    className="inline-flex items-center gap-1 rounded-xl border border-pioneer-orange-normal bg-pioneer-orange-light px-4 py-2 text-sm font-bold text-pioneer-orange-normal hover:bg-pioneer-orange-light/80"
                   >
                     {t("courseView.next")}
                     <ChevronRight className="h-4 w-4 rtl:rotate-180" aria-hidden />
@@ -324,7 +324,7 @@ export default function CourseView() {
                     {resources.map((r) => (
                       <li key={r.id} className="flex items-center justify-between rounded-xl border border-slate-100 bg-white px-3 py-2 text-sm shadow-sm">
                         <span className="font-medium text-slate-800">{r.title}</span>
-                        <a href={r.fileUrl} target="_blank" rel="noreferrer" className="text-xs font-semibold text-nihao-red-normal hover:underline">
+                        <a href={r.fileUrl} target="_blank" rel="noreferrer" className="text-xs font-semibold text-pioneer-orange-normal hover:underline">
                           {t("courseView.download")}
                         </a>
                       </li>

@@ -64,11 +64,11 @@ export default function BlogPostPage() {
     <div className="min-h-screen bg-slate-50 py-12 md:py-16">
       <div className="mx-auto max-w-3xl px-4 md:px-6 lg:px-8">
         <nav className="text-sm text-slate-500">
-          <Link to="/" className="hover:text-nihao-red-normal">
+          <Link to="/" className="hover:text-pioneer-orange-normal">
             {t("header.nav.home")}
           </Link>
           <span className="mx-2">/</span>
-          <Link to="/blogs" className="hover:text-nihao-red-normal">
+          <Link to="/blogs" className="hover:text-pioneer-orange-normal">
             {t("publicBlogs.title")}
           </Link>
           <span className="mx-2">/</span>
@@ -82,7 +82,7 @@ export default function BlogPostPage() {
         ) : null}
 
         {isError ? (
-          <div className="mt-10 rounded-2xl border border-red-100 bg-red-50 p-6 text-sm text-red-800">
+          <div className="mt-10 rounded-2xl border border-red-100 bg-[#EE7C11]/10 p-6 text-sm text-red-800">
             {status === 404 ? t("publicBlogs.notFound") : t("publicBlogs.loadError")}
           </div>
         ) : null}

@@ -75,7 +75,9 @@
       "coupons": "Coupons",
       "certificates": "Certificates",
       "cohorts": "Cohorts",
-      "packages": "Packages"
+      "packages": "Packages",
+      "reviewQueue": "Review Queue",
+      "auditLogs": "Audit Logs"
     }
   },
   "adminPages": {
@@ -681,7 +683,24 @@
       "emptyHint": "Add multiple slides for the mobile home banner carousel.",
       "form": { "title": "Title (optional)", "link": "Link (e.g. /subscription)" }
     },
-    "settingsRoles": { "title": "Roles & Permissions", "subtitle": "Manage role access matrix", "save": "Save Permissions" },
+    "settingsRoles": {
+      "title": "Roles & Permissions",
+      "subtitle": "Manage role access matrix",
+      "save": "Save Permissions",
+      "newRole": "New Role",
+      "createRole": "Create new role",
+      "editRole": "Edit role",
+      "editorSubtitle": "Define the role identity and assign granular permissions.",
+      "roleDetails": "Role details",
+      "roleName": "Role name",
+      "description": "Description",
+      "descriptionPlaceholder": "What can this role do?",
+      "permissionsSelected": "permissions selected",
+      "permissionsHint": "Users inherit all checked permissions through this role.",
+      "searchPermissions": "Search permissions…",
+      "permissionsRequired": "Select at least one permission",
+      "roleNameRequired": "Role name is required"
+    },
     "settingsEmails": {
       "title": "Email Templates",
       "subtitle": "Edit transactional email templates",
@@ -781,7 +800,7 @@
     "fri": "Friday"
   },
   "header": {
-    "logoAlt": "Nihao Academy",
+    "logoAlt": "Engineering Pioneers",
     "search": "Search resources...",
     "admin": "System Admin",
     "notifications": "Notifications",
@@ -926,7 +945,7 @@
     "titlePrefix": "Some valuable",
     "titleHighlight": "feedback",
     "titleSuffix": "from our students",
-    "subtitle": "Real reviews from learners enrolled in Nihao courses appear here when published.",
+    "subtitle": "Real reviews from learners enrolled in Engineering Pioneers courses appear here when published.",
     "button": "Browse courses",
     "anonymousStudent": "Student",
     "noComment": "Rated this course (no written review).",
@@ -942,7 +961,7 @@
       "cta": "Go to Explore"
     },
     "rating": {
-      "fromPublished": "Average from {{count}} published review(s) on Nihao."
+      "fromPublished": "Average from {{count}} published review(s) on Engineering Pioneers."
     }
   },
   "publicFaq": {
@@ -954,13 +973,13 @@
     "footerPlans": "View subscription plans"
   },
   "publicAbout": {
-    "title": "About Nihao",
+    "title": "About Engineering Pioneers",
     "subtitle": "Mission, vision, and story from your CMS.",
     "loadError": "We could not load this page right now.",
     "empty": "About content is not configured yet.",
     "cta": "Explore courses",
     "storyTitle": "Our story",
-    "fallbackStory": "Nihao Academy connects Arabic-speaking learners with structured Chinese programs, live cohorts, and private sessions.",
+    "fallbackStory": "Engineering Pioneers connects Arabic-speaking learners with structured Chinese programs, live cohorts, and private sessions.",
     "mission": "Mission",
     "vision": "Vision",
     "joinTitle": "Ready to learn with us?",
@@ -979,7 +998,7 @@
   },
   "cta": {
     "title": "Ready to Start Your Chinese Learning Journey?",
-    "subtitle": "Join Nihao today and experience interactive classes, expert teachers, and a structured path to fluency.",
+    "subtitle": "Join Engineering Pioneers today and experience interactive classes, expert teachers, and a structured path to fluency.",
     "actions": {
       "createAccount": "Create Free Account",
       "learnMore": "Learn More"
@@ -987,8 +1006,8 @@
   },
   "footer": {
     "brand": {
-      "logoAlt": "Nihao Academy",
-      "description": "Nihao Academy helps Arabic speakers master Chinese through live classes, practical exercises, and expert guidance."
+      "logoAlt": "Engineering Pioneers",
+      "description": "Engineering Pioneers helps Arabic speakers master Chinese through live classes, practical exercises, and expert guidance."
     },
     "company": {
       "title": "Company",
@@ -1011,15 +1030,22 @@
       "howToGuide": "How to guide",
       "terms": "Terms & Conditions"
     },
-    "copyright": "© 2026 Nihao Academy. All rights reserved.",
+    "copyright": "© 2026 Engineering Pioneers. All rights reserved.",
     "socialComingSoon": "Social links coming soon — set VITE_SOCIAL_*_URL in your environment to enable."
   },
   "auth": {
+    "shell": {
+      "headline": "Engineering education, built for professionals.",
+      "body": "Live cohorts, structured curricula, and certificates — one platform for students and teams.",
+      "highlight1": "Industry-led courses with real project workflows",
+      "highlight2": "Structured units, sections, and assessments",
+      "highlight3": "Secure roles, permissions, and admin controls"
+    },
     "login": {
-      "brandTitle": "Welcome Back!",
-      "brandSubtitle": "Continue your Chinese learning journey with Nihao Academy.",
-      "title": "Login to Your Account",
-      "subtitle": "Welcome back! Continue your learning journey.",
+      "brandTitle": "Welcome back",
+      "brandSubtitle": "Continue your engineering learning journey with Engineering Pioneers.",
+      "title": "Sign in",
+      "subtitle": "Access your dashboard, courses, and cohorts.",
       "emailLabel": "Email Address",
       "emailPlaceholder": "you@example.com",
       "passwordLabel": "Password",
@@ -1031,13 +1057,13 @@
       "signUpLink": "Sign Up"
     },
     "signup": {
-      "brandTitle": "Start Learning Today",
-      "brandSubtitle": "Master Chinese with expert teachers and a proven curriculum designed for Arabic speakers.",
-      "benefit1": "Live interactive classes with expert teachers",
-      "benefit2": "Flexible group or one-to-one sessions",
-      "benefit3": "Structured curriculum with tracked progress",
-      "title": "Create Your Account",
-      "subtitle": "Join thousands of students mastering Chinese.",
+      "brandTitle": "Join Engineering Pioneers",
+      "brandSubtitle": "Master engineering skills with expert instructors and structured cohorts.",
+      "benefit1": "Live and recorded cohorts with expert instructors",
+      "benefit2": "Hands-on curriculum aligned with industry practice",
+      "benefit3": "Certificates, exams, and tracked progress",
+      "title": "Create your account",
+      "subtitle": "Start learning — free student registration.",
       "fullNameLabel": "Full Name",
       "fullNamePlaceholder": "Ahmad Hassan",
       "emailLabel": "Email Address",

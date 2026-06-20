@@ -82,12 +82,12 @@ function StudentDetail() {
   }
   if (isError || !student) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+      <div className="rounded-xl border border-red-200 bg-[#EE7C11]/10 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-[#EE7C11]/10 dark:text-red-300">
         {getErrorMessage(error, "Failed to load student.")}
         <button
           type="button"
           onClick={() => refetch()}
-          className="ms-3 rounded bg-[#B91C1C] px-2 py-1 text-xs font-bold text-white"
+          className="ms-3 rounded bg-[#EE7C11] px-2 py-1 text-xs font-bold text-white"
         >
           Retry
         </button>
@@ -139,7 +139,7 @@ function StudentDetail() {
               onClick={() => setActiveTab(tab.id)}
               className={`rounded-lg px-3 py-1.5 text-sm font-semibold ${
                 activeTab === tab.id
-                  ? "bg-[#B91C1C] text-white"
+                  ? "bg-[#EE7C11] text-white"
                   : "border border-slate-200 bg-white text-slate-600 dark:border-white/10 dark:bg-[#0F0F13] dark:text-slate-300"
               }`}
             >
@@ -156,12 +156,12 @@ function StudentDetail() {
               {t("dashboard.common.loading")}
             </div>
           ) : perfQuery.isError ? (
-            <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+            <div className="rounded-xl border border-red-200 bg-[#EE7C11]/10 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-[#EE7C11]/10 dark:text-red-300">
               {getErrorMessage(perfQuery.error, t("adminPages.studentDetail.perf.loadError"))}
               <button
                 type="button"
                 onClick={() => perfQuery.refetch()}
-                className="ms-3 rounded bg-[#B91C1C] px-2 py-1 text-xs font-bold text-white"
+                className="ms-3 rounded bg-[#EE7C11] px-2 py-1 text-xs font-bold text-white"
               >
                 {t("dashboard.common.refresh")}
               </button>
@@ -232,7 +232,7 @@ function StudentDetail() {
                 <div className="h-48" dir="ltr">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
-                      <Pie data={pieData} dataKey="value" nameKey="name" outerRadius={70} fill="#B91C1C">
+                      <Pie data={pieData} dataKey="value" nameKey="name" outerRadius={70} fill="#EE7C11">
                         {pieData.map((entry, i) => (
                           <Cell key={i} fill={i === 0 ? "#10B981" : "#6366F1"} />
                         ))}

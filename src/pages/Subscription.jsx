@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Check, Zap } from "lucide-react";
@@ -6,147 +6,77 @@ import { usePublicPackages } from "../features/public/hooks";
 import useAuthStore from "../store/authStore";
 import { APP_ROLES, normalizeRole } from "../config/permissions";
 
-function parseFeatures(features) {
-  if (Array.isArray(features)) {
-    return features.map((x) => String(x)).filter(Boolean);
-  }
-  if (features && typeof features === "object") {
-    return Object.values(features).map((x) => String(x));
-  }
-  return [];
+function parseDescription(description) {
+  if (!description) return [];
+  return description
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
 }
 
-function BillingToggle({ yearly, onChange }) {
-  const { t } = useTranslation();
-  return (
-    <div className="flex items-center justify-center gap-3">
-      <span className={`text-sm font-medium ${!yearly ? "text-slate-900" : "text-slate-400"}`}>
-        {t("subscription.billing.monthly")}
-      </span>
-      <button
-        type="button"
-        onClick={() => onChange(!yearly)}
-        className={`relative h-7 w-12 rounded-full transition-colors ${
-          yearly ? "bg-nihao-red-normal" : "bg-slate-300"
-        }`}
-        aria-label={t("subscription.billing.toggleAria", { defaultValue: "Toggle billing period" })}
-      >
-        <span
-          className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow-md transition-all ${
-            yearly ? "start-6" : "start-0.5"
-          }`}
-        />
-      </button>
-      <span className={`flex items-center gap-1.5 text-sm font-medium ${yearly ? "text-slate-900" : "text-slate-400"}`}>
-        {t("subscription.billing.yearly")}
-        <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
-          {t("subscription.billing.discount")}
-        </span>
-      </span>
-    </div>
-  );
+function durationLabel(months) {
+  const n = Number(months || 0);
+  if (!n) return "-";
+  return n === 1 ? "1 month" : `${n} months`;
 }
 
-function PlanCard({ pkg, yearly, onGetStarted }) {
+function PlanCard({ pkg, onGetStarted }) {
   const { t } = useTranslation();
-  const price = yearly ? pkg.priceYearly : pkg.priceMonthly;
+  const descriptionLines = useMemo(() => parseDescription(pkg.description), [pkg.description]);
   const highlighted = !!pkg.isRecommended;
-  const featureLines = useMemo(() => parseFeatures(pkg.features), [pkg.features]);
-  const limits = [
-    t("subscription.limits.live", { count: pkg.liveCohortsLimit }),
-    t("subscription.limits.recorded", { count: pkg.recordedCohortsLimit }),
-    t("subscription.limits.private", { count: pkg.privateSessionsLimit }),
-  ];
 
   return (
     <div
       className={`relative flex flex-col rounded-2xl p-0.5 transition-all hover:-translate-y-1 ${
         highlighted
-          ? "bg-gradient-to-b from-nihao-red-normal to-nihao-red-dark shadow-2xl shadow-nihao-red-normal/30"
+          ? "bg-gradient-to-b from-[#EE7C11] to-[#093443] shadow-2xl shadow-[#EE7C11]/30"
           : "border border-slate-200 bg-white shadow-sm hover:shadow-md"
       }`}
     >
       {highlighted ? (
-        <span className="absolute -top-3.5 start-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-nihao-yellow-normal px-3 py-1 text-xs font-bold text-white shadow">
+        <span className="absolute -top-3.5 start-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-pioneer-teal-normal px-3 py-1 text-xs font-bold text-white shadow">
           <Zap className="h-3 w-3" />
-          {t("subscription.mostPopular")}
+          {t("subscription.mostPopular", { defaultValue: "Most Popular" })}
         </span>
       ) : null}
 
-      <div className={`flex flex-1 flex-col rounded-2xl p-6 ${highlighted ? "bg-white" : ""}`}>
+      <div className={`flex flex-1 flex-col rounded-2xl p-6 ${highlighted ? "bg-white mt-1" : ""}`}>
         <div className="space-y-1">
-          <h3 className={`text-xl font-bold ${highlighted ? "text-nihao-red-normal" : "text-slate-900"}`}>{pkg.name}</h3>
-          <span
-            className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${
-              highlighted ? "bg-nihao-red-light text-nihao-red-normal" : "bg-slate-100 text-slate-500"
-            }`}
-          >
-            {pkg.level}
+          <h3 className={`text-xl font-bold ${highlighted ? "text-[#EE7C11]" : "text-slate-900"}`}>{pkg.name}</h3>
+          <span className="inline-block rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500">
+            {durationLabel(pkg.durationMonths)}
           </span>
         </div>
 
         <div className="mt-5 flex items-end gap-1">
-          <span className="text-4xl font-extrabold text-slate-900">${Number(price).toFixed(0)}</span>
-          <span className="mb-1 text-sm text-slate-400">/ {t("subscription.billing.perUser")}</span>
+          <span className="text-4xl font-extrabold text-slate-900">${Number(pkg.price).toFixed(0)}</span>
+          <span className="mb-1 text-sm text-slate-400">/ {t("subscription.billing.oneTime", { defaultValue: "one-time" })}</span>
         </div>
-        {!yearly ? (
-          <p className="mt-0.5 text-xs text-slate-400">
-            {t("subscription.yearlyHint", { price: Number(pkg.priceYearly).toFixed(0), defaultValue: `Yearly $${Number(pkg.priceYearly).toFixed(0)}/mo equivalent` })}
-          </p>
+
+        {descriptionLines.length > 0 ? (
+          <ul className="mt-6 space-y-3 flex-1">
+            {descriptionLines.map((line, idx) => (
+              <li key={`${pkg.id}-desc-${idx}`} className="flex items-start gap-2.5 text-sm text-slate-700">
+                <span className={`mt-0.5 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full ${highlighted ? "bg-[#fdf2e9]" : "bg-pioneer-teal-light"}`}>
+                  <Check className={`h-2.5 w-2.5 ${highlighted ? "text-[#EE7C11]" : "text-pioneer-teal-normal"}`} strokeWidth={3} />
+                </span>
+                <span>{line}</span>
+              </li>
+            ))}
+          </ul>
         ) : (
-          <p className="mt-0.5 text-xs text-slate-400 line-through">
-            ${Number(pkg.priceMonthly).toFixed(0)} {t("subscription.billing.perUser")}
-          </p>
+          <div className="mt-6 flex-1 flex items-center justify-center border border-dashed border-slate-150 rounded-xl p-6">
+            <span className="text-xs text-slate-400">{t("subscription.noDescription", { defaultValue: "No details available." })}</span>
+          </div>
         )}
-
-        <div className="my-5 flex items-center gap-2">
-          <div className="h-px flex-1 bg-slate-200" />
-          <span className="text-xs text-slate-400">{t("subscription.tierLimits", { defaultValue: "Tier limits" })}</span>
-          <div className="h-px flex-1 bg-slate-200" />
-        </div>
-
-        <ul className="space-y-2">
-          {limits.map((line, idx) => (
-            <li key={`${pkg.id}-lim-${idx}`} className="flex items-start gap-2.5 text-sm text-slate-700">
-              <span
-                className={`mt-0.5 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full ${
-                  highlighted ? "bg-nihao-red-light" : "bg-nihao-yellow-light"
-                }`}
-              >
-                <Check className={`h-2.5 w-2.5 ${highlighted ? "text-nihao-red-normal" : "text-nihao-yellow-normal"}`} strokeWidth={3} />
-              </span>
-              {line}
-            </li>
-          ))}
-        </ul>
-
-        {featureLines.length > 0 ? (
-          <>
-            <div className="my-4 flex items-center gap-2">
-              <div className="h-px flex-1 bg-slate-200" />
-              <span className="text-xs text-slate-400">{t("subscription.featuresHeading", { defaultValue: "Features" })}</span>
-              <div className="h-px flex-1 bg-slate-200" />
-            </div>
-            <ul className="space-y-2">
-              {featureLines.slice(0, 8).map((line, idx) => (
-                <li key={`${pkg.id}-feat-${idx}`} className="flex items-start gap-2.5 text-sm text-slate-700">
-                  <span className={`mt-0.5 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full ${highlighted ? "bg-nihao-red-light" : "bg-nihao-yellow-light"}`}>
-                    <Check className={`h-2.5 w-2.5 ${highlighted ? "text-nihao-red-normal" : "text-nihao-yellow-normal"}`} strokeWidth={3} />
-                  </span>
-                  {line}
-                </li>
-              ))}
-            </ul>
-          </>
-        ) : null}
 
         <button
           type="button"
           onClick={() => onGetStarted(pkg.id)}
           className={`mt-8 w-full rounded-xl py-3.5 text-sm font-semibold transition ${
             highlighted
-              ? "bg-nihao-red-normal text-white hover:bg-nihao-red-hover"
-              : "border border-nihao-red-normal text-nihao-red-normal hover:bg-nihao-red-light"
+              ? "bg-[#EE7C11] text-white hover:bg-pioneer-orange-hover"
+              : "border border-pioneer-orange-normal text-pioneer-orange-normal hover:bg-pioneer-orange-light"
           }`}
         >
           {t("subscription.getStarted")}
@@ -159,14 +89,13 @@ function PlanCard({ pkg, yearly, onGetStarted }) {
 export default function Subscription() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [yearly, setYearly] = useState(false);
   const { data: packages = [], isLoading, isError } = usePublicPackages();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const user = useAuthStore((s) => s.user);
   const role = normalizeRole(user?.role);
 
   const handleGetStarted = (id) => {
-    const qs = new URLSearchParams({ packageId: id, yearly: yearly ? "true" : "false" });
+    const qs = new URLSearchParams({ packageId: id });
     const path = `/checkout?${qs.toString()}`;
     if (!isAuthenticated || role !== APP_ROLES.STUDENT) {
       navigate(`/login?redirect=${encodeURIComponent(path)}`);
@@ -176,7 +105,7 @@ export default function Subscription() {
   };
 
   const sortedPackages = useMemo(
-    () => [...packages].sort((a, b) => Number(a.priceMonthly) - Number(b.priceMonthly)),
+    () => [...packages].sort((a, b) => Number(a.price ?? 0) - Number(b.price ?? 0)),
     [packages]
   );
 
@@ -186,13 +115,9 @@ export default function Subscription() {
         <div className="text-center">
           <h1 className="text-3xl font-bold text-slate-900 md:text-4xl lg:text-5xl">
             {t("subscription.titlePrefix")}{" "}
-            <span className="text-nihao-red-normal">{t("subscription.titleAccent")}</span>
+            <span className="text-pioneer-orange-normal">{t("subscription.titleAccent")}</span>
           </h1>
           <p className="mx-auto mt-3 max-w-lg text-base text-slate-500">{t("subscription.subtitle")}</p>
-
-          <div className="mt-7">
-            <BillingToggle yearly={yearly} onChange={setYearly} />
-          </div>
         </div>
 
         {isLoading ? (
@@ -207,16 +132,16 @@ export default function Subscription() {
         ) : null}
 
         {!isLoading && sortedPackages.length > 0 ? (
-          <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 justify-center">
             {sortedPackages.map((pkg) => (
-              <PlanCard key={pkg.id} pkg={pkg} yearly={yearly} onGetStarted={handleGetStarted} />
+              <PlanCard key={pkg.id} pkg={pkg} onGetStarted={handleGetStarted} />
             ))}
           </div>
         ) : null}
 
         <p className="mt-10 text-center text-sm text-slate-500">
           {t("subscription.faqTeaser")}{" "}
-          <Link to="/faq" className="font-medium text-nihao-red-normal hover:underline">
+          <Link to="/faq" className="font-medium text-pioneer-orange-normal hover:underline">
             {t("subscription.faqLink")}
           </Link>
         </p>

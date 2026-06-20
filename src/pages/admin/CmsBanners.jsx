@@ -131,7 +131,7 @@ function CmsBanners() {
           <button
             type="button"
             onClick={openCreate}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#B91C1C] px-4 py-2 text-sm font-bold text-white"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white"
           >
             <Plus className="h-4 w-4" />
             {t("adminPages.cmsBanners.add")}
@@ -171,7 +171,7 @@ function CmsBanners() {
           <button
             type="button"
             onClick={openCreate}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#B91C1C] px-5 py-2.5 text-sm font-bold text-white"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#EE7C11] px-5 py-2.5 text-sm font-bold text-white"
           >
             <Plus className="h-4 w-4" />
             {t("adminPages.cmsBanners.add")}
@@ -311,7 +311,7 @@ function CmsBanners() {
           <button
             type="submit"
             disabled={createMutation.isPending || updateMutation.isPending}
-            className="w-full rounded-lg bg-[#B91C1C] py-3 text-sm font-bold text-white disabled:opacity-50"
+            className="w-full rounded-lg bg-[#EE7C11] py-3 text-sm font-bold text-white disabled:opacity-50"
           >
             {editingId
               ? t("adminPages.cmsBanners.save", { defaultValue: "Save changes" })

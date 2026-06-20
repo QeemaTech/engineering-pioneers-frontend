@@ -4,6 +4,7 @@ import { Loader2, Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Notice from "../../components/dashboard/Notice";
 import PageHeader from "../../components/ui/PageHeader";
+import PermissionGate from "../../components/ui/PermissionGate";
 import {
   useAddFaqItem,
   useAdminFaqs,
@@ -17,11 +18,11 @@ import {
 import { getErrorMessage } from "../../api/error";
 
 const field =
-  "h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#B91C1C] focus:ring-1 focus:ring-[#B91C1C]/30 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white dark:placeholder:text-slate-500";
+  "h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#EE7C11] focus:ring-1 focus:ring-[#EE7C11]/30 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white dark:placeholder:text-slate-500";
 const area =
-  "min-h-32 w-full rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#B91C1C] focus:ring-1 focus:ring-[#B91C1C]/30 dark:border-white/10 dark:bg-[#0F0F13] dark:text-slate-200 dark:placeholder:text-slate-500";
+  "min-h-32 w-full rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#EE7C11] focus:ring-1 focus:ring-[#EE7C11]/30 dark:border-white/10 dark:bg-[#0F0F13] dark:text-slate-200 dark:placeholder:text-slate-500";
 const mono =
-  "min-h-32 w-full rounded-lg border border-slate-200 bg-slate-50 p-4 font-mono text-xs text-slate-800 outline-none transition focus:border-[#B91C1C] dark:border-white/10 dark:bg-[#0D0D11] dark:text-slate-300";
+  "min-h-32 w-full rounded-lg border border-slate-200 bg-slate-50 p-4 font-mono text-xs text-slate-800 outline-none transition focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0D0D11] dark:text-slate-300";
 const card = "rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/8 dark:bg-[#1A1A22]";
 
 function Cms() {
@@ -65,9 +66,10 @@ function Cms() {
   };
 
   const pill =
-    "inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700 transition hover:border-[#B91C1C]/40 hover:bg-red-50 hover:text-[#991B1B] dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10";
+    "inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700 transition hover:border-[#EE7C11]/40 hover:bg-[#EE7C11]/10 hover:text-[#d9700e] dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10";
 
   return (
+    <PermissionGate permission="cms:manage" fallback={<p className="text-sm text-slate-500">{t("common.noAccess", { defaultValue: "You do not have access to this section." })}</p>}>
     <section className="space-y-6">
       <PageHeader
         title={t("dashboard.admin.pages.cms.title")}
@@ -114,7 +116,7 @@ function Cms() {
         <button
           type="button"
           onClick={() => run(() => updateAboutMutation.mutateAsync(about), t("dashboard.admin.pages.cms.aboutSaved"))}
-          className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[#B91C1C] px-6 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-red-700"
+          className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[#EE7C11] px-6 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#d9700e]"
         >
           {updateAboutMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}{" "}
           {t("adminPages.common.save")}
@@ -149,7 +151,7 @@ function Cms() {
                     if (!window.confirm(t("dashboard.admin.pages.cms.confirmDeleteFaq"))) return;
                     run(() => deleteFaqMutation.mutateAsync(item.id), t("dashboard.admin.pages.cms.faqDeleted"));
                   }}
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:border-white/10 dark:hover:bg-red-950/40"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:border-red-200 hover:bg-[#EE7C11]/10 hover:text-red-600 dark:border-white/10 dark:hover:bg-red-950/40"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -184,7 +186,7 @@ function Cms() {
         <button
           type="button"
           onClick={() => run(() => addFaqMutation.mutateAsync(newFaq), t("dashboard.admin.pages.cms.faqAdded"))}
-          className="mt-6 inline-flex items-center gap-2 rounded-lg border border-[#B91C1C] px-6 py-2.5 text-sm font-bold text-[#B91C1C] transition hover:bg-[#B91C1C] hover:text-white"
+          className="mt-6 inline-flex items-center gap-2 rounded-lg border border-[#EE7C11] px-6 py-2.5 text-sm font-bold text-[#EE7C11] transition hover:bg-[#EE7C11] hover:text-white"
         >
           {addFaqMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}{" "}
           {t("dashboard.admin.pages.cms.addFaq")}
@@ -285,13 +287,14 @@ function Cms() {
               t("dashboard.admin.pages.cms.sectionCreated")
             )
           }
-          className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[#B91C1C] px-6 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-red-700"
+          className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[#EE7C11] px-6 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#d9700e]"
         >
           {createSectionMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}{" "}
           {t("dashboard.admin.pages.cms.createSection")}
         </button>
       </div>
     </section>
+    </PermissionGate>
   );
 }
 

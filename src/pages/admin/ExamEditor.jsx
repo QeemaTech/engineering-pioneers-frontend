@@ -106,7 +106,7 @@ function QuestionCard({ question, examId, index }) {
         </div>
         <div className="flex items-center gap-2">
           {dirty && (
-            <button onClick={save} disabled={updateMutation.isPending} className="inline-flex items-center gap-1 rounded-lg bg-[#B91C1C] px-3 py-1 text-xs font-bold text-white hover:bg-[#991B1B] disabled:opacity-50">
+            <button onClick={save} disabled={updateMutation.isPending} className="inline-flex items-center gap-1 rounded-lg bg-[#EE7C11] px-3 py-1 text-xs font-bold text-white hover:bg-[#d9700e] disabled:opacity-50">
               {updateMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />} Save
             </button>
           )}
@@ -118,7 +118,7 @@ function QuestionCard({ question, examId, index }) {
 
       {/* Body */}
       <div className="space-y-4 p-5">
-        <textarea value={text} onChange={(e) => markDirty(setText)(e.target.value)} rows={2} placeholder="Enter the question text..." className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-all focus:border-[#B91C1C]/50 focus:ring-2 focus:ring-[#B91C1C]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
+        <textarea value={text} onChange={(e) => markDirty(setText)(e.target.value)} rows={2} placeholder="Enter the question text..." className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-all focus:border-[#EE7C11]/50 focus:ring-2 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
 
         <div className="grid gap-4 sm:grid-cols-3">
           <label className="block space-y-1">
@@ -141,7 +141,7 @@ function QuestionCard({ question, examId, index }) {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Options</span>
-              <button type="button" onClick={() => { setOptions([...options, ""]); setDirty(true); }} className="text-[10px] font-bold text-[#B91C1C] hover:underline">+ Add Option</button>
+              <button type="button" onClick={() => { setOptions([...options, ""]); setDirty(true); }} className="text-[10px] font-bold text-[#EE7C11] hover:underline">+ Add Option</button>
             </div>
             <div className="grid gap-2 sm:grid-cols-2">
               {options.map((opt, i) => (
@@ -230,8 +230,8 @@ export default function ExamEditor() {
   }, [addQuestionMutation, id, exam]);
 
   /* ── States ── */
-  if (isLoading) return <div className="flex min-h-[60vh] items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-[#B91C1C]" /></div>;
-  if (isError || !exam) return <div className="mx-auto max-w-lg space-y-4 py-20 text-center"><p className="text-lg font-bold text-slate-900 dark:text-white">Exam not found</p><Link to="/admin/exams" className="text-sm text-[#B91C1C] hover:underline">← Back to exams</Link></div>;
+  if (isLoading) return <div className="flex min-h-[60vh] items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-[#EE7C11]" /></div>;
+  if (isError || !exam) return <div className="mx-auto max-w-lg space-y-4 py-20 text-center"><p className="text-lg font-bold text-slate-900 dark:text-white">Exam not found</p><Link to="/admin/exams" className="text-sm text-[#EE7C11] hover:underline">← Back to exams</Link></div>;
 
   const questions = exam.questions || [];
   const totalQuestionPoints = questions.reduce((s, q) => s + (q.points || 0), 0);
@@ -279,7 +279,7 @@ export default function ExamEditor() {
           ) : (
             <div className="flex gap-2">
               <button onClick={() => setEditingSettings(false)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-500 dark:border-white/10">Cancel</button>
-              <button onClick={saveSettings} disabled={updateExamMutation.isPending} className="inline-flex items-center gap-1 rounded-lg bg-[#B91C1C] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#991B1B] disabled:opacity-50">
+              <button onClick={saveSettings} disabled={updateExamMutation.isPending} className="inline-flex items-center gap-1 rounded-lg bg-[#EE7C11] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#d9700e] disabled:opacity-50">
                 {updateExamMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />} Save
               </button>
             </div>
@@ -325,7 +325,7 @@ export default function ExamEditor() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">Question Bank ({questions.length})</h2>
-          <button onClick={handleAddQuestion} disabled={addQuestionMutation.isPending} className="inline-flex items-center gap-1.5 rounded-lg bg-[#B91C1C] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#991B1B] disabled:opacity-50">
+          <button onClick={handleAddQuestion} disabled={addQuestionMutation.isPending} className="inline-flex items-center gap-1.5 rounded-lg bg-[#EE7C11] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#d9700e] disabled:opacity-50">
             {addQuestionMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Plus className="h-3 w-3" />} Add Question
           </button>
         </div>

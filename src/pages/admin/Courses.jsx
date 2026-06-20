@@ -9,7 +9,8 @@ import PageHeader from "../../components/dashboard/PageHeader";
 import { useAdminCourses } from "../../features/admin/courses/hooks";
 import { useAdminInstructors } from "../../features/admin/instructors/hooks";
 import { useAssignAdminCourseInstructor } from "../../features/admin/courses/hooks";
-import { useDeleteAdminCourse, useUpdateAdminCourse } from "../../features/admin/courses/hooks";
+import ContentStatusBadge from "../../components/ui/ContentStatusBadge";
+import { useDeleteAdminCourse, useSubmitCourseForReview, useUpdateAdminCourse } from "../../features/admin/courses/hooks";
 import { getErrorMessage } from "../../api/error";
 
 function Courses() {
@@ -19,13 +20,24 @@ function Courses() {
   const { data: instructorsData } = useAdminInstructors({ page: 1, limit: 100 });
   const assignMutation = useAssignAdminCourseInstructor();
   const updateMutation = useUpdateAdminCourse();
-  const deleteMutation = useDeleteAdminCourse();
+  const submitReviewMutation = useSubmitCourseForReview();
   const instructors = instructorsData?.instructors || [];
   const [editing, setEditing] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [editDesc, setEditDesc] = useState("");
   const [editThumb, setEditThumb] = useState("");
   const [editIntroVideoUrl, setEditIntroVideoUrl] = useState("");
+
+  const deleteMutation = useDeleteAdminCourse();
+
+  const submitForReview = async (course) => {
+    try {
+      await submitReviewMutation.mutateAsync(course.id);
+      toast.success(t("adminPages.courses.submittedForReview", "Submitted for review"));
+    } catch (err) {
+      toast.error(getErrorMessage(err, t("adminPages.courses.submitFailed", "Submit failed")));
+    }
+  };
 
   const toggleStatus = async (course) => {
     try {
@@ -55,7 +67,7 @@ function Courses() {
               value={query.search}
               onChange={(e) => setQuery((prev) => ({ ...prev, search: e.target.value, page: 1 }))}
               placeholder={t("dashboard.common.search")}
-              className="h-10 w-64 rounded-lg border border-slate-200 bg-white ps-9 pe-4 text-sm font-medium text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-[#B91C1C] focus:ring-1 focus:ring-[#B91C1C]/20 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white"
+              className="h-10 w-64 rounded-lg border border-slate-200 bg-white ps-9 pe-4 text-sm font-medium text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-[#EE7C11] focus:ring-1 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white"
             />
           </div>
         }
@@ -81,7 +93,7 @@ function Courses() {
                   </div>
                 </Link>
                 <div className="flex flex-col">
-                  <Link to={`/admin/courses/${row.id}/edit`} className="font-bold text-slate-900 dark:text-white line-clamp-1 hover:text-[#B91C1C] transition-colors">{value}</Link>
+                  <Link to={`/admin/courses/${row.id}/edit`} className="font-bold text-slate-900 dark:text-white line-clamp-1 hover:text-[#EE7C11] transition-colors">{value}</Link>
                   <span className="text-[11px] text-slate-500">ID: {row.id.slice(0, 8)}...</span>
                 </div>
               </div>
@@ -105,7 +117,12 @@ function Courses() {
               ),
           },
           { key: "instructor", title: t("dashboard.admin.courses.instructor"), render: (_, row) => row?.instructor?.fullName || "-" },
-          { 
+          {
+            key: "status",
+            title: t("adminPages.courses.contentStatus", "Content status"),
+            render: (v, row) => <ContentStatusBadge status={String(row.status || v || "DRAFT")} />,
+          },
+          {
             key: "isActive", 
             title: t("dashboard.admin.courses.status"), 
             render: (v, row) => (
@@ -132,7 +149,7 @@ function Courses() {
                   disabled={assignMutation.isPending}
                   defaultValue={row?.instructor?.id || ""}
                   onChange={(e) => e.target.value && assignMutation.mutate({ id: row.id, instructorId: e.target.value })}
-                  className="h-9 w-full rounded-lg border border-slate-200 bg-white px-2 text-xs text-slate-700 outline-none focus:border-[#B91C1C] disabled:opacity-60 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                  className="h-9 w-full rounded-lg border border-slate-200 bg-white px-2 text-xs text-slate-700 outline-none focus:border-[#EE7C11] disabled:opacity-60 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
                 >
                   <option value="">{t("dashboard.admin.courses.selectInstructor")}</option>
                   {instructors.map((i) => (
@@ -140,7 +157,7 @@ function Courses() {
                   ))}
                 </select>
                 {assignMutation.isPending && assignMutation.variables?.id === row.id && (
-                  <Loader2 className="absolute end-8 top-1/2 h-3 w-3 -translate-y-1/2 animate-spin text-[#B91C1C]" />
+                  <Loader2 className="absolute end-8 top-1/2 h-3 w-3 -translate-y-1/2 animate-spin text-[#EE7C11]" />
                 )}
               </div>
             ),
@@ -158,6 +175,14 @@ function Courses() {
                   <Pencil className="h-4 w-4" />
                 </Link>
                 <button
+                  onClick={() => void submitForReview(row)}
+                  disabled={submitReviewMutation.isPending || String(row.status || "").toUpperCase() !== "DRAFT"}
+                  className="inline-flex rounded-md p-2 text-amber-600 hover:bg-amber-50 disabled:opacity-40"
+                  title={t("adminPages.courses.submitForReview", "Submit for review")}
+                >
+                  <ExternalLink className="h-4 w-4" />
+                </button>
+                <button
                   onClick={async () => {
                     if (!window.confirm(t("dashboard.admin.courses.deleteConfirm"))) return;
                     try {
@@ -167,7 +192,7 @@ function Courses() {
                       toast.error(t("dashboard.admin.courses.deleteFailed"));
                     }
                   }}
-                  className="inline-flex rounded-md p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
+                  className="inline-flex rounded-md p-2 text-red-500 hover:bg-[#EE7C11]/10 dark:hover:bg-[#EE7C11]/10"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -213,7 +238,7 @@ function Courses() {
                       toast.error(t("dashboard.admin.courses.updateFailed"));
                     }
                   }}
-                  className="rounded-lg bg-[#B91C1C] px-3 py-2 text-sm font-bold text-white"
+                  className="rounded-lg bg-[#EE7C11] px-3 py-2 text-sm font-bold text-white"
                 >
                   {t("adminPages.common.save")}
                 </button>

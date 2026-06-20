@@ -4,6 +4,7 @@ import PageHeader from "../../components/ui/PageHeader";
 import StatsRow from "../../components/ui/StatsRow";
 import DataTable from "../../components/ui/DataTable";
 import StatusBadge from "../../components/ui/StatusBadge";
+import OtpConfirmModal from "../../components/ui/OtpConfirmModal";
 import { useAdminPayouts, useProcessPayout } from "../../features/admin/finance/hooks";
 import { getErrorMessage } from "../../api/error";
 import toast from "react-hot-toast";
@@ -21,6 +22,7 @@ function InstructorPayouts() {
   const { t } = useTranslation();
   const [statusFilter, setStatusFilter] = useState("");
   const [notesById, setNotesById] = useState({});
+  const [otpPayoutId, setOtpPayoutId] = useState(null);
 
   const { data: payouts = [], isLoading, isError, error, refetch, isFetching } = useAdminPayouts({
     ...(statusFilter ? { status: statusFilter } : {}),
@@ -42,10 +44,10 @@ function InstructorPayouts() {
     return sorted[0].createdAt ? new Date(sorted[0].createdAt).toLocaleDateString() : "—";
   }, [payouts]);
 
-  const runProcess = async (id, status) => {
+  const runProcess = async (id, status, otpCode) => {
     const adminNotes = notesById[id]?.trim() || undefined;
     try {
-      await processMutation.mutateAsync({ id, body: { status, adminNotes } });
+      await processMutation.mutateAsync({ id, body: { status, adminNotes, otpCode } });
       toast.success(t("adminPages.payouts.updated", { defaultValue: "Payout updated." }));
       void refetch();
     } catch (e) {
@@ -96,9 +98,9 @@ function InstructorPayouts() {
         </div>
       ) : null}
       {isError ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+        <div className="rounded-xl border border-red-200 bg-[#EE7C11]/10 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-[#EE7C11]/10 dark:text-red-300">
           {getErrorMessage(error, t("adminPages.payouts.loadError", { defaultValue: "Failed to load payouts." }))}
-          <button type="button" onClick={() => void refetch()} className="ms-3 rounded bg-[#B91C1C] px-2 py-1 text-xs font-bold text-white">
+          <button type="button" onClick={() => void refetch()} className="ms-3 rounded bg-[#EE7C11] px-2 py-1 text-xs font-bold text-white">
             {t("adminPages.payouts.retry", { defaultValue: "Retry" })}
           </button>
         </div>
@@ -169,12 +171,12 @@ function InstructorPayouts() {
                         </button>
                       </>
                     ) : null}
-                    {(r.status === "PENDING" || r.status === "APPROVED") ? (
+                    {r.status === "PENDING" || r.status === "APPROVED" ? (
                       <button
                         type="button"
                         disabled={busy}
-                        onClick={() => void runProcess(r.id, "PAID")}
-                        className="rounded bg-[#B91C1C] px-2 py-1 text-[10px] font-bold text-white disabled:opacity-50"
+                        onClick={() => setOtpPayoutId(r.id)}
+                        className="rounded bg-pioneer-orange px-2 py-1 text-[10px] font-bold text-white disabled:opacity-50"
                       >
                         {t("adminPages.payouts.payNow")}
                       </button>
@@ -187,6 +189,17 @@ function InstructorPayouts() {
           rows={payouts}
         />
       ) : null}
+      <OtpConfirmModal
+        open={Boolean(otpPayoutId)}
+        purpose="PAYOUT_CONFIRM"
+        title={t("adminPages.payouts.otpTitle", { defaultValue: "Confirm payout with OTP" })}
+        onClose={() => setOtpPayoutId(null)}
+        onVerified={async (code) => {
+          if (!otpPayoutId) return;
+          await runProcess(otpPayoutId, "PAID", code);
+          setOtpPayoutId(null);
+        }}
+      />
     </section>
   );
 }

@@ -68,7 +68,7 @@ function InstructorExamDetail() {
     return (
       <section>
         <p className="text-red-600">{getErrorMessage(examErr, t("dashboard.instructor.exams.detailPage.loadError"))}</p>
-        <Link to="/instructor/exams" className="mt-2 inline-block text-nihao-red-normal underline">
+        <Link to="/instructor/exams" className="mt-2 inline-block text-pioneer-orange-normal underline">
           {t("dashboard.instructor.exams.detailPage.back")}
         </Link>
       </section>
@@ -84,7 +84,7 @@ function InstructorExamDetail() {
   return (
     <section className="space-y-8">
       <div>
-        <Link to="/instructor/exams" className="text-sm font-semibold text-nihao-red-normal hover:underline">
+        <Link to="/instructor/exams" className="text-sm font-semibold text-pioneer-orange-normal hover:underline">
           ← {t("dashboard.instructor.exams.detailPage.back")}
         </Link>
         <PageHeader title={exam.title} subtitle={metaLine} />
@@ -154,7 +154,7 @@ function InstructorExamDetail() {
             <button
               type="submit"
               disabled={addQ.isPending}
-              className="inline-flex items-center gap-2 rounded-xl bg-nihao-red-normal px-4 py-2 text-sm font-semibold text-white"
+              className="inline-flex items-center gap-2 rounded-xl bg-pioneer-orange-normal px-4 py-2 text-sm font-semibold text-white"
             >
               {addQ.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               {t("dashboard.instructor.exams.detailPage.addQuestion")}

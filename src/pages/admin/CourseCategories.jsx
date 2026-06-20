@@ -40,7 +40,7 @@ function CourseCategories() {
           <input value={name} onChange={(e) => setName(e.target.value)} className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" placeholder={t("adminPages.categories.nameEn")} />
           <input value={slug} onChange={(e) => setSlug(e.target.value)} className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" placeholder="slug" />
           <input value={description} onChange={(e) => setDescription(e.target.value)} className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" placeholder={t("adminPages.categories.icon")} />
-          <button onClick={onSave} className="rounded-lg bg-[#B91C1C] px-4 py-2 text-sm font-bold text-white">{editingId ? "Update" : t("adminPages.categories.save")}</button>
+          <button onClick={onSave} className="rounded-lg bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white">{editingId ? "Update" : t("adminPages.categories.save")}</button>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:col-span-3">
           {isLoading ? <div className="text-sm text-slate-500">Loading categories...</div> : null}

@@ -190,12 +190,12 @@ function Exams() {
               value={query.search}
               onChange={(e) => setQuery({ search: e.target.value })}
               placeholder={t("dashboard.common.search")}
-              className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-nihao-red-normal dark:border-white/10 dark:bg-[#1A1A22] dark:text-white"
+              className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-pioneer-orange-normal dark:border-white/10 dark:bg-[#1A1A22] dark:text-white"
             />
             <button
               type="button"
               onClick={openCreate}
-              className="h-10 rounded-xl bg-nihao-red-normal px-4 text-sm font-semibold text-white"
+              className="h-10 rounded-xl bg-pioneer-orange-normal px-4 text-sm font-semibold text-white"
             >
               {t("dashboard.instructor.exams.createExam")}
             </button>
@@ -238,7 +238,7 @@ function Exams() {
             render: (_, row) => (
               <Link
                 to={`/instructor/exams/${row.id}`}
-                className="font-semibold text-nihao-red-normal hover:underline"
+                className="font-semibold text-pioneer-orange-normal hover:underline"
               >
                 {t("dashboard.instructor.exams.details")}
               </Link>
@@ -323,7 +323,7 @@ function Exams() {
                 </label>
                 <button
                   type="button"
-                  className="mt-2 text-xs font-semibold text-nihao-red-normal underline"
+                  className="mt-2 text-xs font-semibold text-pioneer-orange-normal underline"
                   onClick={() => {
                     setUnitId("");
                     setLessonId("");
@@ -453,7 +453,7 @@ function Exams() {
               <button
                 type="submit"
                 disabled={createMutation.isPending}
-                className="inline-flex items-center gap-2 rounded-xl bg-nihao-red-normal px-4 py-2 text-sm font-semibold text-white"
+                className="inline-flex items-center gap-2 rounded-xl bg-pioneer-orange-normal px-4 py-2 text-sm font-semibold text-white"
               >
                 {createMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                 {t("dashboard.instructor.exams.create.submit")}

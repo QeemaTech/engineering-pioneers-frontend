@@ -31,7 +31,7 @@ function AddStudent() {
         </div>
         {mutation.isError ? <p className="mt-3 text-sm text-red-600 dark:text-red-300">{getErrorMessage(mutation.error, "Failed to create student.")}</p> : null}
         {mutation.isSuccess ? <p className="mt-3 text-sm text-emerald-600 dark:text-emerald-300">Student created successfully.</p> : null}
-        <button onClick={onSubmit} className="mt-4 rounded-lg bg-[#B91C1C] px-4 py-2 text-sm font-bold text-white">{mutation.isPending ? "Creating..." : "Create Student"}</button>
+        <button onClick={onSubmit} className="mt-4 rounded-lg bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white">{mutation.isPending ? "Creating..." : "Create Student"}</button>
       </div>
     </section>
   );

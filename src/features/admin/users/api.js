@@ -35,18 +35,6 @@ export async function updateAdminUser({ id, body }) {
   return response?.data?.data || null;
 }
 
-export async function createStudentByAdmin(body) {
-  const payload = {
-    fullName: body.fullName,
-    email: body.email,
-    password: body.password,
-    confirmPassword: body.confirmPassword || body.password,
-    phone: body.phone || undefined,
-  };
-  const response = await client.post("/auth/register", payload);
-  return response?.data?.data || null;
-}
-
 export async function setAdminUserPassword({ id, newPassword }) {
   const payload = { newPassword, password: newPassword };
   const candidates = [
@@ -70,4 +58,48 @@ export async function setAdminUserPassword({ id, newPassword }) {
     }
   }
   throw lastError || new Error("No supported password endpoint found.");
+}
+
+export async function createStudentByAdmin(body) {
+  const payload = {
+    fullName: body.fullName,
+    email: body.email,
+    password: body.password,
+    confirmPassword: body.confirmPassword || body.password,
+    phone: body.phone || undefined,
+  };
+  const response = await client.post("/auth/register", payload);
+  return response?.data?.data || null;
+}
+
+export async function grantUserPermission({ userId, permissionId, expiresAt }) {
+  const response = await client.post(endpoints.admin.userPermissions(userId), {
+    permissionId,
+    expiresAt: expiresAt || undefined,
+  });
+  return response?.data?.data || null;
+}
+
+export async function revokeUserPermission({ userId, permissionId }) {
+  const response = await client.delete(
+    `${endpoints.admin.userPermissions(userId)}/${permissionId}`
+  );
+  return response?.data?.data || null;
+}
+
+export async function fetchUserSessions(userId) {
+  const response = await client.get(endpoints.admin.userSessions(userId));
+  const payload = response?.data?.data;
+  return payload?.sessions || (Array.isArray(payload) ? payload : []);
+}
+
+export async function fetchUserDevices(userId) {
+  const response = await client.get(endpoints.admin.userDevices(userId));
+  const payload = response?.data?.data;
+  return payload?.devices || (Array.isArray(payload) ? payload : []);
+}
+
+export async function forceLogoutUser(userId) {
+  const response = await client.delete(endpoints.admin.forceLogout(userId));
+  return response?.data?.data || null;
 }

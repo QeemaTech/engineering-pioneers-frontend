@@ -28,7 +28,7 @@ function Stars({ rating, max = 5, size = "h-4 w-4" }) {
           <span key={i} className="relative inline-block">
             <Star className={`${size} text-slate-200`} />
             <span className="absolute inset-0 overflow-hidden" style={{ width: `${fill * 100}%` }}>
-              <Star className={`${size} fill-nihao-yellow-normal text-nihao-yellow-normal`} />
+              <Star className={`${size} fill-pioneer-teal-normal text-pioneer-teal-normal`} />
             </span>
           </span>
         );
@@ -160,11 +160,11 @@ export default function CourseDetails() {
     return (
       <div className="min-h-screen bg-slate-50 py-16 text-center">
         <p className="text-red-600">{t("courseDetails.loadError", { defaultValue: "Course not found." })}</p>
-        <button type="button" onClick={() => void refetch()} className="mt-4 text-nihao-red-normal hover:underline">
+        <button type="button" onClick={() => void refetch()} className="mt-4 text-pioneer-orange-normal hover:underline">
           {t("courseDetails.retry", { defaultValue: "Retry" })}
         </button>
         <div className="mt-6">
-          <Link to="/explore" className="text-sm font-semibold text-nihao-red-normal">
+          <Link to="/explore" className="text-sm font-semibold text-pioneer-orange-normal">
             {t("courseDetails.breadcrumb.explore")}
           </Link>
         </div>
@@ -176,7 +176,7 @@ export default function CourseDetails() {
     <div className="min-h-screen bg-slate-50 py-10 md:py-14">
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
         <nav className="mb-6 flex items-center gap-1.5 text-sm text-slate-500">
-          <Link to="/explore" className="transition-colors hover:text-nihao-red-normal">
+          <Link to="/explore" className="transition-colors hover:text-pioneer-orange-normal">
             {t("courseDetails.breadcrumb.explore")}
           </Link>
           <ChevronRight className="h-3.5 w-3.5 rtl:rotate-180" />
@@ -187,7 +187,7 @@ export default function CourseDetails() {
           <main className="space-y-8 lg:col-span-2">
             <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
               {course.category?.name ? (
-                <span className="inline-block rounded-full bg-nihao-red-light px-3 py-1 text-xs font-bold text-nihao-red-normal">
+                <span className="inline-block rounded-full bg-pioneer-orange-light px-3 py-1 text-xs font-bold text-pioneer-orange-normal">
                   {course.category.name}
                 </span>
               ) : null}
@@ -197,7 +197,7 @@ export default function CourseDetails() {
               <div className="mt-4 flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-2">
                   <Stars rating={displayRating} />
-                  <span className="text-sm font-bold text-nihao-yellow-dark">{displayRating}</span>
+                  <span className="text-sm font-bold text-pioneer-teal-dark">{displayRating}</span>
                   <span className="text-sm text-slate-500">
                     ({reviewCount} {t("courseDetails.reviews")})
                   </span>
@@ -235,7 +235,7 @@ export default function CourseDetails() {
               <section className="overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
                 <h2 className="mb-5 text-xl font-bold text-slate-900">{t("courseDetails.instructor.title")}</h2>
                 <div className="flex items-start gap-4">
-                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-nihao-red-normal text-xl font-extrabold text-white shadow">
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-pioneer-orange-normal text-xl font-extrabold text-white shadow">
                     {initials(instructorForCard.fullName)}
                   </div>
                   <div>
@@ -249,7 +249,7 @@ export default function CourseDetails() {
 
           <aside className="lg:col-span-1">
             <div className="sticky top-24 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-lg">
-              <div className="relative overflow-hidden bg-gradient-to-br from-nihao-red-dark to-nihao-red-normal" style={{ paddingTop: "56.25%" }}>
+              <div className="relative overflow-hidden bg-gradient-to-br from-pioneer-orange-dark to-pioneer-orange-normal" style={{ paddingTop: "56.25%" }}>
                 {course.thumbnail ? (
                   <img src={course.thumbnail} alt="" className="absolute inset-0 h-full w-full object-cover" />
                 ) : (
@@ -260,7 +260,7 @@ export default function CourseDetails() {
                 )}
                 <button type="button" className="absolute inset-0 flex items-center justify-center">
                   <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-lg transition hover:scale-105">
-                    <Play className="ms-1 h-6 w-6 fill-nihao-red-normal text-nihao-red-normal" />
+                    <Play className="ms-1 h-6 w-6 fill-pioneer-orange-normal text-pioneer-orange-normal" />
                   </span>
                 </button>
                 <span className="absolute bottom-2.5 start-2.5 rounded-lg bg-black/50 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur">
@@ -295,14 +295,14 @@ export default function CourseDetails() {
                   <div className="space-y-2">
                     <Link
                       to={loginHref}
-                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-nihao-red-normal py-3 text-sm font-bold text-white transition hover:bg-nihao-red-hover"
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-pioneer-orange-normal py-3 text-sm font-bold text-white transition hover:bg-pioneer-orange-hover"
                     >
                       <BookOpen className="h-4 w-4" />
                       {t("courseDetails.card.logInToEnroll", { defaultValue: "Log in to Enroll" })}
                     </Link>
                     <Link
                       to={`/signup?${enrollQuery}`}
-                      className="flex w-full items-center justify-center rounded-xl border border-slate-200 py-3 text-sm font-semibold text-slate-800 transition hover:border-nihao-red-normal hover:text-nihao-red-normal dark:border-white/10 dark:text-slate-200"
+                      className="flex w-full items-center justify-center rounded-xl border border-slate-200 py-3 text-sm font-semibold text-slate-800 transition hover:border-pioneer-orange-normal hover:text-pioneer-orange-normal dark:border-white/10 dark:text-slate-200"
                     >
                       {t("courseDetails.cohorts.continueSignup")}
                     </Link>
@@ -310,7 +310,7 @@ export default function CourseDetails() {
                 ) : isStudent && isEnrolledInSelected ? (
                   <Link
                     to={continueLearningHref}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-nihao-yellow-normal py-3 text-sm font-bold text-white transition hover:bg-nihao-yellow-hover"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-pioneer-teal-normal py-3 text-sm font-bold text-white transition hover:bg-pioneer-teal-hover"
                   >
                     <BookOpen className="h-4 w-4" />
                     {t("courseDetails.card.continueLearning")}
@@ -318,7 +318,7 @@ export default function CourseDetails() {
                 ) : (
                   <Link
                     to={checkoutHref}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-nihao-red-normal py-3 text-sm font-bold text-white transition hover:bg-nihao-red-hover"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-pioneer-orange-normal py-3 text-sm font-bold text-white transition hover:bg-pioneer-orange-hover"
                   >
                     <BookOpen className="h-4 w-4" />
                     {t("courseDetails.card.enrollWithPrice", {
@@ -335,7 +335,7 @@ export default function CourseDetails() {
                 <ul className="space-y-2.5">
                   {INCLUSIONS.map(({ icon: Icon, key }) => (
                     <li key={key} className="flex items-start gap-2.5 text-sm text-slate-600">
-                      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-nihao-red-normal" />
+                      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-pioneer-orange-normal" />
                       {t(`courseDetails.inclusions.${key}`)}
                     </li>
                   ))}
@@ -367,7 +367,7 @@ function CohortOption({ cohort, selected, onSelect }) {
       type="button"
       onClick={onSelect}
       className={`rounded-xl border p-4 text-start transition ${
-        selected ? "border-nihao-red-normal bg-nihao-red-light ring-1 ring-nihao-red-normal" : "border-slate-200 bg-white hover:border-nihao-red-normal/50"
+        selected ? "border-pioneer-orange-normal bg-pioneer-orange-light ring-1 ring-pioneer-orange-normal" : "border-slate-200 bg-white hover:border-pioneer-orange-normal/50"
       }`}
     >
       <p className="font-bold text-slate-900">{cohort.name}</p>
@@ -383,7 +383,7 @@ function CohortOption({ cohort, selected, onSelect }) {
       <p className="mt-1 text-xs text-slate-500">
         {t("courseDetails.cohorts.enrolled")}: {cohort._count?.enrollments ?? 0}
       </p>
-      <p className="mt-2 text-lg font-extrabold text-nihao-red-normal">${Number(cohort.price).toFixed(0)}</p>
+      <p className="mt-2 text-lg font-extrabold text-pioneer-orange-normal">${Number(cohort.price).toFixed(0)}</p>
     </button>
   );
 }

@@ -36,7 +36,8 @@ export default function ExamSubmissions() {
               </div>
             )},
             { key: "totalScore", title: "Score", render: (v, row) => <span className="font-bold">{v ?? "-"} / {row.exam?.totalPoints || "-"}</span> },
-            { key: "isPassed", title: "Result", render: (v) => v === true ? <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-bold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300"><CheckCircle2 className="h-3 w-3" />Passed</span> : v === false ? <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-1 text-[11px] font-bold text-red-700 dark:bg-red-500/20 dark:text-red-300"><XCircle className="h-3 w-3" />Failed</span> : <span className="text-xs text-slate-400">Pending</span> },
+            { key: "attemptNumber", title: "Attempt", render: (v) => <span className="font-semibold">{v || 1}</span> },
+            { key: "isPassed", title: "Result", render: (v) => v === true ? <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-bold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300"><CheckCircle2 className="h-3 w-3" />Passed</span> : v === false ? <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-1 text-[11px] font-bold text-red-700 dark:bg-[#EE7C11]/20 dark:text-red-300"><XCircle className="h-3 w-3" />Failed</span> : <span className="text-xs text-slate-400">Pending</span> },
             { key: "submittedAt", title: "Submitted", render: (v) => v ? new Date(v).toLocaleDateString() : <span className="text-xs text-slate-400">In progress</span> },
           ]}
           rows={submissions}

@@ -12,7 +12,7 @@ function CourseProgress({ course }) {
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="text-sm font-bold text-slate-900">{course.name}</h3>
-          <p className="mt-0.5 text-xs text-nihao-red-normal">{course.teacher}</p>
+          <p className="mt-0.5 text-xs text-pioneer-orange-normal">{course.teacher}</p>
         </div>
         {done && (
           <span className="shrink-0 rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-semibold text-green-600">
@@ -87,7 +87,7 @@ export default function Progress() {
       progressStats.find((s) => s.cohortId === course.cohortId) ||
       progressStats.find((s) => s.courseId === course.id) ||
       {};
-    const palette = ["bg-nihao-red-normal", "bg-nihao-yellow-normal", "bg-green-500", "bg-blue-500"];
+    const palette = ["bg-pioneer-orange-normal", "bg-pioneer-teal-normal", "bg-green-500", "bg-blue-500"];
     const pct = Math.round(Number(stat.percentage ?? course.progressPercentage ?? 0));
     const completed = Number(stat.completedLessons ?? course.completedLessonsCount ?? 0);
     const total =
@@ -109,10 +109,10 @@ export default function Progress() {
   const avgScore = courses.length ? Math.round(courses.reduce((acc, c) => acc + c.progress, 0) / courses.length) : 0;
   const completedCourses = courses.filter((c) => c.isCourseCompleted).length;
   const statCards = [
-    { key: "coursesEnrolled", value: myCourses.length, icon: BookOpen, color: "text-nihao-red-normal", bg: "bg-nihao-red-light" },
+    { key: "coursesEnrolled", value: myCourses.length, icon: BookOpen, color: "text-pioneer-orange-normal", bg: "bg-pioneer-orange-light" },
     { key: "classesAttended", value: courses.reduce((acc, c) => acc + c.lessons, 0), icon: Video, color: "text-blue-600", bg: "bg-blue-50" },
     { key: "homeworkDone", value: completedCourses, icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50" },
-    { key: "avgScore", value: `${avgScore}%`, icon: Star, color: "text-nihao-yellow-dark", bg: "bg-nihao-yellow-light" },
+    { key: "avgScore", value: `${avgScore}%`, icon: Star, color: "text-pioneer-teal-dark", bg: "bg-pioneer-teal-light" },
   ];
 
   const activity = myCourses.slice(0, 5).map((course, idx) => ({
@@ -122,7 +122,7 @@ export default function Progress() {
     date: course?.joinedAt ? new Date(course.joinedAt).toLocaleDateString() : "-",
     colour:
       idx % 2 === 0
-        ? "bg-nihao-red-light text-nihao-red-normal"
+        ? "bg-pioneer-orange-light text-pioneer-orange-normal"
         : "bg-blue-50 text-blue-600",
   }));
 
@@ -130,9 +130,9 @@ export default function Progress() {
     <div className="min-h-screen bg-slate-50 py-12 md:py-16">
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
         {isError ? (
-          <div className="mx-auto mb-8 max-w-lg rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-center text-sm text-red-800">
+          <div className="mx-auto mb-8 max-w-lg rounded-xl border border-red-100 bg-[#EE7C11]/10 px-4 py-3 text-center text-sm text-red-800">
             <p>{getErrorMessage(error, "Could not load your progress.")}</p>
-            <button type="button" onClick={() => void refetch()} className="mt-2 font-semibold text-nihao-red-normal hover:underline">
+            <button type="button" onClick={() => void refetch()} className="mt-2 font-semibold text-pioneer-orange-normal hover:underline">
               Retry
             </button>
           </div>
@@ -142,7 +142,7 @@ export default function Progress() {
         <div className="text-center">
           <h1 className="text-3xl font-bold text-slate-900 md:text-4xl lg:text-5xl">
             {t("progress.titlePrefix")}{" "}
-            <span className="text-nihao-red-normal">{t("progress.titleAccent")}</span>
+            <span className="text-pioneer-orange-normal">{t("progress.titleAccent")}</span>
           </h1>
           <p className="mx-auto mt-3 max-w-lg text-base text-slate-500">{t("progress.subtitle")}</p>
         </div>
@@ -168,7 +168,7 @@ export default function Progress() {
               <div className="space-y-4 lg:col-span-2">
                 <h2 className="text-lg font-bold text-slate-900">
                   {t("progress.myCourses")}{" "}
-                  <TrendingUp className="ms-1 inline h-4 w-4 text-nihao-red-normal" />
+                  <TrendingUp className="ms-1 inline h-4 w-4 text-pioneer-orange-normal" />
                 </h2>
                 {isLoading ? (
                   <div className="rounded-2xl border border-slate-100 bg-white p-5 text-slate-500">Loading...</div>

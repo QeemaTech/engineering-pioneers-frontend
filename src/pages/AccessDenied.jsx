@@ -8,7 +8,7 @@ function AccessDenied() {
         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
           You do not have permission to access this resource.
         </p>
-        <Link to="/" className="mt-4 inline-flex rounded-lg bg-[#B91C1C] px-4 py-2 text-sm font-bold text-white">
+        <Link to="/" className="mt-4 inline-flex rounded-lg bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white">
           Back Home
         </Link>
       </div>

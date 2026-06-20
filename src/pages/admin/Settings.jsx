@@ -45,7 +45,7 @@ function SettingsToggle({ label, description, enabled, onChange }) {
       <button
         type="button"
         onClick={onChange}
-        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${enabled ? "bg-[#B91C1C]" : "bg-slate-300 dark:bg-slate-700"}`}
+        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${enabled ? "bg-[#EE7C11]" : "bg-slate-300 dark:bg-slate-700"}`}
       >
         <span
           className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${enabled ? "translate-x-5" : "translate-x-0"}`}
@@ -64,7 +64,7 @@ function SettingsInputField({ label, value, onChange, placeholder, type = "text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-red-300 focus:ring-1 focus:ring-red-200 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white dark:focus:border-red-800 dark:focus:ring-red-900"
+        className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#EE7C11] focus:ring-1 focus:ring-[#0D9488]/30 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white dark:focus:border-[#EE7C11] dark:focus:ring-[#0D9488]/30"
       />
     </div>
   );
@@ -76,7 +76,7 @@ function Settings() {
   const updateMutation = useUpdateAdminSettings();
   const [hydrated, setHydrated] = useState(false);
   const [settings, setSettings] = useState({
-    siteName: "Nihao Academy",
+    siteName: "Engineering Pioneers",
     siteEmail: "",
     phoneNumber: "",
     socialFacebook: "",
@@ -154,7 +154,7 @@ function Settings() {
             type="button"
             disabled={updateMutation.isPending || !hydrated || isLoading}
             onClick={handleSave}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#B91C1C] px-6 py-2.5 text-sm font-bold text-white shadow-xl shadow-[#B91C1C]/20 transition-all hover:bg-red-700 active:scale-95 disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#EE7C11] px-6 py-2.5 text-sm font-bold text-white shadow-xl shadow-[#EE7C11]/20 transition-all hover:bg-[#d9700e] active:scale-95 disabled:opacity-50"
           >
             <Save className="h-4 w-4" /> {t("common.save", { defaultValue: "Save changes" })}
           </button>
@@ -166,9 +166,9 @@ function Settings() {
         </div>
       ) : null}
       {isError ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+        <div className="rounded-lg border border-red-200 bg-[#EE7C11]/10 p-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-[#EE7C11]/10 dark:text-red-300">
           {getErrorMessage(error, "Failed to load settings.")}
-          <button type="button" onClick={() => refetch()} className="ms-2 rounded bg-[#B91C1C] px-2 py-1 text-xs font-bold text-white">
+          <button type="button" onClick={() => refetch()} className="ms-2 rounded bg-[#EE7C11] px-2 py-1 text-xs font-bold text-white">
             Retry
           </button>
         </div>
@@ -180,7 +180,7 @@ function Settings() {
             Shown in the marketing header, footer, and contact links. Leave a social URL empty to hide that icon.
           </p>
           <div className="grid gap-6 sm:grid-cols-2">
-            <SettingsInputField label="Public contact email" value={settings.siteEmail} onChange={(v) => setSettings((p) => ({ ...p, siteEmail: v }))} placeholder="hello@nihaoacademy.com" type="email" />
+            <SettingsInputField label="Public contact email" value={settings.siteEmail} onChange={(v) => setSettings((p) => ({ ...p, siteEmail: v }))} placeholder="hello@engineeringpioneers.com" type="email" />
             <SettingsInputField label="Phone (header)" value={settings.phoneNumber} onChange={(v) => setSettings((p) => ({ ...p, phoneNumber: v }))} placeholder="+1-800-000-0000" />
           </div>
           <div className="grid gap-6 sm:grid-cols-2">
@@ -193,7 +193,7 @@ function Settings() {
 
         <SettingsSection title="General Settings" icon={Globe}>
           <div className="grid gap-6 sm:grid-cols-2">
-            <SettingsInputField label="Site Name" value={settings.siteName} onChange={(v) => setSettings((p) => ({ ...p, siteName: v }))} placeholder="Nihao Academy" />
+            <SettingsInputField label="Site Name" value={settings.siteName} onChange={(v) => setSettings((p) => ({ ...p, siteName: v }))} placeholder="Engineering Pioneers" />
           </div>
           <SettingsToggle
             label="Public Registration"
@@ -213,7 +213,7 @@ function Settings() {
               <select
                 value={settings.theme}
                 onChange={(e) => setSettings((p) => ({ ...p, theme: e.target.value }))}
-                className="h-10 appearance-none rounded-lg border border-slate-200 bg-white px-4 text-sm font-bold text-slate-900 outline-none focus:border-red-300 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white dark:focus:border-red-800"
+                className="h-10 appearance-none rounded-lg border border-slate-200 bg-white px-4 text-sm font-bold text-slate-900 outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#1A1A22] dark:text-white dark:focus:border-[#EE7C11]"
               >
                 <option value="dark">Dark Theme (Premium)</option>
                 <option value="light">Light Theme</option>
@@ -236,7 +236,7 @@ function Settings() {
               enabled={settings.maintenanceMode}
               onChange={() => handleToggle("maintenanceMode")}
             />
-            <button type="button" className="text-sm font-bold text-[#B91C1C] hover:underline">
+            <button type="button" className="text-sm font-bold text-[#EE7C11] hover:underline">
               Configure 2FA for Administrators →
             </button>
           </div>

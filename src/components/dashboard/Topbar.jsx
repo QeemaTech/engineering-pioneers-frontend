@@ -70,7 +70,7 @@ function Topbar({ onMenuClick }) {
   const currentLng = lang;
 
   return (
-    <header className="sticky top-0 z-20 border-b border-slate-200 bg-white dark:border-white/5 dark:bg-[#0A0A10]">
+    <header className="sticky top-0 z-20 border-b border-slate-200 bg-pioneer-light-card dark:border-white/5 dark:bg-pioneer-dark-card">
       <div className="flex h-16 min-h-16 items-center justify-between gap-2 px-3 sm:h-20 sm:min-h-20 sm:px-6 md:px-10">
         <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-6 md:gap-8">
           <div className="flex min-w-0 items-center gap-2 sm:gap-4 md:gap-6">
@@ -116,7 +116,7 @@ function Topbar({ onMenuClick }) {
               onClick={() => setLang("en")}
               className={`rounded-full px-2 py-0.5 text-[9px] font-bold transition-all sm:px-3 sm:py-1 sm:text-[10px] ${
                 currentLng === "en"
-                  ? "bg-[#B91C1C] text-white"
+                  ? "bg-pioneer-orange text-white"
                   : "border border-slate-200 bg-transparent text-slate-400 dark:border-white/10"
               }`}
             >
@@ -127,7 +127,7 @@ function Topbar({ onMenuClick }) {
               onClick={() => setLang("ar")}
               className={`rounded-full px-2 py-0.5 text-[9px] font-bold transition-all sm:px-3 sm:py-1 sm:text-[10px] ${
                 currentLng === "ar"
-                  ? "bg-[#B91C1C] text-white"
+                  ? "bg-pioneer-orange text-white"
                   : "border border-slate-200 bg-transparent text-slate-400 dark:border-white/10"
               }`}
             >
@@ -141,17 +141,17 @@ function Topbar({ onMenuClick }) {
               onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
               aria-expanded={isNotificationsOpen}
               aria-label={t("header.notifications")}
-              className={`relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors sm:h-10 sm:w-10 ${isNotificationsOpen ? "bg-[#B91C1C] text-white" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white"}`}
+              className={`relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors sm:h-10 sm:w-10 ${isNotificationsOpen ? "bg-pioneer-orange text-white" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white"}`}
             >
               <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
-              <span className="absolute end-2.5 top-2.5 h-2 w-2 rounded-full bg-[#B91C1C] ring-2 ring-white dark:ring-[#0A0A10]" />
+              <span className="absolute end-2.5 top-2.5 h-2 w-2 rounded-full bg-pioneer-orange ring-2 ring-pioneer-light-card dark:ring-pioneer-dark-card" />
             </button>
 
             {isNotificationsOpen && (
-              <div className="absolute end-0 z-50 mt-3 w-[min(20rem,calc(100vw-1.5rem))] max-w-[calc(100vw-1.5rem)] rounded-2xl border border-slate-200 bg-white p-3 shadow-md sm:mt-4 sm:w-80 sm:max-w-none sm:p-4 dark:border-white/10 dark:bg-[#1A1A22] dark:shadow-2xl dark:shadow-black/50 dark:backdrop-blur-xl">
+              <div className="absolute end-0 z-50 mt-3 w-[min(20rem,calc(100vw-1.5rem))] max-w-[calc(100vw-1.5rem)] rounded-2xl border border-slate-200 bg-pioneer-light-card p-3 shadow-md sm:mt-4 sm:w-80 sm:max-w-none sm:p-4 dark:border-white/10 dark:bg-pioneer-dark-card dark:shadow-2xl dark:shadow-black/50 dark:backdrop-blur-xl">
                 <div className="mb-4 flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">{t("header.notifications")}</h3>
-                  <button className="text-[10px] font-bold text-[#B91C1C] hover:underline">Mark all read</button>
+                  <h3 className="text-sm font-bold text-pioneer-light-textPrimary dark:text-pioneer-dark-textPrimary">{t("header.notifications")}</h3>
+                  <button className="text-[10px] font-bold text-pioneer-orange hover:underline">Mark all read</button>
                 </div>
                 <div className="space-y-2">
                   {[
@@ -176,7 +176,7 @@ function Topbar({ onMenuClick }) {
             <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
               {t("overview.lastSynced")}: 2 {t("overview.minAgo")}
             </p>
-            <div className="h-px w-8 bg-[#B91C1C]/30 mt-1" />
+            <div className="h-px w-8 bg-pioneer-orange/30 mt-1" />
           </div>
 
           <div className="relative">
@@ -192,7 +192,7 @@ function Topbar({ onMenuClick }) {
                   {user?.fullName || t("header.admin")}
                 </p>
                 <p className="truncate text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                  {user?.role || "Global Admin"}
+                  {(typeof user?.role === "object" ? user.role.name : user?.role) || "Global Admin"}
                 </p>
               </div>
               <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-100 ring-2 ring-slate-200 sm:h-10 sm:w-10 dark:bg-white/5 dark:ring-white/10">
@@ -215,7 +215,7 @@ function Topbar({ onMenuClick }) {
             </button>
 
             {isProfileOpen && (
-              <div className="absolute end-0 z-50 mt-3 w-[min(14rem,calc(100vw-1.5rem))] rounded-2xl border border-slate-200 bg-white p-2 shadow-md sm:mt-4 sm:w-56 dark:border-white/10 dark:bg-[#1A1A22] dark:shadow-2xl dark:shadow-black/50">
+              <div className="absolute end-0 z-50 mt-3 w-[min(14rem,calc(100vw-1.5rem))] rounded-2xl border border-slate-200 bg-pioneer-light-card p-2 shadow-md sm:mt-4 sm:w-56 dark:border-white/10 dark:bg-pioneer-dark-card dark:shadow-2xl dark:shadow-black/50">
                 <div className="mb-1 border-b border-slate-100 p-2 dark:border-white/5">
                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                     {t("header.dashboardMenu.accountActions")}

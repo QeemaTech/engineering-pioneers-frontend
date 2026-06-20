@@ -41,7 +41,7 @@ export default function HowItWorks() {
         <header className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold text-slate-900 md:text-4xl">
             {t("howItWorks.titleStart")}{" "}
-            <span className="text-nihao-red-normal">{t("howItWorks.titleAccent")}</span>
+            <span className="text-pioneer-orange-normal">{t("howItWorks.titleAccent")}</span>
           </h2>
           <p className="mt-3 text-base text-slate-500">
             {t("howItWorks.subtitle")}
@@ -56,7 +56,7 @@ export default function HowItWorks() {
               {/* Circle + arrow row */}
               <div className="flex w-full items-center">
                 {/* Red circle number */}
-                <div className="mx-auto flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-nihao-red-normal text-2xl font-bold text-white shadow-md md:mx-0">
+                <div className="mx-auto flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-pioneer-orange-normal text-2xl font-bold text-white shadow-md md:mx-0">
                   {NUMS[idx]}
                 </div>
 

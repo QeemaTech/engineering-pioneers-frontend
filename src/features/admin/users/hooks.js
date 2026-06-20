@@ -4,6 +4,11 @@ import {
   fetchAdminStudentPerformance,
   fetchAdminUserById,
   fetchAdminUsers,
+  forceLogoutUser,
+  fetchUserDevices,
+  fetchUserSessions,
+  grantUserPermission,
+  revokeUserPermission,
   setAdminUserPassword,
   toggleAdminUserActive,
   updateAdminUser,
@@ -70,5 +75,53 @@ export function useCreateStudentByAdmin() {
 export function useSetAdminUserPassword() {
   return useMutation({
     mutationFn: setAdminUserPassword,
+  });
+}
+
+export function useUserSessions(userId) {
+  return useQuery({
+    queryKey: ["admin", "users", userId, "sessions"],
+    queryFn: () => fetchUserSessions(userId),
+    enabled: Boolean(userId),
+    retry: false,
+  });
+}
+
+export function useUserDevices(userId) {
+  return useQuery({
+    queryKey: ["admin", "users", userId, "devices"],
+    queryFn: () => fetchUserDevices(userId),
+    enabled: Boolean(userId),
+    retry: false,
+  });
+}
+
+export function useGrantUserPermission() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: grantUserPermission,
+    onSuccess: (_, vars) => {
+      if (vars?.userId) void queryClient.invalidateQueries({ queryKey: ["admin", "users", vars.userId] });
+    },
+  });
+}
+
+export function useRevokeUserPermission() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: revokeUserPermission,
+    onSuccess: (_, vars) => {
+      if (vars?.userId) void queryClient.invalidateQueries({ queryKey: ["admin", "users", vars.userId] });
+    },
+  });
+}
+
+export function useForceLogoutUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: forceLogoutUser,
+    onSuccess: (_, userId) => {
+      void queryClient.invalidateQueries({ queryKey: ["admin", "users", userId, "sessions"] });
+    },
   });
 }

@@ -39,7 +39,7 @@ function Certificates() {
           <button
             type="button"
             onClick={() => setShowIssueModal(true)}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#B91C1C] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#991B1B]"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#d9700e]"
           >
             <Plus className="h-4 w-4" />
             {tx("adminPages.certificates.issue", "Issue Certificate")}
@@ -55,7 +55,7 @@ function Certificates() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={tx("adminPages.certificates.search", "Search certificates")}
-            className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 ps-9 pe-3 text-sm text-slate-900 outline-none focus:border-[#B91C1C] focus:bg-white dark:border-white/10 dark:bg-[#0F0F13] dark:text-white dark:focus:border-[#B91C1C]"
+            className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 ps-9 pe-3 text-sm text-slate-900 outline-none focus:border-[#EE7C11] focus:bg-white dark:border-white/10 dark:bg-[#0F0F13] dark:text-white dark:focus:border-[#EE7C11]"
           />
         </div>
         <button
@@ -202,7 +202,7 @@ function IssueCertificateModal({ onClose }) {
             <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-white/10 dark:text-slate-200">
               {tx("common.cancel", "Cancel")}
             </button>
-            <button disabled={issueMutation.isPending} type="submit" className="rounded-lg bg-[#B91C1C] px-3 py-2 text-sm font-bold text-white disabled:opacity-70">
+            <button disabled={issueMutation.isPending} type="submit" className="rounded-lg bg-[#EE7C11] px-3 py-2 text-sm font-bold text-white disabled:opacity-70">
               {issueMutation.isPending ? tx("common.saving", "Saving...") : tx("adminPages.certificates.issue", "Issue Certificate")}
             </button>
           </div>

@@ -65,7 +65,7 @@ function Finance() {
     const q = search.toLowerCase();
     return subscriptions.filter((s) =>
       String(s.student?.fullName || "").toLowerCase().includes(q) ||
-      String(s.package?.name || "").toLowerCase().includes(q)
+      String(s.plan?.name || s.package?.name || "").toLowerCase().includes(q)
     );
   }, [subscriptions, search]);
 
@@ -107,7 +107,7 @@ function Finance() {
                 setEnrollType("package");
                 setOpenCreate(true);
               }}
-              className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#B91C1C] px-4 text-sm font-bold text-white"
+              className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#EE7C11] px-4 text-sm font-bold text-white"
             >
               <UserPlus className="h-4 w-4" /> Grant Access
             </button>
@@ -126,7 +126,7 @@ function Finance() {
             onClick={() => setActiveTab(tab.key)}
             className={`rounded-lg px-4 py-2 text-sm font-semibold ${
               activeTab === tab.key
-                ? "bg-[#B91C1C] text-white"
+                ? "bg-[#EE7C11] text-white"
                 : "border border-slate-200 text-slate-700 dark:border-white/10 dark:text-slate-300"
             }`}
           >
@@ -182,25 +182,16 @@ function Finance() {
         <DataTable
           columns={[
             { key: "student", title: "Student", render: (_, row) => <div><p className="font-bold text-slate-900 dark:text-white">{row?.student?.fullName || "-"}</p><p className="text-xs text-slate-500">{row?.student?.email || "-"}</p></div> },
-            { key: "package", title: "Package", render: (_, row) => <span>{row?.package?.name || "-"} ({row?.package?.level || "-"})</span> },
+            { key: "plan", title: "Package", render: (_, row) => <span>{row?.plan?.name || row?.package?.name || "-"}</span> },
             {
-              key: "credits",
-              title: "Credits",
-              render: (_, row) => {
-                const liveTotal = row?.package?.liveCohortsLimit ?? 0;
-                const recTotal = row?.package?.recordedCohortsLimit ?? 0;
-                const privateTotal = row?.package?.privateSessionsLimit ?? 0;
-                const liveUsed = row?.liveCohortsUsed ?? 0;
-                const recUsed = row?.recordedCohortsUsed ?? 0;
-                const privateUsed = row?.privateSessionsUsed ?? 0;
-                return (
-                  <div className="space-y-1 text-xs text-slate-600 dark:text-slate-300">
-                    <p>Live: <b>{liveUsed}/{liveTotal}</b> used · <b>{Math.max(0, liveTotal - liveUsed)}</b> left</p>
-                    <p>Recorded: <b>{recUsed}/{recTotal}</b> used · <b>{Math.max(0, recTotal - recUsed)}</b> left</p>
-                    <p>Private: <b>{privateUsed}/{privateTotal}</b> used · <b>{Math.max(0, privateTotal - privateUsed)}</b> left</p>
-                  </div>
-                );
-              }
+              key: "period",
+              title: "Period",
+              render: (_, row) => (
+                <div className="text-xs text-slate-600 dark:text-slate-300">
+                  <p>Start: <b>{row.startDate ? new Date(row.startDate).toLocaleDateString() : "-"}</b></p>
+                  <p>End: <b>{row.endDate ? new Date(row.endDate).toLocaleDateString() : "-"}</b></p>
+                </div>
+              )
             },
             { key: "createdAt", title: "Purchased", render: (v) => <span className="text-xs text-slate-500">{v ? new Date(v).toLocaleDateString() : "-"}</span> },
             {
@@ -246,8 +237,8 @@ function Finance() {
           <div className="w-full max-w-xl rounded-xl border border-slate-200 bg-white p-5 shadow-xl dark:border-white/10 dark:bg-[#1A1A22]">
             <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-slate-900 dark:text-white"><CreditCard className="h-5 w-5" /> Grant Access</h3>
             <div className="mb-4 grid grid-cols-2 gap-2">
-              <button type="button" onClick={() => { setEnrollType("package"); setCourseId(""); setCohortId(""); }} className={`rounded-lg px-3 py-2 text-sm ${enrollType === "package" ? "bg-[#B91C1C] text-white" : "border border-slate-200 dark:border-white/10"}`}>Package credits</button>
-              <button type="button" onClick={() => { setEnrollType("course"); setPackageId(""); }} className={`rounded-lg px-3 py-2 text-sm ${enrollType === "course" ? "bg-[#B91C1C] text-white" : "border border-slate-200 dark:border-white/10"}`}>Manual cohort access</button>
+              <button type="button" onClick={() => { setEnrollType("package"); setCourseId(""); setCohortId(""); }} className={`rounded-lg px-3 py-2 text-sm ${enrollType === "package" ? "bg-[#EE7C11] text-white" : "border border-slate-200 dark:border-white/10"}`}>Package credits</button>
+              <button type="button" onClick={() => { setEnrollType("course"); setPackageId(""); }} className={`rounded-lg px-3 py-2 text-sm ${enrollType === "course" ? "bg-[#EE7C11] text-white" : "border border-slate-200 dark:border-white/10"}`}>Manual cohort access</button>
             </div>
             <div className="space-y-3">
               <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -265,7 +256,9 @@ function Finance() {
                 <select value={packageId} onChange={(e) => setPackageId(e.target.value)} className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white">
                   <option value="">Select Package</option>
                   {packages.map((p) => (
-                    <option key={p.id} value={p.id}>{p.name} ({p.level}) · {p.liveCohortsLimit ?? 0} live / {p.recordedCohortsLimit ?? 0} recorded / {p.privateSessionsLimit ?? 0} private</option>
+                    <option key={p.id} value={p.id}>
+                      {p.name} ({p.durationMonths} {p.durationMonths === 1 ? 'month' : 'months'}) · ${p.price}
+                    </option>
                   ))}
                 </select>
               ) : (
@@ -321,7 +314,7 @@ function Finance() {
                     toast.error("Failed to create.");
                   }
                 }}
-                className="rounded-lg bg-[#B91C1C] px-3 py-2 text-sm font-bold text-white"
+                className="rounded-lg bg-[#EE7C11] px-3 py-2 text-sm font-bold text-white"
               >
                 Create
               </button>

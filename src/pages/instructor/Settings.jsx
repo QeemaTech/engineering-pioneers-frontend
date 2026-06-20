@@ -123,12 +123,12 @@ function Settings() {
 
   if (isError || !profile) {
     return (
-      <section className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+      <section className="rounded-xl border border-red-200 bg-[#EE7C11]/10 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-[#EE7C11]/10 dark:text-red-300">
         {getErrorMessage(error, t("dashboard.instructor.pages.settings.loadError"))}
         <button
           type="button"
           onClick={() => refetch()}
-          className="ms-3 rounded-lg bg-[#B91C1C] px-3 py-1 text-xs font-bold text-white"
+          className="ms-3 rounded-lg bg-[#EE7C11] px-3 py-1 text-xs font-bold text-white"
         >
           {t("dashboard.common.retry")}
         </button>

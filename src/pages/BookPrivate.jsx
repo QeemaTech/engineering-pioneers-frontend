@@ -45,12 +45,12 @@ export default function BookPrivate() {
         <p className="mt-2 text-slate-600">{t("bookSession.subtitle")}</p>
         {msg ? <p className="mt-4 rounded-lg bg-green-50 px-4 py-2 text-sm text-green-800">{msg}</p> : null}
         {err ? (
-          <div className="mt-4 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-800">
+          <div className="mt-4 rounded-xl border border-red-100 bg-[#EE7C11]/10 px-4 py-3 text-sm text-red-800">
             <p>{err}</p>
             {needsSubscription ? (
               <Link
                 to="/subscription"
-                className="mt-3 inline-flex rounded-lg bg-nihao-red-normal px-4 py-2 text-sm font-bold text-white hover:bg-nihao-red-hover"
+                className="mt-3 inline-flex rounded-lg bg-pioneer-orange-normal px-4 py-2 text-sm font-bold text-white hover:bg-pioneer-orange-hover"
               >
                 {t("bookSession.viewPlans")}
               </Link>
@@ -61,7 +61,7 @@ export default function BookPrivate() {
         {isError ? (
           <p className="mt-8 text-red-600">
             {t("bookSession.loadError")}{" "}
-            <button type="button" className="font-semibold text-nihao-red-normal hover:underline" onClick={() => void refetch()}>
+            <button type="button" className="font-semibold text-pioneer-orange-normal hover:underline" onClick={() => void refetch()}>
               {t("takeExam.retry")}
             </button>
           </p>
@@ -70,8 +70,8 @@ export default function BookPrivate() {
           {slots.map((s) => (
             <li key={s.id} className="flex flex-col gap-2 rounded-xl border border-slate-100 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-nihao-red-light">
-                  <Calendar className="h-5 w-5 text-nihao-red-normal" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-pioneer-orange-light">
+                  <Calendar className="h-5 w-5 text-pioneer-orange-normal" />
                 </div>
                 <div>
                   <p className="flex items-center gap-2 text-sm font-semibold text-slate-900">
@@ -87,7 +87,7 @@ export default function BookPrivate() {
                 type="button"
                 disabled={book.isPending}
                 onClick={() => void onBook(s.id)}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-nihao-red-normal px-4 py-2 text-sm font-bold text-white hover:bg-nihao-red-hover disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-pioneer-orange-normal px-4 py-2 text-sm font-bold text-white hover:bg-pioneer-orange-hover disabled:opacity-50"
               >
                 {book.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                 {t("bookSession.book")}

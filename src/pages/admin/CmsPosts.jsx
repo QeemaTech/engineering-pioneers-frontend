@@ -100,7 +100,7 @@ function CmsPosts() {
                 }
               );
             }}
-            className="inline-flex h-10 shrink-0 items-center justify-center rounded-lg bg-[#B91C1C] px-4 text-sm font-bold text-white disabled:opacity-50"
+            className="inline-flex h-10 shrink-0 items-center justify-center rounded-lg bg-[#EE7C11] px-4 text-sm font-bold text-white disabled:opacity-50"
           >
             {createMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : t("adminPages.cmsPosts.create")}
           </button>
@@ -116,7 +116,7 @@ function CmsPosts() {
         </div>
       ) : null}
       {isError ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+        <div className="rounded-xl border border-red-200 bg-[#EE7C11]/10 p-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-[#EE7C11]/10 dark:text-red-300">
           {getErrorMessage(error, "Failed to load posts.")}{" "}
           <button type="button" onClick={() => refetch()} className="ms-2 underline">
             Retry
@@ -182,7 +182,7 @@ function CmsPosts() {
                     if (!window.confirm(t("adminPages.cmsPosts.confirmDelete"))) return;
                     deleteMutation.mutate(p.id);
                   }}
-                  className="inline-flex items-center gap-1 rounded-lg border border-red-200 px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 dark:border-red-500/30 dark:text-red-400 dark:hover:bg-red-950/40"
+                  className="inline-flex items-center gap-1 rounded-lg border border-red-200 px-2 py-1 text-xs font-semibold text-red-600 hover:bg-[#EE7C11]/10 dark:border-red-500/30 dark:text-red-400 dark:hover:bg-red-950/40"
                 >
                   <Trash2 className="h-3 w-3" />
                   {t("adminPages.common.delete")}
@@ -258,7 +258,7 @@ function CmsPosts() {
                     }
                   );
                 }}
-                className="rounded-lg bg-[#B91C1C] px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
+                className="rounded-lg bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
               >
                 {updateMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : t("adminPages.cmsPosts.saveChanges")}
               </button>

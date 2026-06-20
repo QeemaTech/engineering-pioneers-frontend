@@ -52,7 +52,7 @@ const LiIcon = () => (
 /* ── Helpers ── */
 const navLinkClass = ({ isActive }) =>
   `text-sm font-medium transition-colors ${
-    isActive ? "text-nihao-red-normal font-semibold" : "text-slate-700 hover:text-nihao-red-normal"
+    isActive ? "text-pioneer-orange-normal font-semibold" : "text-slate-700 hover:text-pioneer-orange-normal"
   }`;
 
 function getInitials(name = "") {
@@ -67,7 +67,7 @@ function UserAvatarMark({ user, className = "", textClassName = "text-sm font-bo
     return <img src={src} alt="" className={`rounded-full object-cover ${className}`} />;
   }
   return (
-    <div className={`flex items-center justify-center rounded-full bg-nihao-red-normal font-bold text-white shadow-md ${textClassName} ${className}`}>
+    <div className={`flex items-center justify-center rounded-full bg-pioneer-orange-normal font-bold text-white shadow-md ${textClassName} ${className}`}>
       {getInitials(user?.fullName)}
     </div>
   );
@@ -126,7 +126,7 @@ function UserDropdown({ user, onClose }) {
       className="absolute end-0 top-[calc(100%+8px)] z-50 w-64 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-xl shadow-slate-200/60"
     >
       {/* ── User header ── */}
-      <div className="flex items-center gap-3 bg-nihao-red-light/60 px-4 py-4">
+      <div className="flex items-center gap-3 bg-pioneer-orange-light/60 px-4 py-4">
         <UserAvatarMark user={user} className="h-11 w-11 shrink-0" textClassName="text-sm font-bold" />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-slate-900">{user?.fullName}</p>
@@ -141,7 +141,7 @@ function UserDropdown({ user, onClose }) {
             key={to}
             type="button"
             onClick={() => handleNav(to)}
-            className="flex w-full items-center gap-3 px-4 py-2.5 text-start text-sm text-slate-700 transition-colors hover:bg-slate-50 hover:text-nihao-red-normal"
+            className="flex w-full items-center gap-3 px-4 py-2.5 text-start text-sm text-slate-700 transition-colors hover:bg-slate-50 hover:text-pioneer-orange-normal"
           >
             <Icon className="h-4 w-4 shrink-0 text-slate-400" />
             <span>{t(labelKey)}</span>
@@ -157,7 +157,7 @@ function UserDropdown({ user, onClose }) {
         <button
           type="button"
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 px-4 py-2.5 text-start text-sm font-medium text-nihao-red-normal transition-colors hover:bg-nihao-red-light"
+          className="flex w-full items-center gap-3 px-4 py-2.5 text-start text-sm font-medium text-pioneer-orange-normal transition-colors hover:bg-pioneer-orange-light"
         >
           <LogOut className="h-4 w-4 shrink-0" />
           <span>{t("header.dropdown.logout")}</span>
@@ -190,12 +190,12 @@ function NotificationBell() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="relative rounded-full p-2 text-slate-600 transition hover:bg-slate-100 hover:text-nihao-red-normal"
+        className="relative rounded-full p-2 text-slate-600 transition hover:bg-slate-100 hover:text-pioneer-orange-normal"
         aria-label={t("header.notifications")}
       >
         <Bell className="h-5 w-5" />
         {unread > 0 ? (
-          <span className="absolute end-1 top-1 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-nihao-red-normal px-0.5 text-[10px] font-bold text-white">
+          <span className="absolute end-1 top-1 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-pioneer-orange-normal px-0.5 text-[10px] font-bold text-white">
             {unread > 9 ? "9+" : unread}
           </span>
         ) : null}
@@ -213,7 +213,7 @@ function NotificationBell() {
               <button
                 type="button"
                 onClick={() => markAll.mutate()}
-                className="text-xs font-semibold text-nihao-red-normal hover:underline"
+                className="text-xs font-semibold text-pioneer-orange-normal hover:underline"
               >
                 {t("header.notificationsMarkAll")}
               </button>
@@ -228,7 +228,7 @@ function NotificationBell() {
                   onClick={() => {
                     if (!n.isRead) markOne.mutate(n.id);
                   }}
-                  className={`block w-full border-b border-slate-50 px-3 py-2.5 text-start text-sm transition hover:bg-slate-50 ${n.isRead ? "text-slate-600" : "bg-nihao-red-light/30 font-medium text-slate-900"}`}
+                  className={`block w-full border-b border-slate-50 px-3 py-2.5 text-start text-sm transition hover:bg-slate-50 ${n.isRead ? "text-slate-600" : "bg-pioneer-orange-light/30 font-medium text-slate-900"}`}
                 >
                   <span className="block font-semibold">{n.title}</span>
                   <span className="mt-0.5 line-clamp-2 text-xs text-slate-500">{n.message}</span>
@@ -270,7 +270,7 @@ function UserMenu() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label={t("header.dropdown.open")}
-        className="flex items-center gap-2 rounded-full ring-2 ring-transparent transition hover:ring-nihao-red-normal/30 focus:outline-none focus:ring-nihao-red-normal/40"
+        className="flex items-center gap-2 rounded-full ring-2 ring-transparent transition hover:ring-pioneer-orange-normal/30 focus:outline-none focus:ring-pioneer-orange-normal/40"
       >
         <UserAvatarMark user={user} className="h-9 w-9" textClassName="text-sm font-bold" />
         <ChevronDown
@@ -328,7 +328,7 @@ export default function Header() {
               {t("header.topbar.visitTime")}
             </span>
             {site.phoneNumber ? (
-              <a href={`tel:${site.phoneNumber.replace(/\s/g, "")}`} className="hidden items-center gap-1.5 sm:flex hover:text-nihao-red-normal">
+              <a href={`tel:${site.phoneNumber.replace(/\s/g, "")}`} className="hidden items-center gap-1.5 sm:flex hover:text-pioneer-orange-normal">
                 <Phone className="h-3.5 w-3.5 text-slate-400" />
                 <span dir="ltr">{site.phoneNumber}</span>
               </a>
@@ -349,7 +349,7 @@ export default function Header() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="transition hover:text-nihao-red-normal"
+                  className="transition hover:text-pioneer-orange-normal"
                 >
                   <Icon />
                 </a>
@@ -358,7 +358,7 @@ export default function Header() {
             <button
               type="button"
               onClick={toggleLanguage}
-              className="flex items-center gap-1 text-xs transition hover:text-nihao-red-normal"
+              className="flex items-center gap-1 text-xs transition hover:text-pioneer-orange-normal"
             >
               <Globe className="h-3.5 w-3.5" />
               <span>{t("header.topbar.language")}</span>
@@ -380,7 +380,7 @@ export default function Header() {
                 alt={t("header.logoAlt")}
                 className="h-10 w-auto md:h-12"
               />
-              <h1 className="text-2xl font-bold text-slate-900">Nihao <span className="text-nihao-red-normal">Academy</span></h1>
+              <h1 className="text-2xl font-bold text-slate-900">Engineering Pioneers </h1>
             </div>
           </Link>
 
@@ -404,13 +404,13 @@ export default function Header() {
               <>
                 <Link
                   to="/login"
-                  className="rounded-md px-5 py-2 text-sm font-medium text-slate-700 transition hover:text-nihao-red-normal"
+                  className="rounded-md px-5 py-2 text-sm font-medium text-slate-700 transition hover:text-pioneer-orange-normal"
                 >
                   {t("header.actions.login")}
                 </Link>
                 <Link
                   to="/signup"
-                  className="rounded-md bg-nihao-red-normal px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-nihao-red-hover"
+                  className="rounded-md bg-pioneer-orange-normal px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-pioneer-orange-hover"
                 >
                   {t("header.actions.signUp")}
                 </Link>
@@ -451,7 +451,7 @@ export default function Header() {
                   className={({ isActive }) =>
                     `block rounded-md px-3 py-2.5 text-sm font-medium text-start transition-colors ${
                       isActive
-                        ? "bg-nihao-red-light text-nihao-red-normal"
+                        ? "bg-pioneer-orange-light text-pioneer-orange-normal"
                         : "text-slate-700 hover:bg-slate-50"
                     }`
                   }
@@ -469,14 +469,14 @@ export default function Header() {
                   <div className="flex gap-2">
                     <Link
                       to="/login"
-                      className="flex-1 rounded-md border border-slate-300 py-2.5 text-center text-sm font-medium text-slate-700 transition hover:border-nihao-red-normal hover:text-nihao-red-normal"
+                      className="flex-1 rounded-md border border-slate-300 py-2.5 text-center text-sm font-medium text-slate-700 transition hover:border-pioneer-orange-normal hover:text-pioneer-orange-normal"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {t("header.actions.login")}
                     </Link>
                     <Link
                       to="/signup"
-                      className="flex-1 rounded-md bg-nihao-red-normal py-2.5 text-center text-sm font-semibold text-white transition hover:bg-nihao-red-hover"
+                      className="flex-1 rounded-md bg-pioneer-orange-normal py-2.5 text-center text-sm font-semibold text-white transition hover:bg-pioneer-orange-hover"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {t("header.actions.signUp")}
@@ -511,7 +511,7 @@ function MobileUserSection({ onClose }) {
   return (
     <div className="space-y-0.5">
       {/* User identity row */}
-      <div className="flex items-center gap-3 rounded-xl bg-nihao-red-light/60 px-3 py-3 mb-2">
+      <div className="flex items-center gap-3 rounded-xl bg-pioneer-orange-light/60 px-3 py-3 mb-2">
         <UserAvatarMark user={user} className="h-9 w-9 shrink-0" textClassName="text-sm font-bold" />
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold text-slate-900">{user?.fullName}</p>
@@ -524,7 +524,7 @@ function MobileUserSection({ onClose }) {
           key={to}
           type="button"
           onClick={() => { navigate(to); onClose(); }}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-start text-sm text-slate-700 transition-colors hover:bg-slate-50 hover:text-nihao-red-normal"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-start text-sm text-slate-700 transition-colors hover:bg-slate-50 hover:text-pioneer-orange-normal"
         >
           <Icon className="h-4 w-4 shrink-0 text-slate-400" />
           <span>{t(labelKey)}</span>
@@ -534,7 +534,7 @@ function MobileUserSection({ onClose }) {
       <button
         type="button"
         onClick={async () => { onClose(); await logout(); navigate("/"); }}
-        className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-start text-sm font-medium text-nihao-red-normal transition-colors hover:bg-nihao-red-light"
+        className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-start text-sm font-medium text-pioneer-orange-normal transition-colors hover:bg-pioneer-orange-light"
       >
         <LogOut className="h-4 w-4 shrink-0" />
         <span>{t("header.dropdown.logout")}</span>

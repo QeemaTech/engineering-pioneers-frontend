@@ -15,7 +15,7 @@ function InstructorsList() {
   const instructors = data?.instructors || [];
   return (
     <section className="space-y-6">
-      <PageHeader title={t("adminPages.instructorsList.title")} subtitle={t("adminPages.instructorsList.subtitle")} action={<Link to="/admin/instructors" className="inline-flex items-center rounded-lg bg-[#B91C1C] px-4 py-2 text-sm font-bold text-white">Add Instructor</Link>} />
+      <PageHeader title={t("adminPages.instructorsList.title")} subtitle={t("adminPages.instructorsList.subtitle")} action={<Link to="/admin/instructors" className="inline-flex items-center rounded-lg bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white">Add Instructor</Link>} />
       <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/8 dark:bg-[#1A1A22]">
         <div className="relative max-w-sm">
           <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
@@ -24,9 +24,9 @@ function InstructorsList() {
       </div>
       {isLoading ? <div className="rounded-xl border border-slate-200 bg-white p-6 text-slate-500 dark:border-white/8 dark:bg-[#1A1A22]">Loading instructors...</div> : null}
       {isError ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+        <div className="rounded-xl border border-red-200 bg-[#EE7C11]/10 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-[#EE7C11]/10 dark:text-red-300">
           {getErrorMessage(error, "Failed to load instructors.")}
-          <button onClick={() => refetch()} className="ms-3 rounded bg-[#B91C1C] px-2 py-1 text-xs font-bold text-white">Retry</button>
+          <button onClick={() => refetch()} className="ms-3 rounded bg-[#EE7C11] px-2 py-1 text-xs font-bold text-white">Retry</button>
         </div>
       ) : null}
       {!isLoading && !isError ? <DataTable
@@ -45,7 +45,7 @@ function InstructorsList() {
                 .toUpperCase();
               return (
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#B91C1C]/90 to-amber-600/90 text-xs font-bold text-white shadow-sm">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#EE7C11]/90 to-amber-600/90 text-xs font-bold text-white shadow-sm">
                     {initials || "?"}
                   </div>
                   <span className="font-semibold text-slate-900 dark:text-white">{name}</span>

@@ -9,7 +9,7 @@ function ConfirmDialog({ open, title, message, confirmLabel, cancelLabel, onConf
           <button onClick={onCancel} className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 dark:border-white/10 dark:text-slate-300">
             {cancelLabel}
           </button>
-          <button onClick={onConfirm} className="rounded-lg bg-[#B91C1C] px-3 py-2 text-sm font-bold text-white">
+          <button onClick={onConfirm} className="rounded-lg bg-[#EE7C11] px-3 py-2 text-sm font-bold text-white">
             {confirmLabel}
           </button>
         </div>

@@ -7,12 +7,12 @@ export default function CTA() {
   return (
     <section className="py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-3xl bg-nihao-yellow-normal px-6 py-14 text-center md:px-12 md:py-16">
+        <div className="relative overflow-hidden rounded-3xl bg-pioneer-teal-normal px-6 py-14 text-center md:px-12 md:py-16">
 
           {/* Decorative semi-circles — Figma edges */}
-          <div className="pointer-events-none absolute -start-14 top-1/2 h-40 w-40 -translate-y-1/2 rounded-full bg-nihao-yellow-light/60" />
-          <div className="pointer-events-none absolute -end-14 top-1/2 h-52 w-52 -translate-y-1/2 rounded-full bg-nihao-yellow-light/60" />
-          <div className="pointer-events-none absolute -bottom-10 start-1/4 h-28 w-28 rounded-full bg-nihao-yellow-light/40" />
+          <div className="pointer-events-none absolute -start-14 top-1/2 h-40 w-40 -translate-y-1/2 rounded-full bg-pioneer-teal-light/60" />
+          <div className="pointer-events-none absolute -end-14 top-1/2 h-52 w-52 -translate-y-1/2 rounded-full bg-pioneer-teal-light/60" />
+          <div className="pointer-events-none absolute -bottom-10 start-1/4 h-28 w-28 rounded-full bg-pioneer-teal-light/40" />
 
           <div className="relative">
             <h2 className="mx-auto max-w-2xl text-2xl font-bold text-slate-900 md:text-4xl">
@@ -25,13 +25,13 @@ export default function CTA() {
             <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
                 to="/signup"
-                className="w-full rounded-xl bg-white px-8 py-3.5 text-center text-sm font-semibold text-nihao-red-normal shadow-sm transition hover:bg-slate-50 sm:w-auto"
+                className="w-full rounded-xl bg-white px-8 py-3.5 text-center text-sm font-semibold text-pioneer-orange-normal shadow-sm transition hover:bg-slate-50 sm:w-auto"
               >
                 {t("cta.actions.createAccount")}
               </Link>
               <Link
                 to="/subscription"
-                className="w-full rounded-xl border border-nihao-red-normal/30 bg-transparent px-8 py-3.5 text-center text-sm font-semibold text-nihao-red-normal transition hover:bg-white/30 sm:w-auto"
+                className="w-full rounded-xl border border-pioneer-orange-normal/30 bg-transparent px-8 py-3.5 text-center text-sm font-semibold text-pioneer-orange-normal transition hover:bg-white/30 sm:w-auto"
               >
                 {t("cta.actions.learnMore")}
               </Link>

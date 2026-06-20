@@ -30,7 +30,7 @@ const LiIcon = () => (
 function SocialIcon({ label, Icon, href }) {
   const { t } = useTranslation();
   const baseClass =
-    "inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 text-slate-500 transition hover:border-nihao-red-normal hover:text-nihao-red-normal";
+    "inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 text-slate-500 transition hover:border-pioneer-orange-normal hover:text-pioneer-orange-normal";
   if (href) {
     return (
       <a href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className={baseClass}>
@@ -102,7 +102,7 @@ export default function Footer() {
               alt={t("footer.brand.logoAlt")}
               className="h-12 w-auto"
             />
-            <h1 className="text-2xl font-bold text-slate-900">Nihao Academy</h1>
+            <h1 className="text-2xl font-bold text-slate-900">Engineering Pioneers</h1>
 </div>
             <p className="mt-4 max-w-xs text-sm leading-7 text-slate-500">{t("footer.brand.description")}</p>
             <div className="mt-5 flex items-center gap-2">
@@ -119,11 +119,11 @@ export default function Footer() {
                 {col.links.map((item) => (
                   <li key={`${col.title}-${item.label}`}>
                     {"href" in item ? (
-                      <a href={item.href} className="text-sm text-slate-500 transition hover:text-nihao-red-normal">
+                      <a href={item.href} className="text-sm text-slate-500 transition hover:text-pioneer-orange-normal">
                         {item.label}
                       </a>
                     ) : (
-                      <Link to={item.to} className="text-sm text-slate-500 transition hover:text-nihao-red-normal">
+                      <Link to={item.to} className="text-sm text-slate-500 transition hover:text-pioneer-orange-normal">
                         {item.label}
                       </Link>
                     )}

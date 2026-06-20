@@ -19,6 +19,10 @@ function SettingsIntegrations() {
   return (
     <section className="space-y-6">
       <PageHeader title={t("adminPages.settingsIntegrations.title")} subtitle={t("adminPages.settingsIntegrations.subtitle")} />
+      <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-600 dark:border-white/8 dark:bg-[#1A1A22] dark:text-slate-300">
+        <p className="font-semibold text-slate-900 dark:text-white">{t("adminPages.settingsIntegrations.webhookGuideTitle", "Webhook setup guide")}</p>
+        <p className="mt-1">{t("adminPages.settingsIntegrations.webhookGuideBody", "Configure provider webhooks to point to /api/v1/webhooks/payments/:provider and validate signatures in provider dashboards.")}</p>
+      </div>
       <div className="grid gap-4 md:grid-cols-2">
         {integrations.map((it) => (
           <div key={it.name} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/8 dark:bg-[#1A1A22]">
@@ -36,7 +40,7 @@ function SettingsIntegrations() {
         <div className="space-y-3">
           <input className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" placeholder="API Key" />
           <input className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" placeholder="Webhook URL" />
-          <button className="rounded-lg bg-[#B91C1C] px-4 py-2 text-sm font-bold text-white">{t("adminPages.settingsIntegrations.testConnection")}</button>
+          <button className="rounded-lg bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white">{t("adminPages.settingsIntegrations.testConnection")}</button>
         </div>
       </SlideOver>
     </section>

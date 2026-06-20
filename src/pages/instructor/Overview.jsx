@@ -15,7 +15,7 @@ import {
 import PageHeader from "../../components/dashboard/PageHeader";
 import StatCard from "../../components/dashboard/StatCard";
 import { useInstructorOverview } from "../../features/instructor/overview/hooks";
-const BAR_COLORS = ["#B91C1C", "#ca9a1a", "#64748B", "#10B981", "#8B5CF6"];
+const BAR_COLORS = ["#EE7C11", "#ca9a1a", "#64748B", "#10B981", "#8B5CF6"];
 
 function ChartTooltip({ active, payload, label, valuePrefix = "" }) {
   if (!active || !payload?.length) return null;
@@ -65,7 +65,7 @@ export default function Overview() {
       />
 
       {isError ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
+        <div className="rounded-xl border border-red-200 bg-[#EE7C11]/10 px-4 py-3 text-sm text-red-800 dark:border-red-500/30 dark:bg-[#EE7C11]/10 dark:text-red-200">
           {error?.message || t("common.error", { defaultValue: "Something went wrong." })}
         </div>
       ) : null}
@@ -126,7 +126,7 @@ export default function Overview() {
                 {t("overview.monthlyEarnings")}
               </p>
             </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-50 text-nihao-red-normal">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#EE7C11]/10 text-pioneer-orange-normal">
               <TrendingUp className="h-5 w-5" />
             </div>
           </div>
@@ -173,7 +173,7 @@ export default function Overview() {
             </p>
           </div>
           <div className="flex flex-col items-center justify-center py-6">
-            <div className="mb-4 flex h-32 w-32 items-center justify-center rounded-full border-8 border-red-50 text-nihao-red-normal ring-8 ring-nihao-red-light/10 dark:border-white/10">
+            <div className="mb-4 flex h-32 w-32 items-center justify-center rounded-full border-8 border-red-50 text-pioneer-orange-normal ring-8 ring-pioneer-orange-light/10 dark:border-white/10">
               <MessageSquare className="h-10 w-10" />
             </div>
             {isLoading ? (
@@ -249,7 +249,7 @@ export default function Overview() {
 
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-white/8 dark:bg-[#1A1A22]">
         <div className="flex items-center gap-3 border-b border-slate-100 px-6 py-5 dark:border-white/5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#B91C1C]/10 text-[#B91C1C]">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#EE7C11]/10 text-[#EE7C11]">
             <Activity className="h-5 w-5" />
           </div>
           <div>
@@ -285,7 +285,7 @@ export default function Overview() {
                 >
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                      <span className="text-nihao-red-normal">{item.studentName}</span>
+                      <span className="text-pioneer-orange-normal">{item.studentName}</span>
                       <span className="mx-1 text-slate-400">·</span>
                       {item.label}
                     </p>

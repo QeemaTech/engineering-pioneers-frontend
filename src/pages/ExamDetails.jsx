@@ -12,8 +12,8 @@ function examTypeLabelKey(type) {
 function MetaItem({ icon: Icon, label, value }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-nihao-red-light">
-        <Icon className="h-5 w-5 text-nihao-red-normal" />
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-pioneer-orange-light">
+        <Icon className="h-5 w-5 text-pioneer-orange-normal" />
       </div>
       <div>
         <p className="text-xs text-slate-500">{label}</p>
@@ -37,7 +37,7 @@ export default function ExamDetails() {
       <div className="mx-auto max-w-lg px-4 py-20 text-center">
         <AlertCircle className="mx-auto h-10 w-10 text-red-400" />
         <p className="mt-4 text-red-600">{error?.response?.data?.message || t("examDetails.loadError", { defaultValue: "Exam not found." })}</p>
-        <button type="button" onClick={() => void refetch()} className="mt-4 text-sm text-nihao-red-normal hover:underline">
+        <button type="button" onClick={() => void refetch()} className="mt-4 text-sm text-pioneer-orange-normal hover:underline">
           {t("takeExam.retry")}
         </button>
       </div>
@@ -52,13 +52,13 @@ export default function ExamDetails() {
   return (
     <div className="min-h-screen bg-slate-50 py-10 md:py-14">
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
-        <Link to="/exams" className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-nihao-red-normal">
+        <Link to="/exams" className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-pioneer-orange-normal">
           <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
           {t("examDetails.backToExams")}
         </Link>
 
         <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
-          <div className="border-b border-slate-100 bg-gradient-to-r from-nihao-red-light/50 to-white px-6 py-8 md:px-10">
+          <div className="border-b border-slate-100 bg-gradient-to-r from-pioneer-orange-light/50 to-white px-6 py-8 md:px-10">
             <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">{exam.title}</h1>
             <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">{exam.description || t("examDetails.noDescription", { defaultValue: "No description provided." })}</p>
             <div className="mt-6 flex flex-wrap gap-4">
@@ -100,7 +100,7 @@ export default function ExamDetails() {
                 </p>
                 <Link
                   to={`/exams/${exam.id}/results/${sub.id}`}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-nihao-red-normal bg-nihao-red-light px-8 py-3 text-sm font-bold text-nihao-red-normal hover:bg-nihao-red-light/80"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-pioneer-orange-normal bg-pioneer-orange-light px-8 py-3 text-sm font-bold text-pioneer-orange-normal hover:bg-pioneer-orange-light/80"
                 >
                   {t("exams.actions.viewResults", { defaultValue: "View Results" })}
                 </Link>
@@ -108,7 +108,7 @@ export default function ExamDetails() {
             ) : exam.status === "AVAILABLE" ? (
               <Link
                 to={`/exams/${exam.id}/take`}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-nihao-red-normal px-8 py-3 text-sm font-bold text-white hover:bg-nihao-red-hover"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-pioneer-orange-normal px-8 py-3 text-sm font-bold text-white hover:bg-pioneer-orange-hover"
               >
                 <BookOpen className="h-4 w-4" />
                 {sub && !sub.submittedAt

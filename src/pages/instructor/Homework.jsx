@@ -103,7 +103,7 @@ function Homework() {
           onClick={() => setTab("notOpened")}
           className={`rounded-2xl border p-4 text-start shadow-sm transition-colors ${
             tab === "notOpened"
-              ? "border-nihao-red-normal bg-red-50 dark:border-nihao-red-normal dark:bg-red-950/30"
+              ? "border-pioneer-orange-normal bg-[#EE7C11]/10 dark:border-pioneer-orange-normal dark:bg-[#EE7C11]/20"
               : "border-slate-200/80 bg-white dark:border-white/10 dark:bg-[#1A1A22]"
           }`}
         >
@@ -117,7 +117,7 @@ function Homework() {
           onClick={() => setTab("opened")}
           className={`rounded-2xl border p-4 text-start shadow-sm transition-colors ${
             tab === "opened"
-              ? "border-nihao-red-normal bg-red-50 dark:border-nihao-red-normal dark:bg-red-950/30"
+              ? "border-pioneer-orange-normal bg-[#EE7C11]/10 dark:border-pioneer-orange-normal dark:bg-[#EE7C11]/20"
               : "border-slate-200/80 bg-white dark:border-white/10 dark:bg-[#1A1A22]"
           }`}
         >
@@ -131,7 +131,7 @@ function Homework() {
           onClick={() => setTab("closed")}
           className={`rounded-2xl border p-4 text-start shadow-sm transition-colors ${
             tab === "closed"
-              ? "border-nihao-red-normal bg-red-50 dark:border-nihao-red-normal dark:bg-red-950/30"
+              ? "border-pioneer-orange-normal bg-[#EE7C11]/10 dark:border-pioneer-orange-normal dark:bg-[#EE7C11]/20"
               : "border-slate-200/80 bg-white dark:border-white/10 dark:bg-[#1A1A22]"
           }`}
         >
@@ -150,7 +150,7 @@ function Homework() {
             onClick={() => setTab(key)}
             className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
               tab === key
-                ? "bg-nihao-red-normal text-white"
+                ? "bg-pioneer-orange-normal text-white"
                 : "border border-slate-200 bg-white text-slate-700 dark:border-white/10 dark:bg-[#1A1A22] dark:text-slate-200"
             }`}
           >
@@ -190,7 +190,7 @@ function Homework() {
                     <p className="text-xs text-slate-500 dark:text-slate-400">
                       {ctx} · {sub.student?.fullName} · Max {sub.homework?.totalPoints} pts
                       {sub.status === "GRADED" && sub.grade != null && (
-                        <span className="ms-1 font-semibold text-nihao-red-normal">
+                        <span className="ms-1 font-semibold text-pioneer-orange-normal">
                           · Graded: {sub.grade}/{sub.homework?.totalPoints}
                         </span>
                       )}
@@ -199,7 +199,7 @@ function Homework() {
                   <button
                     type="button"
                     onClick={() => openGrade(sub)}
-                    className="rounded-xl bg-nihao-red-normal px-3 py-1.5 text-sm font-semibold text-white"
+                    className="rounded-xl bg-pioneer-orange-normal px-3 py-1.5 text-sm font-semibold text-white"
                   >
                     Review & grade
                   </button>
@@ -226,7 +226,7 @@ function Homework() {
                       href={sub.fileUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="mt-2 inline-block text-nihao-red-normal underline"
+                      className="mt-2 inline-block text-pioneer-orange-normal underline"
                     >
                       Open submitted file
                     </a>
@@ -288,7 +288,7 @@ function Homework() {
               <button
                 type="submit"
                 disabled={gradeMutation.isPending || active.status === "GRADED"}
-                className="inline-flex items-center gap-2 rounded-xl bg-nihao-red-normal px-4 py-2 text-sm font-semibold text-white"
+                className="inline-flex items-center gap-2 rounded-xl bg-pioneer-orange-normal px-4 py-2 text-sm font-semibold text-white"
               >
                 {gradeMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                 {t("dashboard.common.submit")}

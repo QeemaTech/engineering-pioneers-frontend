@@ -76,7 +76,7 @@ function Qna() {
                 placeholder={t("dashboard.instructor.qna.replyPlaceholder")}
                 className="h-10 flex-1 rounded-xl border border-slate-200 px-3 text-sm"
               />
-              <button onClick={() => onReply(q.id)} disabled={replyMutation.isPending} className="inline-flex items-center gap-2 rounded-xl bg-nihao-red-normal px-4 text-sm font-semibold text-white">
+              <button onClick={() => onReply(q.id)} disabled={replyMutation.isPending} className="inline-flex items-center gap-2 rounded-xl bg-pioneer-orange-normal px-4 text-sm font-semibold text-white">
                 {replyMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />} {t("dashboard.common.reply")}
               </button>
             </div>

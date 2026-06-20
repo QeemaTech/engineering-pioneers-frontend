@@ -1,6 +1,7 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 import { navigateReplaceTo } from "./routerNavigation";
+import useAuthStore from "../store/authStore";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1",
@@ -36,7 +37,7 @@ api.interceptors.response.use(
       const code = error.response?.data?.code;
       if (code === "SUBSCRIPTION_QUOTA") {
         window.dispatchEvent(
-          new CustomEvent("nihao:subscription-quota", {
+          new CustomEvent("pioneer:subscription-quota", {
             detail: {
               message: error.response?.data?.message || "",
             },
@@ -93,8 +94,7 @@ api.interceptors.response.use(
           { refreshToken }
         );
         const { accessToken, refreshToken: newRefresh } = data.data.tokens;
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", newRefresh);
+        useAuthStore.getState().setTokens({ accessToken, refreshToken: newRefresh });
         api.defaults.headers.Authorization = `Bearer ${accessToken}`;
         processQueue(null, accessToken);
         original.headers.Authorization = `Bearer ${accessToken}`;

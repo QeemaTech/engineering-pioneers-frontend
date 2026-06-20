@@ -127,7 +127,7 @@ function Instructors() {
                   }
                 )
               }
-              className="rounded-lg border border-white/5 bg-white/5 p-2 text-slate-400 transition-all hover:bg-[#B91C1C] hover:text-white"
+              className="rounded-lg border border-white/5 bg-white/5 p-2 text-slate-400 transition-all hover:bg-[#EE7C11] hover:text-white"
             >
               <UserRoundCheck className="h-4 w-4" />
             </button>
@@ -168,10 +168,10 @@ function Instructors() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={t("dashboard.common.search")}
-                className="h-10 w-64 rounded-lg border border-slate-200 bg-white ps-9 pe-4 text-sm font-medium text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-red-700 focus:ring-1 focus:ring-red-200 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white dark:placeholder:text-slate-600 dark:focus:border-red-800 dark:focus:ring-red-900"
+                className="h-10 w-64 rounded-lg border border-slate-200 bg-white ps-9 pe-4 text-sm font-medium text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-[#EE7C11] focus:ring-1 focus:ring-[#0D9488]/30 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white dark:placeholder:text-slate-600 dark:focus:border-[#EE7C11] dark:focus:ring-[#0D9488]/30"
               />
             </div>
-            <button onClick={openCreate} className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#B91C1C] px-5 text-sm font-bold text-white shadow-xl shadow-[#B91C1C]/20 transition-all hover:bg-red-700 active:scale-95">
+            <button onClick={openCreate} className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#EE7C11] px-5 text-sm font-bold text-white shadow-xl shadow-[#EE7C11]/20 transition-all hover:bg-[#d9700e] active:scale-95">
               <Plus className="h-4 w-4" /> {t("dashboard.admin.instructors.add")}
             </button>
           </div>
@@ -203,7 +203,7 @@ function Instructors() {
                   </label>
                   <input 
                     {...form.register(field)} 
-                    className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-red-700 focus:ring-1 focus:ring-red-200 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white dark:focus:border-red-800 dark:focus:ring-red-900"
+                    className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#EE7C11] focus:ring-1 focus:ring-[#0D9488]/30 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white dark:focus:border-[#EE7C11] dark:focus:ring-[#0D9488]/30"
                   />
                 </div>
               ))}
@@ -216,7 +216,7 @@ function Instructors() {
                     {...form.register("password")} 
                     type="password" 
                     placeholder="••••••••" 
-                    className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-red-700 focus:ring-1 focus:ring-red-200 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white dark:focus:border-red-800 dark:focus:ring-red-900"
+                    className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#EE7C11] focus:ring-1 focus:ring-[#0D9488]/30 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white dark:focus:border-[#EE7C11] dark:focus:ring-[#0D9488]/30"
                   />
                 </div>
               )}
@@ -226,7 +226,7 @@ function Instructors() {
                 </label>
                 <textarea 
                   {...form.register("bio")} 
-                  className="min-h-24 w-full rounded-lg border border-slate-200 bg-white p-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-red-700 focus:ring-1 focus:ring-red-200 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white dark:focus:border-red-800 dark:focus:ring-red-900"
+                  className="min-h-24 w-full rounded-lg border border-slate-200 bg-white p-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#EE7C11] focus:ring-1 focus:ring-[#0D9488]/30 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white dark:focus:border-[#EE7C11] dark:focus:ring-[#0D9488]/30"
                 />
               </div>
             </div>
@@ -245,7 +245,7 @@ function Instructors() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="New password (min 8 chars)"
-                    className="h-11 flex-1 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-red-700 focus:ring-1 focus:ring-red-200 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white"
+                    className="h-11 flex-1 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#EE7C11] focus:ring-1 focus:ring-[#0D9488]/30 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white"
                   />
                   <button
                     type="button"
@@ -272,7 +272,7 @@ function Instructors() {
               <button 
                 type="submit" 
                 disabled={createMutation.isPending || updateMutation.isPending} 
-                className="inline-flex items-center gap-2 rounded-lg bg-[#B91C1C] px-6 py-2.5 text-sm font-bold text-white shadow-xl shadow-[#B91C1C]/20 transition-all hover:bg-red-700 active:scale-95"
+                className="inline-flex items-center gap-2 rounded-lg bg-[#EE7C11] px-6 py-2.5 text-sm font-bold text-white shadow-xl shadow-[#EE7C11]/20 transition-all hover:bg-[#d9700e] active:scale-95"
               >
                 {(createMutation.isPending || updateMutation.isPending) && <Loader2 className="h-4 w-4 animate-spin" />}
                 {t("dashboard.common.save")}

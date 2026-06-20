@@ -26,7 +26,7 @@ function Cohorts() {
           <select
             value={query.status}
             onChange={(e) => setQuery((prev) => ({ ...prev, status: e.target.value, page: 1 }))}
-            className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-nihao-red-normal dark:border-white/10 dark:bg-[#1A1A22] dark:text-white"
+            className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-pioneer-orange-normal dark:border-white/10 dark:bg-[#1A1A22] dark:text-white"
           >
             <option value="">{t("dashboard.instructor.cohorts.allStatuses")}</option>
             <option value="UPCOMING">{t("dashboard.instructor.cohorts.upcoming")}</option>
@@ -46,7 +46,7 @@ function Cohorts() {
             key: "id",
             title: t("dashboard.instructor.cohorts.students"),
             render: (_, row) => (
-              <Link to={`/instructor/students?cohort=${row.id}`} className="font-semibold text-nihao-red-normal hover:underline">
+              <Link to={`/instructor/students?cohort=${row.id}`} className="font-semibold text-pioneer-orange-normal hover:underline">
                 View
               </Link>
             ),

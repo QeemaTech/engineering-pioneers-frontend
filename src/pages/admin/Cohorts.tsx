@@ -233,7 +233,7 @@ export default function AdminCohortsPage() {
         <button
           type="button"
           onClick={openCreate}
-          className="h-10 shrink-0 rounded-lg bg-nihao-red-normal px-4 text-sm font-bold text-white hover:bg-nihao-red-hover"
+          className="h-10 shrink-0 rounded-lg bg-pioneer-orange-normal px-4 text-sm font-bold text-white hover:bg-pioneer-orange-hover"
         >
           {t("adminPages.cohorts.addCohort")}
         </button>
@@ -272,7 +272,7 @@ export default function AdminCohortsPage() {
                 <button
                   type="button"
                   onClick={() => openEdit(row)}
-                  className="text-xs font-semibold text-nihao-red-normal hover:underline"
+                  className="text-xs font-semibold text-pioneer-orange-normal hover:underline"
                 >
                   {t("adminPages.cohorts.table.edit")}
                 </button>
@@ -438,7 +438,7 @@ export default function AdminCohortsPage() {
               type="button"
               disabled={createMutation.isPending || updateMutation.isPending}
               onClick={() => void handleSubmit()}
-              className="rounded-lg bg-nihao-red-normal px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
+              className="rounded-lg bg-pioneer-orange-normal px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
             >
               {t("adminPages.cohorts.form.save")}
             </button>

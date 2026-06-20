@@ -9,7 +9,7 @@ const StarRow = ({ value = 5, size = "h-4 w-4" }) => {
       {[1, 2, 3, 4, 5].map((i) => (
         <Star
           key={i}
-          className={`${size} ${i <= v ? "fill-nihao-yellow-normal text-nihao-yellow-normal" : "fill-none text-slate-300"}`}
+          className={`${size} ${i <= v ? "fill-pioneer-teal-normal text-pioneer-teal-normal" : "fill-none text-slate-300"}`}
         />
       ))}
     </div>
@@ -58,7 +58,7 @@ export default function Feedback({ featuredReviews = [], reviewsLoading = false 
           <div className="text-start">
             <h2 className="max-w-md text-3xl font-bold leading-snug text-slate-900 md:text-4xl">
               {t("feedback.titlePrefix")}{" "}
-              <span className="rounded bg-nihao-yellow-normal px-1 text-slate-900">
+              <span className="rounded bg-pioneer-teal-normal px-1 text-slate-900">
                 {t("feedback.titleHighlight")}
               </span>{" "}
               {t("feedback.titleSuffix")}
@@ -66,7 +66,7 @@ export default function Feedback({ featuredReviews = [], reviewsLoading = false 
             <p className="mt-4 max-w-sm text-base text-slate-500">{t("feedback.subtitle")}</p>
             <Link
               to="/explore"
-              className="mt-7 inline-block rounded-lg bg-nihao-red-normal px-7 py-3 text-sm font-semibold text-white transition hover:bg-nihao-red-hover"
+              className="mt-7 inline-block rounded-lg bg-pioneer-orange-normal px-7 py-3 text-sm font-semibold text-white transition hover:bg-pioneer-orange-hover"
             >
               {t("feedback.button")}
             </Link>
@@ -86,13 +86,13 @@ export default function Feedback({ featuredReviews = [], reviewsLoading = false 
                 <div className="flex flex-wrap gap-3 pt-2">
                   <Link
                     to="/explore"
-                    className="inline-flex rounded-xl bg-nihao-red-normal px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-nihao-red-hover"
+                    className="inline-flex rounded-xl bg-pioneer-orange-normal px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-pioneer-orange-hover"
                   >
                     {t("feedback.empty.ctaExplore")}
                   </Link>
                   <Link
                     to="/signup"
-                    className="inline-flex rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 transition hover:border-nihao-red-normal hover:text-nihao-red-normal"
+                    className="inline-flex rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 transition hover:border-pioneer-orange-normal hover:text-pioneer-orange-normal"
                   >
                     {t("feedback.empty.ctaSignup")}
                   </Link>
@@ -146,14 +146,14 @@ export default function Feedback({ featuredReviews = [], reviewsLoading = false 
                   </div>
                   <Link
                     to="/explore"
-                    className="inline-flex shrink-0 justify-center rounded-xl bg-nihao-red-normal px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-nihao-red-hover"
+                    className="inline-flex shrink-0 justify-center rounded-xl bg-pioneer-orange-normal px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-pioneer-orange-hover"
                   >
                     {t("feedback.discover.cta")}
                   </Link>
                 </div>
 
                 {avgRating > 0 ? (
-                  <div className="rounded-xl bg-nihao-red-normal p-4 text-white shadow-md">
+                  <div className="rounded-xl bg-pioneer-orange-normal p-4 text-white shadow-md">
                     <p className="text-2xl font-bold">
                       {avgRating.toFixed(1)}
                       <span className="text-base font-semibold text-white/90">/5</span>

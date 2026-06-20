@@ -133,7 +133,7 @@ export default function HomeworkDetail() {
     return (
       <div className="mx-auto max-w-lg px-4 py-16 text-center">
         <p className="text-red-600">{t("homeworkDetail.listError", { defaultValue: "Could not load assignments." })}</p>
-        <button type="button" onClick={() => void refetch()} className="mt-4 font-semibold text-nihao-red-normal hover:underline">
+        <button type="button" onClick={() => void refetch()} className="mt-4 font-semibold text-pioneer-orange-normal hover:underline">
           {t("takeExam.retry", { defaultValue: "Retry" })}
         </button>
         <div className="mt-4">
@@ -149,7 +149,7 @@ export default function HomeworkDetail() {
     return (
       <div className="mx-auto max-w-lg px-4 py-16 text-center">
         <p className="text-slate-600">{t("homeworkDetail.notFound", { defaultValue: "Assignment not found." })}</p>
-        <Link to={backTo} className="mt-4 inline-block text-nihao-red-normal hover:underline">
+        <Link to={backTo} className="mt-4 inline-block text-pioneer-orange-normal hover:underline">
           {t("homeworkDetail.back")}
         </Link>
       </div>
@@ -177,7 +177,7 @@ export default function HomeworkDetail() {
   return (
     <div className="min-h-screen bg-slate-50 py-10 md:py-14">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
-        <Link to={backTo} className="inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-nihao-red-normal">
+        <Link to={backTo} className="inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-pioneer-orange-normal">
           <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
           {t("homeworkDetail.back")}
         </Link>
@@ -245,7 +245,7 @@ export default function HomeworkDetail() {
                       value={text}
                       onChange={(e) => setText(e.target.value)}
                       rows={8}
-                      className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-nihao-red-normal focus:ring-2 focus:ring-nihao-red-light"
+                      className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-pioneer-orange-normal focus:ring-2 focus:ring-pioneer-orange-light"
                       placeholder={t("homeworkDetail.submitCard.answerPlaceholder")}
                     />
                   </div>
@@ -256,7 +256,7 @@ export default function HomeworkDetail() {
                     type="url"
                     value={linkUrl}
                     onChange={(e) => setLinkUrl(e.target.value)}
-                    className="mt-4 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none focus:border-nihao-red-normal focus:ring-2 focus:ring-nihao-red-light"
+                    className="mt-4 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none focus:border-pioneer-orange-normal focus:ring-2 focus:ring-pioneer-orange-light"
                     placeholder="https://..."
                   />
                 ) : null}
@@ -279,10 +279,10 @@ export default function HomeworkDetail() {
                         if (e.key === "Enter" || e.key === " ") e.currentTarget.querySelector('input[type="file"]')?.click();
                       }}
                       className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-4 py-10 transition-colors ${
-                        dragOver ? "border-nihao-red-normal bg-nihao-red-light/30" : "border-slate-200 bg-slate-50/80"
+                        dragOver ? "border-pioneer-orange-normal bg-pioneer-orange-light/30" : "border-slate-200 bg-slate-50/80"
                       }`}
                     >
-                      <Upload className="h-8 w-8 text-nihao-red-normal" />
+                      <Upload className="h-8 w-8 text-pioneer-orange-normal" />
                       <p className="mt-2 text-center text-sm font-medium text-slate-700">{t("homeworkDetail.upload.cta")}</p>
                       <p className="mt-1 text-center text-xs text-slate-500">{t("homeworkDetail.upload.hint")}</p>
                       <input type="file" onChange={onFileInput} className="mt-4 block text-xs" />
@@ -295,7 +295,7 @@ export default function HomeworkDetail() {
                         setFilePastedUrl(e.target.value);
                         if (e.target.value.trim()) setSelectedFile(null);
                       }}
-                      className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none focus:border-nihao-red-normal focus:ring-2 focus:ring-nihao-red-light"
+                      className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none focus:border-pioneer-orange-normal focus:ring-2 focus:ring-pioneer-orange-light"
                       placeholder={t("homeworkDetail.fileUrlPlaceholder")}
                     />
                     {selectedFile ? (
@@ -312,7 +312,7 @@ export default function HomeworkDetail() {
                   type="button"
                   disabled={submit.isPending}
                   onClick={() => void onSubmit()}
-                  className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-nihao-red-normal px-6 py-3 text-sm font-bold text-white hover:bg-nihao-red-hover disabled:opacity-50"
+                  className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-pioneer-orange-normal px-6 py-3 text-sm font-bold text-white hover:bg-pioneer-orange-hover disabled:opacity-50"
                 >
                   {submit.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                   {t("homeworkDetail.submitCard.submitBtn")}
@@ -327,7 +327,7 @@ export default function HomeworkDetail() {
               <p className="mt-2 text-sm text-slate-600">{ctxSubtitle}</p>
               <Link
                 to={coursePlayerLink}
-                className="mt-4 block w-full rounded-xl bg-nihao-red-light py-2.5 text-center text-sm font-bold text-nihao-red-normal hover:bg-nihao-red-light/80"
+                className="mt-4 block w-full rounded-xl bg-pioneer-orange-light py-2.5 text-center text-sm font-bold text-pioneer-orange-normal hover:bg-pioneer-orange-light/80"
               >
                 {t("homeworkDetail.sidebar.viewClassBtn")}
               </Link>

@@ -47,7 +47,7 @@ function Wallet() {
         title={t("dashboard.instructor.pages.wallet.title")}
         subtitle={t("dashboard.instructor.pages.wallet.subtitle")}
         actions={
-          <button onClick={() => setOpenModal(true)} className="inline-flex h-10 items-center gap-2 rounded-xl bg-nihao-red-normal px-4 text-sm font-semibold text-white">
+          <button onClick={() => setOpenModal(true)} className="inline-flex h-10 items-center gap-2 rounded-xl bg-pioneer-orange-normal px-4 text-sm font-semibold text-white">
             <DollarSign className="h-4 w-4" /> {t("dashboard.instructor.wallet.requestPayout")}
           </button>
         }
@@ -80,6 +80,18 @@ function Wallet() {
             columns={[
               { key: "amount", title: "Amount" },
               { key: "status", title: "Status" },
+              {
+                key: "payoutDetails",
+                title: "Payout Details",
+                render: (v) => {
+                  if (!v) return "-";
+                  if (typeof v === "string") return v;
+                  const bank = v.bankName || v.bank || "";
+                  const holder = v.accountHolderName || v.accountName || "";
+                  const acct = v.accountNumber ? String(v.accountNumber).slice(-4) : "";
+                  return [bank, holder, acct ? `****${acct}` : ""].filter(Boolean).join(" · ") || "-";
+                },
+              },
               { key: "createdAt", title: "Requested", render: (v) => (v ? new Date(v).toLocaleString() : "-") },
               { key: "processedAt", title: "Processed", render: (v) => (v ? new Date(v).toLocaleString() : "-") },
             ]}
@@ -105,7 +117,7 @@ function Wallet() {
               >
                 {t("dashboard.common.cancel")}
               </button>
-              <button type="submit" disabled={requestMutation.isPending} className="inline-flex items-center gap-2 rounded-xl bg-nihao-red-normal px-4 py-2 text-sm font-semibold text-white">
+              <button type="submit" disabled={requestMutation.isPending} className="inline-flex items-center gap-2 rounded-xl bg-pioneer-orange-normal px-4 py-2 text-sm font-semibold text-white">
                 {requestMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />} {t("dashboard.common.submit")}
               </button>
             </div>

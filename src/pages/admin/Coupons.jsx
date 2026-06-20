@@ -9,6 +9,7 @@ import {
   useDeleteAdminCoupon,
   useUpdateAdminCoupon,
 } from "../../features/admin/coupons/hooks";
+import { useAdminCourses } from "../../features/admin/courses/hooks";
 import { getErrorMessage } from "../../api/error";
 
 const EMPTY_FORM = {
@@ -31,6 +32,7 @@ function Coupons() {
   const [openForm, setOpenForm] = useState(false);
   const [editing, setEditing] = useState(null);
   const { data, isLoading, isError, error, refetch, isFetching } = useAdminCoupons({ page: 1, limit: 100 });
+  const { data: coursesData } = useAdminCourses({ page: 1, limit: 200 });
   const createCoupon = useCreateAdminCoupon();
   const updateCoupon = useUpdateAdminCoupon();
   const deleteCoupon = useDeleteAdminCoupon();
@@ -78,7 +80,7 @@ function Coupons() {
               setEditing(null);
               setOpenForm(true);
             }}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#B91C1C] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#991B1B]"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#d9700e]"
           >
             <Plus className="h-4 w-4" />
             {tx("adminPages.coupons.new", "New Coupon")}
@@ -94,7 +96,7 @@ function Coupons() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={tx("adminPages.coupons.search", "Search coupons")}
-            className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 ps-9 pe-3 text-sm text-slate-900 outline-none focus:border-[#B91C1C] focus:bg-white dark:border-white/10 dark:bg-[#0F0F13] dark:text-white dark:focus:border-[#B91C1C]"
+            className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 ps-9 pe-3 text-sm text-slate-900 outline-none focus:border-[#EE7C11] focus:bg-white dark:border-white/10 dark:bg-[#0F0F13] dark:text-white dark:focus:border-[#EE7C11]"
           />
         </div>
         <button
@@ -135,7 +137,7 @@ function Coupons() {
                   <tr key={coupon.id} className="hover:bg-slate-50 dark:hover:bg-white/5">
                     <td className="px-4 py-3 font-bold text-slate-900 dark:text-white">
                       <div className="inline-flex items-center gap-2">
-                        <Tag className="h-4 w-4 text-[#B91C1C]" />
+                        <Tag className="h-4 w-4 text-[#EE7C11]" />
                         {coupon.code}
                       </div>
                     </td>
@@ -175,7 +177,7 @@ function Coupons() {
                         <button
                           type="button"
                           onClick={() => onDelete(coupon.id)}
-                          className="rounded-md p-2 text-slate-500 hover:bg-red-50 hover:text-red-700 dark:text-slate-300 dark:hover:bg-red-500/20"
+                          className="rounded-md p-2 text-slate-500 hover:bg-[#EE7C11]/10 hover:text-red-700 dark:text-slate-300 dark:hover:bg-[#EE7C11]/20"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -199,6 +201,7 @@ function Coupons() {
       {openForm ? (
         <CouponFormModal
           coupon={editing}
+          courses={coursesData?.courses || []}
           loading={createCoupon.isPending || updateCoupon.isPending}
           onClose={() => setOpenForm(false)}
           onSubmit={async (payload) => {
@@ -221,7 +224,7 @@ function Coupons() {
   );
 }
 
-function CouponFormModal({ coupon, loading, onClose, onSubmit }) {
+function CouponFormModal({ coupon, courses = [], loading, onClose, onSubmit }) {
   const { t } = useTranslation();
   const tx = (key, fallback) => t(key, { defaultValue: fallback });
   const [form, setForm] = useState(() => ({
@@ -231,6 +234,7 @@ function CouponFormModal({ coupon, loading, onClose, onSubmit }) {
     maxUses: coupon?.maxUses ?? "",
     startsAt: coupon?.startsAt ? new Date(coupon.startsAt).toISOString().slice(0, 10) : "",
     expiresAt: coupon?.expiresAt ? new Date(coupon.expiresAt).toISOString().slice(0, 10) : "",
+    courseIds: coupon?.courseIds || coupon?.eligibleCourses?.map((ec) => ec.courseId || ec.course?.id).filter(Boolean) || [],
   }));
 
   const submit = (e) => {
@@ -246,6 +250,7 @@ function CouponFormModal({ coupon, loading, onClose, onSubmit }) {
       startsAt: form.startsAt ? new Date(`${form.startsAt}T00:00:00.000Z`).toISOString() : undefined,
       expiresAt: form.expiresAt ? new Date(`${form.expiresAt}T23:59:59.999Z`).toISOString() : null,
       isActive: Boolean(form.isActive),
+      courseIds: Array.isArray(form.courseIds) ? form.courseIds : [],
     });
   };
 
@@ -278,6 +283,35 @@ function CouponFormModal({ coupon, loading, onClose, onSubmit }) {
             <input type="date" value={form.startsAt} onChange={(e) => setForm((s) => ({ ...s, startsAt: e.target.value }))} className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
             <input type="date" value={form.expiresAt} onChange={(e) => setForm((s) => ({ ...s, expiresAt: e.target.value }))} className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
           </div>
+          {form.appliesTo !== "SUBSCRIPTION" ? (
+            <div className="rounded-lg border border-slate-200 p-3 dark:border-white/10">
+              <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">
+                {tx("adminPages.coupons.targetCourses", "Target courses (optional)")}
+              </p>
+              <div className="max-h-40 space-y-1 overflow-auto">
+                {courses.map((course) => (
+                  <label key={course.id} className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
+                    <input
+                      type="checkbox"
+                      checked={(form.courseIds || []).includes(course.id)}
+                      onChange={(e) =>
+                        setForm((prev) => {
+                          const list = Array.isArray(prev.courseIds) ? prev.courseIds : [];
+                          return {
+                            ...prev,
+                            courseIds: e.target.checked
+                              ? [...list, course.id]
+                              : list.filter((id) => id !== course.id),
+                          };
+                        })
+                      }
+                    />
+                    <span>{course.title}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          ) : null}
           <textarea value={form.description} onChange={(e) => setForm((s) => ({ ...s, description: e.target.value }))} placeholder={tx("common.description", "Description")} className="min-h-20 w-full rounded-lg border border-slate-200 bg-white p-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
           <label className="inline-flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
             <input type="checkbox" checked={form.isActive} onChange={(e) => setForm((s) => ({ ...s, isActive: e.target.checked }))} />
@@ -287,7 +321,7 @@ function CouponFormModal({ coupon, loading, onClose, onSubmit }) {
             <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-white/10 dark:text-slate-200">
               {tx("common.cancel", "Cancel")}
             </button>
-            <button disabled={loading} type="submit" className="rounded-lg bg-[#B91C1C] px-3 py-2 text-sm font-bold text-white disabled:opacity-70">
+            <button disabled={loading} type="submit" className="rounded-lg bg-[#EE7C11] px-3 py-2 text-sm font-bold text-white disabled:opacity-70">
               {loading ? tx("common.saving", "Saving...") : tx("common.save", "Save")}
             </button>
           </div>

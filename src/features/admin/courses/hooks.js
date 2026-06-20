@@ -1,15 +1,22 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   assignAdminCourseInstructor,
+  approveCourse,
   createAdminCourse,
   createAdminLesson,
   createAdminUnit,
   deleteAdminCourse,
   deleteAdminLesson,
   deleteAdminUnit,
+  addCourseStaff,
   fetchAdminCourse,
   fetchAdminCourses,
   fetchAdminUnits,
+  fetchCourseStaff,
+  fetchReviewQueue,
+  removeCourseStaff,
+  rejectCourse,
+  submitCourseForReview,
   updateAdminCourse,
   updateAdminLesson,
   updateAdminUnit,
@@ -120,5 +127,76 @@ export function useAssignAdminCourseInstructor() {
   return useMutation({
     mutationFn: assignAdminCourseInstructor,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "courses"] }),
+  });
+}
+
+export function useReviewQueue(params) {
+  return useQuery({
+    queryKey: ["admin", "courses", "review-queue", params],
+    queryFn: () => fetchReviewQueue(params),
+    retry: false,
+  });
+}
+
+export function useSubmitCourseForReview() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: submitCourseForReview,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "courses"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "courses", "review-queue"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "course"] });
+    },
+  });
+}
+
+export function useApproveCourse() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: approveCourse,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "courses"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "courses", "review-queue"] });
+    },
+  });
+}
+
+export function useRejectCourse() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: rejectCourse,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "courses"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "courses", "review-queue"] });
+    },
+  });
+}
+
+export function useCourseStaff(courseId) {
+  return useQuery({
+    queryKey: ["admin", "course", courseId, "staff"],
+    queryFn: () => fetchCourseStaff(courseId),
+    enabled: Boolean(courseId),
+    retry: false,
+  });
+}
+
+export function useAddCourseStaff() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: addCourseStaff,
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "course", vars?.courseId, "staff"] });
+    },
+  });
+}
+
+export function useRemoveCourseStaff() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: removeCourseStaff,
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "course", vars?.courseId, "staff"] });
+    },
   });
 }

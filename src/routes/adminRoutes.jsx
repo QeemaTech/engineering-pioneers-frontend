@@ -1,7 +1,6 @@
 import { lazy } from "react";
 import { Route } from "react-router-dom";
-import { APP_ROLES } from "../config/permissions";
-import GuardedRoute from "./guardedRoute";
+import AdminGuard from "./adminGuard";
 import AdminLayout from "../layouts/AdminLayout";
 import { AdminSuspense } from "../components/admin/AdminSuspense";
 
@@ -30,6 +29,7 @@ const AdminEnrollStudent = lazy(() => import("../pages/admin/EnrollStudent"));
 const AdminCmsPosts = lazy(() => import("../pages/admin/CmsPosts"));
 const AdminCmsBanners = lazy(() => import("../pages/admin/CmsBanners"));
 const AdminSettingsRoles = lazy(() => import("../pages/admin/SettingsRoles"));
+const AdminRoleEditor = lazy(() => import("../pages/admin/RoleEditor"));
 const AdminSettingsEmails = lazy(() => import("../pages/admin/SettingsEmails"));
 const AdminSettingsIntegrations = lazy(() => import("../pages/admin/SettingsIntegrations"));
 const AdminAddExam = lazy(() => import("../pages/admin/AddExam"));
@@ -40,6 +40,8 @@ const AdminCoupons = lazy(() => import("../pages/admin/Coupons"));
 const AdminCertificates = lazy(() => import("../pages/admin/Certificates"));
 const AdminCohorts = lazy(() => import("../pages/admin/Cohorts"));
 const AdminPackages = lazy(() => import("../pages/admin/Packages"));
+const AdminReviewQueue = lazy(() => import("../pages/admin/ReviewQueue"));
+const AdminAuditLogs = lazy(() => import("../pages/admin/AuditLogs"));
 
 function wrap(node) {
   return <AdminSuspense>{node}</AdminSuspense>;
@@ -47,9 +49,10 @@ function wrap(node) {
 
 function AdminRoutes() {
   return (
-    <Route element={<GuardedRoute allowedRoles={[APP_ROLES.ADMIN]} />}>
+    <Route element={<AdminGuard />}>
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={wrap(<AdminOverview />)} />
+        <Route path="dashboard" element={wrap(<AdminOverview />)} />
         <Route path="finance" element={wrap(<AdminFinance />)} />
         <Route path="packages" element={wrap(<AdminPackages />)} />
         <Route path="cohorts" element={wrap(<AdminCohorts />)} />
@@ -67,6 +70,7 @@ function AdminRoutes() {
 
         <Route path="courses" element={wrap(<AdminCourses />)} />
         <Route path="courses/new" element={wrap(<AdminAddCourse />)} />
+        <Route path="courses/review" element={wrap(<AdminReviewQueue />)} />
         <Route path="courses/:id/edit" element={wrap(<AdminCourseEditor />)} />
         <Route path="courses/categories" element={wrap(<AdminCourseCategories />)} />
         <Route path="courses/:id" element={wrap(<AdminCourses />)} />
@@ -82,9 +86,12 @@ function AdminRoutes() {
 
         <Route path="account" element={wrap(<AdminAccount />)} />
         <Route path="settings" element={wrap(<AdminSettings />)} />
+        <Route path="settings/roles/new" element={wrap(<AdminRoleEditor />)} />
+        <Route path="settings/roles/:id/edit" element={wrap(<AdminRoleEditor />)} />
         <Route path="settings/roles" element={wrap(<AdminSettingsRoles />)} />
         <Route path="settings/emails" element={wrap(<AdminSettingsEmails />)} />
         <Route path="settings/integrations" element={wrap(<AdminSettingsIntegrations />)} />
+        <Route path="audit-logs" element={wrap(<AdminAuditLogs />)} />
 
         <Route path="users/:id" element={wrap(<AdminUserDetail />)} />
         <Route path="users" element={wrap(<AdminUsers />)} />

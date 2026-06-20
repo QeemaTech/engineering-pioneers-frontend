@@ -85,9 +85,9 @@ export default function Homework() {
           <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
             {t("homework.titlePrefix")}{" "}
             <span className="relative inline-block">
-              <span className="relative z-10 text-nihao-red-normal">{t("homework.titleAccent")}</span>
+              <span className="relative z-10 text-pioneer-orange-normal">{t("homework.titleAccent")}</span>
               <span
-                className="absolute -inset-x-1 bottom-0 -z-0 h-2/5 rounded-sm bg-nihao-yellow-light opacity-90"
+                className="absolute -inset-x-1 bottom-0 -z-0 h-2/5 rounded-sm bg-pioneer-teal-light opacity-90"
                 aria-hidden
               />
             </span>
@@ -102,12 +102,12 @@ export default function Homework() {
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder={t("homework.searchPlaceholder")}
-                className="w-full rounded-xl border border-slate-200 bg-white py-3 pe-4 ps-4 text-sm text-slate-900 outline-none focus:border-nihao-red-normal focus:ring-2 focus:ring-nihao-red-light sm:pe-3"
+                className="w-full rounded-xl border border-slate-200 bg-white py-3 pe-4 ps-4 text-sm text-slate-900 outline-none focus:border-pioneer-orange-normal focus:ring-2 focus:ring-pioneer-orange-light sm:pe-3"
               />
             </div>
             <button
               type="button"
-              className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-nihao-red-normal text-white shadow-sm hover:bg-nihao-red-hover"
+              className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-pioneer-orange-normal text-white shadow-sm hover:bg-pioneer-orange-hover"
               aria-label={t("homework.searchAria", { defaultValue: "Search" })}
             >
               <Search className="h-5 w-5" />
@@ -116,7 +116,7 @@ export default function Homework() {
               <select
                 value={cohortFilter}
                 onChange={(e) => setCohortFilter(e.target.value)}
-                className="h-12 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-white py-2 pe-10 ps-4 text-sm text-slate-900 outline-none focus:border-nihao-red-normal focus:ring-2 focus:ring-nihao-red-light"
+                className="h-12 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-white py-2 pe-10 ps-4 text-sm text-slate-900 outline-none focus:border-pioneer-orange-normal focus:ring-2 focus:ring-pioneer-orange-light"
               >
                 <option value="">{t("homework.filter.allClasses", { defaultValue: "All classes" })}</option>
                 {cohortOptions.map((c) => (
@@ -144,7 +144,7 @@ export default function Homework() {
         {isError ? (
           <div className="mt-12 text-center text-red-600">
             {t("homework.hubLoadError", { defaultValue: "Could not load homework." })}{" "}
-            <button type="button" onClick={() => void refetch()} className="ms-2 text-sm font-semibold text-nihao-red-normal hover:underline">
+            <button type="button" onClick={() => void refetch()} className="ms-2 text-sm font-semibold text-pioneer-orange-normal hover:underline">
               {t("takeExam.retry", { defaultValue: "Retry" })}
             </button>
           </div>
@@ -179,7 +179,7 @@ export default function Homework() {
                         <div className="min-w-0">
                           <h3 className="text-base font-bold text-slate-900">{hw.title}</h3>
                           <p className="mt-1 text-xs text-slate-500">{ctx}</p>
-                          <p className="mt-1 text-[11px] font-semibold uppercase tracking-wide text-nihao-red-normal/90">{t(typeKey)}</p>
+                          <p className="mt-1 text-[11px] font-semibold uppercase tracking-wide text-pioneer-orange-normal/90">{t(typeKey)}</p>
                         </div>
                         <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${badgeClass}`}>{t(STATUS_LABEL[st.key])}</span>
                       </div>
@@ -219,7 +219,7 @@ export default function Homework() {
 
                       <Link
                         to={`/homework/assignment/${hw.id}`}
-                        className="mt-5 block w-full rounded-xl bg-nihao-red-light py-3 text-center text-sm font-bold text-nihao-red-normal transition hover:bg-nihao-red-light/80"
+                        className="mt-5 block w-full rounded-xl bg-pioneer-orange-light py-3 text-center text-sm font-bold text-pioneer-orange-normal transition hover:bg-pioneer-orange-light/80"
                       >
                         {t(ctaKey)}
                       </Link>

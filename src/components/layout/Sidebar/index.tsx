@@ -26,25 +26,23 @@ function Sidebar({ sections, isMobileOpen, setIsMobileOpen }: SidebarProps) {
 
   return (
     <aside
-      className={`${widthClass} h-screen shrink-0 border-e border-slate-200 bg-white transition-transform duration-300 ease-in-out dark:border-white/6 dark:bg-[#0A0A10] max-lg:fixed max-lg:inset-y-0 max-lg:start-0 max-lg:z-[100] max-lg:shadow-2xl max-lg:max-w-[min(16rem,85vw)] lg:max-w-none lg:sticky lg:top-0 lg:z-30 lg:self-start lg:shadow-none lg:!translate-x-0 ${
-        isMobileOpen
+      className={`${widthClass} h-screen shrink-0 border-e border-slate-200 bg-pioneer-light-card transition-transform duration-300 ease-in-out dark:border-white/6 dark:bg-pioneer-dark-card max-lg:fixed max-lg:inset-y-0 max-lg:start-0 max-lg:z-[100] max-lg:shadow-2xl max-lg:max-w-[min(16rem,85vw)] lg:max-w-none lg:sticky lg:top-0 lg:z-30 lg:self-start lg:shadow-none lg:!translate-x-0 ${isMobileOpen
           ? "max-lg:translate-x-0"
           : "max-lg:ltr:-translate-x-full max-lg:rtl:translate-x-full"
-      }`}
+        }`}
     >
       <div
-        className={`flex h-16 items-center border-b border-slate-100 px-3 transition-all sm:h-20 sm:px-4 dark:border-white/6 ${
-          isCollapsed ? "lg:justify-center" : "justify-between"
-        }`}
+        className={`flex h-16 items-center border-b border-slate-100 px-3 transition-all sm:h-20 sm:px-4 dark:border-white/6 ${isCollapsed ? "lg:justify-center" : "justify-between"
+          }`}
       >
         <div className={`flex items-center gap-3 overflow-hidden whitespace-nowrap ${isCollapsed ? "lg:hidden" : ""}`}>
           <img
             src="/assets/ChatGPT%20Image%20Mar%2025,%202026,%2002_45_22%20PM%201.svg"
-            alt="Nihao Academy"
+            alt="Engineering Pioneers"
             className="h-8 w-auto object-contain dark:brightness-0 dark:invert"
           />
           <h1 className="text-base font-bold tracking-tight text-slate-900 dark:text-white">
-            Nihao Academy
+            Engineering Pioneers
           </h1>
         </div>
 
@@ -74,9 +72,9 @@ function Sidebar({ sections, isMobileOpen, setIsMobileOpen }: SidebarProps) {
             <nav className="space-y-1 px-2">
               {section.items.map((item) =>
                 isNavGroup(item) ? (
-                  <NavGroup key={t(item.labelKey)} group={item} isCollapsed={isCollapsed} />
+                  <NavGroup key={item.labelKey} group={item} isCollapsed={isCollapsed} />
                 ) : (
-                  <NavItem key={t(item.path)} item={item} isCollapsed={isCollapsed} />
+                  <NavItem key={item.path} item={item} isCollapsed={isCollapsed} />
                 )
               )}
             </nav>
@@ -88,4 +86,3 @@ function Sidebar({ sections, isMobileOpen, setIsMobileOpen }: SidebarProps) {
 }
 
 export default Sidebar;
-

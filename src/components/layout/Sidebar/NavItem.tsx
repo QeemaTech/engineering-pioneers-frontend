@@ -20,16 +20,16 @@ function NavItem({ item, isSubItem = false, isCollapsed = false }: Props) {
       <NavLink
         to={item.path}
         className={`relative mx-1 flex items-center gap-2 rounded-md py-1.5 pe-3 ps-8 text-[13px] transition-all duration-150 ${
-          isActive
-            ? "border-s-2 border-[#B91C1C] bg-red-50/80 ps-[30px] text-red-700 dark:bg-red-950/30 dark:text-red-300"
-            : "text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-white/5 dark:hover:text-slate-300"
-        }`}
-      >
-        <span className="h-1.5 w-1.5 rounded-full bg-current opacity-80" />
-        <span>{t(item.labelKey)}</span>
-      </NavLink>
-    );
-  }
+        isActive
+          ? "border-s-2 border-pioneer-orange bg-pioneer-orange/10 ps-[30px] text-pioneer-orange dark:bg-pioneer-orange/20 dark:text-pioneer-orange"
+          : "text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-white/5 dark:hover:text-slate-300"
+      }`}
+    >
+      <span className="h-1.5 w-1.5 rounded-full bg-current opacity-80" />
+      <span>{t(item.labelKey)}</span>
+    </NavLink>
+  );
+}
 
   const Icon = item.icon;
   return (
@@ -40,14 +40,14 @@ function NavItem({ item, isSubItem = false, isCollapsed = false }: Props) {
         isCollapsed ? "justify-center px-2" : "gap-2.5 px-3"
       } ${
         isActive
-          ? "border-s-2 border-[#B91C1C] bg-red-50 ps-[10px] text-[#B91C1C] dark:bg-white/10 dark:text-white"
+          ? "border-s-2 border-pioneer-orange bg-pioneer-orange/10 ps-[10px] text-pioneer-orange dark:bg-white/10 dark:text-white"
           : "text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
       }`}
     >
       <Icon className="h-4 w-4" />
       {!isCollapsed ? <span className="truncate">{t(item.labelKey)}</span> : null}
       {typeof item.badge === "number" && item.badge > 0 && !isCollapsed ? (
-        <span className="ms-auto rounded-full bg-[#B91C1C] px-1.5 py-0.5 text-[10px] font-bold text-white">
+        <span className="ms-auto rounded-full bg-pioneer-orange px-1.5 py-0.5 text-[10px] font-bold text-white">
           {item.badge}
         </span>
       ) : null}

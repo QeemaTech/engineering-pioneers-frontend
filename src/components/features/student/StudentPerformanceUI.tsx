@@ -83,7 +83,7 @@ function toneClass(pct: number): "green" | "amber" | "red" {
 const toneStyles = {
   green: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
   amber: "border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-300",
-  red: "border-red-500/40 bg-red-500/10 text-red-700 dark:text-red-300",
+  red: "border-red-500/40 bg-[#EE7C11]/10 text-red-700 dark:text-red-300",
 };
 
 function StatCard({
@@ -120,7 +120,7 @@ function Section({ title, icon: Icon, children }: { title: string; icon: typeof 
   return (
     <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#1A1A22]">
       <div className="mb-4 flex items-center gap-2">
-        <Icon className="h-5 w-5 text-[#B91C1C]" />
+        <Icon className="h-5 w-5 text-[#EE7C11]" />
         <h3 className="text-lg font-bold text-slate-900 dark:text-white">{title}</h3>
       </div>
       {children}

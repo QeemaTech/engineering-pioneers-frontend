@@ -11,12 +11,13 @@ import {
 } from "lucide-react";
 import { useAdminTickets, useProcessAdminTicket } from "../../features/admin/tickets/hooks";
 import { getErrorMessage } from "../../api/error";
+import PermissionGate from "../../components/ui/PermissionGate";
 
 const STATUS_OPTIONS = ["All", "Open", "In Progress", "Resolved", "Closed"];
 const PRIORITY_OPTIONS = ["All", "High", "Medium", "Low"];
 
 const priorityClasses = {
-  High: "border border-red-500/20 bg-red-500/15 text-red-400",
+  High: "border border-red-500/20 bg-[#EE7C11]/15 text-red-400",
   Medium: "border border-amber-500/20 bg-amber-500/15 text-amber-400",
   Low: "border border-slate-500/20 bg-slate-500/15 text-slate-400",
 };
@@ -69,6 +70,7 @@ function Tickets() {
   }, [tickets, search, status, priority, fromDate, toDate]);
 
   return (
+    <PermissionGate permission="support:manage" fallback={<p className="text-sm text-slate-500">You do not have access to support management.</p>}>
     <section className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
@@ -77,7 +79,7 @@ function Tickets() {
             Manage student and instructor support requests
           </p>
         </div>
-        <button className="inline-flex items-center gap-2 rounded-lg bg-[#B91C1C] px-4 py-2 text-sm font-bold text-white transition hover:bg-red-700">
+        <button className="inline-flex items-center gap-2 rounded-lg bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#d9700e]">
           <Plus className="h-4 w-4" />
           New Ticket
         </button>
@@ -138,7 +140,7 @@ function Tickets() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search tickets..."
-              className="h-10 w-full rounded-lg border border-slate-200 bg-white ps-9 pe-3 text-sm text-slate-900 outline-none focus:border-red-300 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+              className="h-10 w-full rounded-lg border border-slate-200 bg-white ps-9 pe-3 text-sm text-slate-900 outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
             />
           </div>
           <select value={status} onChange={(e) => setStatus(e.target.value)} className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none dark:border-white/10 dark:bg-[#0F0F13] dark:text-slate-300 lg:col-span-2">
@@ -157,7 +159,7 @@ function Tickets() {
       </div>
 
       {isLoading ? <div className="rounded-xl border border-slate-200 bg-white p-6 text-slate-500 dark:border-white/8 dark:bg-[#1A1A22]">Loading tickets...</div> : null}
-      {isError ? <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">{getErrorMessage(error, "Failed to load tickets.")}<button onClick={() => refetch()} className="ms-3 rounded bg-[#B91C1C] px-2 py-1 text-xs font-bold text-white">Retry</button></div> : null}
+      {isError ? <div className="rounded-xl border border-red-200 bg-[#EE7C11]/10 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-[#EE7C11]/10 dark:text-red-300">{getErrorMessage(error, "Failed to load tickets.")}<button onClick={() => refetch()} className="ms-3 rounded bg-[#EE7C11] px-2 py-1 text-xs font-bold text-white">Retry</button></div> : null}
       {!isLoading && !isError && tickets.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white py-16 text-center dark:border-white/8 dark:bg-[#1A1A22]">
           <Ticket className="h-10 w-10 text-slate-300 dark:text-slate-600" />
@@ -229,6 +231,7 @@ function Tickets() {
         </div>
       ) : null}
     </section>
+    </PermissionGate>
   );
 }
 

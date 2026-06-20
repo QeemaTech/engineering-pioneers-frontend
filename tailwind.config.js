@@ -8,20 +8,39 @@ export default {
   theme: {
     extend: {
       colors: {
-        nihao: {
-          red: {
-            light: "#f5e8e9",
-            normal: "#9d1c21",
-            hover: "#8d191e",
-            active: "#7e161a",
-            dark: "#761519",
+        pioneer: {
+          orange: {
+            light: "#fdf2e9",
+            normal: "#EE7C11",
+            hover: "#d9700e",
+            active: "#c4640d",
+            dark: "#093443",
+            DEFAULT: "#EE7C11",
           },
-          yellow: {
-            light: "#faf5e8",
-            normal: "#ca9a1a",
-            hover: "#b68b17",
-            active: "#a27b15",
-            dark: "#987414",
+          teal: {
+            light: "#f0fdf4",
+            normal: "#0D9488",
+            hover: "#0f766e",
+            active: "#115e59",
+            dark: "#093443",
+            DEFAULT: "#0D9488",
+          },
+          navy: {
+            DEFAULT: "#093443",
+          },
+          primary: "#EE7C11",
+          secondary: "#0D9488",
+          light: {
+            bg: "#F8FAFC",
+            card: "#FFFFFF",
+            textPrimary: "#0F172A",
+            textSecondary: "#475569",
+          },
+          dark: {
+            bg: "#06242F",
+            card: "#093443",
+            textPrimary: "#F8FAFC",
+            textSecondary: "#94A3B8",
           },
         },
       },
@@ -39,8 +58,8 @@ export default {
         times: ["Times New Roman", "Times", "serif"],
         helvetica: ["Helvetica", "Arial", "sans-serif"],
         inter: ["Inter", "Helvetica Neue", "Helvetica", "Arial", "ui-sans-serif", "system-ui", "sans-serif"],
-        arabic: ["Alexandria", "sans-serif"],
-        cairo: ["Alexandria", "sans-serif"],
+        arabic: ["Cairo", "Alexandria", "sans-serif"],
+        cairo: ["Cairo", "Alexandria", "sans-serif"],
       },
 
     },

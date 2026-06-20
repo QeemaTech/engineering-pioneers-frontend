@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { useStudentExams } from "../features/student/exams/hooks";
 
 const STATUS_MAP = {
-  UPCOMING: { label: "exams.status.upcoming", style: "bg-nihao-yellow-light text-nihao-yellow-dark" },
+  UPCOMING: { label: "exams.status.upcoming", style: "bg-pioneer-teal-light text-pioneer-teal-dark" },
   AVAILABLE: { label: "exams.status.available", style: "bg-cyan-50 text-cyan-700" },
   COMPLETED: { label: "exams.status.completed", style: "bg-green-50 text-green-600" },
   EXPIRED: { label: "exams.status.expired", style: "bg-slate-100 text-slate-500" },
@@ -38,7 +38,7 @@ export default function Exams() {
         <div className="text-center md:text-start">
           <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
             {t("exams.titlePrefix")}{" "}
-            <span className="text-nihao-red-normal">{t("exams.titleAccent")}</span>
+            <span className="text-pioneer-orange-normal">{t("exams.titleAccent")}</span>
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-base text-slate-500 md:mx-0">{t("exams.subtitle")}</p>
           <p className="mx-auto mt-2 max-w-xl text-xs text-slate-400 md:mx-0">{t("exams.enrolledOnlyHint")}</p>
@@ -50,7 +50,7 @@ export default function Exams() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder={t("exams.searchPlaceholder")}
-            className="w-full rounded-xl border border-slate-200 bg-white py-3 pe-4 ps-10 text-sm text-slate-900 outline-none focus:border-nihao-red-normal focus:ring-2 focus:ring-nihao-red-light"
+            className="w-full rounded-xl border border-slate-200 bg-white py-3 pe-4 ps-10 text-sm text-slate-900 outline-none focus:border-pioneer-orange-normal focus:ring-2 focus:ring-pioneer-orange-light"
           />
         </div>
 
@@ -58,7 +58,7 @@ export default function Exams() {
         {isError ? (
           <div className="mt-12 text-center text-red-600">
             {t("exams.loadError", { defaultValue: "Could not load exams." })}
-            <button type="button" onClick={() => void refetch()} className="ms-3 text-sm font-semibold text-nihao-red-normal hover:underline">
+            <button type="button" onClick={() => void refetch()} className="ms-3 text-sm font-semibold text-pioneer-orange-normal hover:underline">
               {t("takeExam.retry")}
             </button>
           </div>
@@ -87,7 +87,7 @@ export default function Exams() {
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <h3 className="text-base font-bold text-slate-900">{exam.title}</h3>
-                          <p className="mt-0.5 text-xs font-medium text-nihao-red-normal">{courseLabel(exam)}</p>
+                          <p className="mt-0.5 text-xs font-medium text-pioneer-orange-normal">{courseLabel(exam)}</p>
                           <p className="mt-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t(typeKey)}</p>
                         </div>
                         <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${st.style}`}>{t(st.label)}</span>
@@ -119,21 +119,21 @@ export default function Exams() {
                       {studentFinished && scorePct != null ? (
                         <div className="mt-3">
                           <div className="h-2 overflow-hidden rounded-full bg-slate-100">
-                            <div className="h-full rounded-full bg-nihao-red-normal" style={{ width: `${Math.min(100, scorePct)}%` }} />
+                            <div className="h-full rounded-full bg-pioneer-orange-normal" style={{ width: `${Math.min(100, scorePct)}%` }} />
                           </div>
                         </div>
                       ) : null}
                       <div className="mt-4 flex flex-wrap gap-2">
                         <Link
                           to={`/exams/${exam.id}`}
-                          className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-nihao-red-normal hover:text-nihao-red-normal"
+                          className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-pioneer-orange-normal hover:text-pioneer-orange-normal"
                         >
                           {t("exams.actions.viewDetails", { defaultValue: "View Exam Details" })}
                         </Link>
                         {studentFinished && sub?.id ? (
                           <Link
                             to={`/exams/${exam.id}/results/${sub.id}`}
-                            className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-nihao-red-normal hover:text-nihao-red-normal"
+                            className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-pioneer-orange-normal hover:text-pioneer-orange-normal"
                           >
                             {t("exams.actions.viewResults", { defaultValue: "View Results" })}
                           </Link>
@@ -141,7 +141,7 @@ export default function Exams() {
                         {exam.status === "AVAILABLE" && !studentFinished ? (
                           <Link
                             to={`/exams/${exam.id}/take`}
-                            className="rounded-lg bg-nihao-red-normal px-4 py-2 text-sm font-semibold text-white hover:bg-nihao-red-hover"
+                            className="rounded-lg bg-pioneer-orange-normal px-4 py-2 text-sm font-semibold text-white hover:bg-pioneer-orange-hover"
                           >
                             {inProgress ? t("exams.continue", { defaultValue: "Continue exam" }) : t("exams.start", { defaultValue: "Start" })}
                           </Link>

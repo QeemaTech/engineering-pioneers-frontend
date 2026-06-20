@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import api from "../lib/api";
+import endpoints from "../api/endpoints";
+import { resolveUserPermissions } from "../hooks/usePermissions";
 
 const useAuthStore = create(
   persist(
@@ -12,9 +14,48 @@ const useAuthStore = create(
       hydrated: false,
       setHydrated: (value) => set({ hydrated: value }),
 
+      setTokens: ({ accessToken, refreshToken }) => {
+        if (accessToken) localStorage.setItem("accessToken", accessToken);
+        if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+        set({
+          accessToken: accessToken ?? get().accessToken,
+          refreshToken: refreshToken ?? get().refreshToken,
+        });
+      },
+
+      setUser: (user) => {
+        if (user?.role) {
+          const roleName =
+            typeof user.role === "object" ? user.role.name : user.role;
+          if (roleName) localStorage.setItem("role", String(roleName).toLowerCase());
+        }
+        const resolvedPermissions = resolveUserPermissions(user);
+        const enriched = user
+          ? { ...user, resolvedPermissions }
+          : null;
+        set({
+          user: enriched,
+          isAuthenticated: Boolean(enriched && get().accessToken),
+        });
+      },
+
+      refreshProfile: async () => {
+        const { data } = await api.get(endpoints.auth.me);
+        const user = data?.data?.user || data?.data || null;
+        if (user) get().setUser(user);
+        return user;
+      },
+
       /* ── Login ── */
-      login: async ({ identifier, password }) => {
-        const { data } = await api.post("/auth/login", { identifier, password });
+      login: async ({ identifier, password, deviceFingerprint, deviceName, os, userAgent }) => {
+        const { data } = await api.post(endpoints.auth.login, {
+          identifier,
+          password,
+          deviceFingerprint,
+          deviceName,
+          os,
+          userAgent,
+        });
         const payload = data?.data || {};
         const user = payload.user
           ? {
@@ -24,16 +65,14 @@ const useAuthStore = create(
           : null;
         const accessToken = payload?.tokens?.accessToken || payload?.token || null;
         const refreshToken = payload?.tokens?.refreshToken || payload?.refreshToken || null;
-        if (accessToken) localStorage.setItem("accessToken", accessToken);
-        if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
-        if (user?.role) localStorage.setItem("role", String(user.role).toLowerCase());
-        set({ user, accessToken, refreshToken, isAuthenticated: Boolean(user && accessToken) });
+        get().setTokens({ accessToken, refreshToken });
+        get().setUser(user);
         return user;
       },
 
       /* ── Register ── */
       register: async (payload) => {
-        const { data } = await api.post("/auth/register", payload);
+        const { data } = await api.post(endpoints.auth.register, payload);
         const result = data?.data || {};
         const user = result.user
           ? {
@@ -43,10 +82,8 @@ const useAuthStore = create(
           : null;
         const accessToken = result?.tokens?.accessToken || result?.token || null;
         const refreshToken = result?.tokens?.refreshToken || result?.refreshToken || null;
-        if (accessToken) localStorage.setItem("accessToken", accessToken);
-        if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
-        if (user?.role) localStorage.setItem("role", String(user.role).toLowerCase());
-        set({ user, accessToken, refreshToken, isAuthenticated: Boolean(user && accessToken) });
+        get().setTokens({ accessToken, refreshToken });
+        get().setUser(user);
         return user;
       },
 
@@ -54,7 +91,7 @@ const useAuthStore = create(
       logout: async () => {
         const refreshToken = get().refreshToken;
         try {
-          await api.post("/auth/logout", { refreshToken });
+          await api.post(endpoints.auth.logout, { refreshToken });
         } catch {
           // always clear regardless of server response
         }
@@ -65,7 +102,7 @@ const useAuthStore = create(
       },
     }),
     {
-      name: "nihao-auth",
+      name: "pioneer-auth",
       onRehydrateStorage: () => (state) => {
         state?.setHydrated?.(true);
       },
@@ -88,16 +125,20 @@ const useAuthStore = create(
         const refreshToken =
           persisted.refreshToken || localStorage.getItem("refreshToken") || null;
 
+        const enrichedUser = mergedUser
+          ? { ...mergedUser, resolvedPermissions: resolveUserPermissions(mergedUser) }
+          : null;
+
         return {
           ...currentState,
           ...persisted,
-          user: mergedUser,
+          user: enrichedUser,
           accessToken,
           refreshToken,
           hydrated: true,
           isAuthenticated:
             persisted.isAuthenticated ??
-            Boolean(mergedUser && accessToken),
+            Boolean(enrichedUser && accessToken),
         };
       },
       partialize: (state) => ({

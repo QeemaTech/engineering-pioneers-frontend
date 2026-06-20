@@ -8,7 +8,7 @@ export function adminSuspenseFallback() {
       aria-live="polite"
     >
       <div
-        className="h-9 w-9 animate-spin rounded-full border-2 border-nihao-red-normal border-t-transparent"
+        className="h-9 w-9 animate-spin rounded-full border-2 border-pioneer-orange-normal border-t-transparent"
         aria-hidden
       />
       <p className="text-sm font-medium">Loading…</p>

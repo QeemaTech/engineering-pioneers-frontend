@@ -36,7 +36,7 @@ export default function FaqPage() {
     <div className="min-h-screen bg-slate-50 py-12 md:py-16">
       <div className="mx-auto max-w-3xl px-4 md:px-6">
         <nav className="text-sm text-slate-500">
-          <Link to="/" className="hover:text-nihao-red-normal">
+          <Link to="/" className="hover:text-pioneer-orange-normal">
             {t("header.nav.home")}
           </Link>
           <span className="mx-2">/</span>
@@ -50,12 +50,12 @@ export default function FaqPage() {
             <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500">{t("dashboard.common.loading")}</div>
           ) : null}
           {isError ? (
-            <div className="rounded-2xl border border-red-100 bg-red-50 p-6 text-sm text-red-800">{t("publicFaq.loadError")}</div>
+            <div className="rounded-2xl border border-red-100 bg-[#EE7C11]/10 p-6 text-sm text-red-800">{t("publicFaq.loadError")}</div>
           ) : null}
           {!isLoading && !isError && items.length === 0 ? (
             <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-600">
               <p>{t("publicFaq.empty")}</p>
-              <Link to="/explore" className="mt-4 inline-block font-semibold text-nihao-red-normal hover:underline">
+              <Link to="/explore" className="mt-4 inline-block font-semibold text-pioneer-orange-normal hover:underline">
                 {t("publicFaq.ctaExplore")}
               </Link>
             </div>
@@ -80,7 +80,7 @@ export default function FaqPage() {
         </div>
 
         <p className="mt-10 text-center text-sm text-slate-500">
-          <Link to="/subscription" className="font-semibold text-nihao-red-normal hover:underline">
+          <Link to="/subscription" className="font-semibold text-pioneer-orange-normal hover:underline">
             {t("publicFaq.footerPlans")}
           </Link>
         </p>
