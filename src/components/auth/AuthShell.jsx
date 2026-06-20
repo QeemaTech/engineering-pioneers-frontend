@@ -27,7 +27,12 @@ export default function AuthShell({ title, subtitle, footer, children }) {
         {/* Brand panel */}
         <section className="mb-8 flex flex-1 flex-col justify-center lg:mb-0 lg:pe-6">
           <Link to="/" className="mb-8 inline-flex items-center gap-3">
-            <img src="/assets/logo-full.png" alt="Engineering Pioneers" className="h-11 w-auto object-contain" />
+            <img
+              src="/assets/ChatGPT%20Image%20Mar%2025,%202026,%2002_45_22%20PM%201.svg"
+              alt="رواد الهندسة"
+              className="h-11 w-auto object-contain"
+            />
+            <span className="text-2xl font-black text-slate-950 dark:text-white">رواد الهندسة</span>
           </Link>
 
           <div className="max-w-lg">
