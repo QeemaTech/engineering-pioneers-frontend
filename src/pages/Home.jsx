@@ -17,12 +17,15 @@ function Home() {
     retry: false,
   });
   const sections = data?.sections || [];
+  const heroSection = sections.find((s) => s?.key === "HERO");
+  const showHero =
+    sections.length === 0 || !heroSection || heroSection.isVisible !== false;
   const isVisible = (key) =>
     sections.length === 0 || sections.some((s) => s?.key === key && s?.isVisible !== false);
 
   return (
     <div className="overflow-hidden">
-      {isVisible("HERO_SECTION") ? <Hero /> : null}
+      {showHero ? <Hero content={heroSection?.content} /> : null}
       <Features />
       <HowItWorks />
       <LearningStyle />

@@ -31,7 +31,7 @@ function DashboardLayout({ sidebarSections = [] }) {
   }, [isMobileSidebarOpen]);
 
   return (
-    <div className="flex min-h-screen bg-pioneer-light-bg font-sans text-pioneer-light-textPrimary transition-all duration-300 selection:bg-pioneer-orange/20 dark:bg-pioneer-dark-bg dark:text-pioneer-dark-textPrimary dark:selection:bg-pioneer-orange/30 dark:selection:text-white">
+    <div className="flex min-h-screen bg-pioneer-light-bg font-sans text-pioneer-light-textPrimary transition-all duration-300 selection:bg-pioneer-orange/20 dark:bg-[#0F172A] dark:text-pioneer-dark-textPrimary dark:selection:bg-pioneer-orange/30 dark:selection:text-white">
       {/* Mobile drawer backdrop — below sidebar (z-[100]), above page */}
       {isMobileSidebarOpen ? (
         <button

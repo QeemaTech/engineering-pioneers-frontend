@@ -65,7 +65,7 @@ function PackageCard({
     <article
       className={`group relative overflow-hidden rounded-3xl border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:bg-[#1A1A22] ${borderTone}`}
     >
-      <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#EE7C11] via-amber-400 to-[#0D9488]" />
+      <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#EE7C11] via-amber-400 to-[#3B82F6]" />
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -77,7 +77,7 @@ function PackageCard({
               </span>
             ) : null}
           </div>
-          <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-[#0D9488]">
+          <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-[#3B82F6]">
             {durationLabel(pkg.durationMonths)}
           </p>
         </div>
@@ -486,7 +486,7 @@ export default function AdminPackagesPage() {
       >
         <div className="flex min-h-full flex-col">
           <div className="space-y-5 p-5">
-            <div className="rounded-3xl bg-gradient-to-br from-pioneer-orange-normal to-[#093443] p-5 text-white">
+            <div className="rounded-3xl bg-gradient-to-br from-pioneer-orange-normal to-[#1E293B] p-5 text-white">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/70">
                 {editingId ? t("adminPages.packages.formHero.update") : t("adminPages.packages.formHero.create")}
               </p>

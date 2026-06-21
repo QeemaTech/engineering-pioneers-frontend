@@ -11,6 +11,7 @@ import {
   useAdminCourse, useUpdateAdminCourse,
   useAddCourseStaff, useCourseStaff, useCreateAdminUnit, useRemoveCourseStaff, useUpdateAdminUnit, useDeleteAdminUnit,
   useCreateAdminLesson, useUpdateAdminLesson, useDeleteAdminLesson,
+  useCourseSessions, useCreateCourseSession, useDeleteCourseSession,
 } from "../../features/admin/courses/hooks";
 import {
   useCreateAdminSection,
@@ -872,6 +873,7 @@ function DetailEditor({ node, onClose }) {
     thumbnail: "",
     introVideoUrl: "",
     price: "",
+    type: "RECORDED",
     isLifetimePurchasable: true,
     isActive: false,
     categoryId: "",
@@ -889,6 +891,7 @@ function DetailEditor({ node, onClose }) {
         thumbnail: node.data.thumbnail || "",
         introVideoUrl: node.data.introVideoUrl || "",
         price: node.data.price != null ? String(node.data.price) : "",
+        type: node.data.type || "RECORDED",
         isLifetimePurchasable: node.data.isLifetimePurchasable !== false,
         isActive: node.data.isActive === true,
         categoryId: node.data.categoryId || node.data.category?.id || "",
@@ -912,6 +915,7 @@ function DetailEditor({ node, onClose }) {
             thumbnail: formData.thumbnail.trim() || undefined,
             introVideoUrl: formData.introVideoUrl.trim() || null,
             price: price != null && !Number.isNaN(price) ? price : undefined,
+            type: formData.type,
             isLifetimePurchasable: formData.isLifetimePurchasable,
             isActive: formData.isActive,
             categoryId: formData.categoryId === "" ? null : (formData.categoryId || undefined),
@@ -1041,6 +1045,19 @@ function DetailEditor({ node, onClose }) {
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="block space-y-1.5">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    {t("adminPages.addCourse.courseType", { defaultValue: "Course type" })}
+                  </span>
+                  <select
+                    value={formData.type}
+                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                    className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                  >
+                    <option value="RECORDED">{t("adminPages.addCourse.typeRecorded", { defaultValue: "Recorded" })}</option>
+                    <option value="HYBRID">{t("adminPages.addCourse.typeHybrid", { defaultValue: "Hybrid (live + recorded)" })}</option>
+                  </select>
+                </label>
+                <label className="block space-y-1.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                     {t("adminPages.addCourse.price", { defaultValue: "Lifetime purchase price" })}
                   </span>
                   <input
@@ -1052,6 +1069,9 @@ function DetailEditor({ node, onClose }) {
                     className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
                   />
                 </label>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
                 <label className="flex items-center gap-2 pt-6 text-sm text-slate-700 dark:text-slate-200">
                   <input
                     type="checkbox"
@@ -1224,6 +1244,150 @@ function DetailEditor({ node, onClose }) {
 }
 
 
+/* ─── Live Sessions Tab ─── */
+function CourseSessionsPanel({ course }) {
+  const { t } = useTranslation();
+  const { data: sessions = [], isLoading } = useCourseSessions(course?.id);
+  const { data: instructorsData } = useAdminInstructors({ page: 1, limit: 100 });
+  const instructors = instructorsData?.instructors || [];
+  const createSession = useCreateCourseSession();
+  const deleteSession = useDeleteCourseSession();
+  const [form, setForm] = useState({
+    title: "",
+    instructorId: course?.instructorId || course?.instructor?.id || "",
+    startTime: "",
+    endTime: "",
+    meetingUrl: "",
+  });
+
+  useEffect(() => {
+    const defaultId = course?.instructorId || course?.instructor?.id || "";
+    setForm((prev) => ({ ...prev, instructorId: defaultId }));
+  }, [course?.instructorId, course?.instructor?.id]);
+
+  const sortedInstructors = useMemo(() => {
+    const ownerId = course?.instructorId || course?.instructor?.id;
+    if (!ownerId || !instructors.length) return instructors;
+    const owner = instructors.find((i) => i.id === ownerId);
+    const others = instructors.filter((i) => i.id !== ownerId);
+    return owner ? [owner, ...others] : others;
+  }, [instructors, course?.instructorId, course?.instructor?.id]);
+
+  if (course?.type !== "HYBRID") {
+    return (
+      <div className="rounded-xl border border-amber-100 bg-amber-50 p-6 text-sm text-amber-900 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
+        {t("adminPages.courseEditor.sessions.hybridOnly", { defaultValue: "Live sessions are only available for HYBRID courses. Change the course type in settings." })}
+      </div>
+    );
+  }
+
+  const onCreate = async (e) => {
+    e.preventDefault();
+    if (!form.instructorId || !form.startTime || !form.endTime) {
+      toast.error(t("adminPages.courseEditor.sessions.required", { defaultValue: "Instructor and times are required." }));
+      return;
+    }
+    try {
+      await createSession.mutateAsync({
+        courseId: course.id,
+        body: {
+          title: form.title.trim() || undefined,
+          instructorId: form.instructorId,
+          startTime: new Date(form.startTime).toISOString(),
+          endTime: new Date(form.endTime).toISOString(),
+          meetingUrl: form.meetingUrl.trim() || undefined,
+        },
+      });
+      setForm((prev) => ({ ...prev, title: "", startTime: "", endTime: "", meetingUrl: "" }));
+      toast.success(t("adminPages.courseEditor.sessions.created", { defaultValue: "Session created" }));
+    } catch (err) {
+      toast.error(getErrorMessage(err, t("adminPages.courseEditor.sessions.createFailed", { defaultValue: "Failed to create session" })));
+    }
+  };
+
+  return (
+    <div className="space-y-6 p-5">
+      <div>
+        <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+          {t("adminPages.courseEditor.sessions.title", { defaultValue: "Live sessions" })}
+        </h2>
+        <p className="mt-1 text-sm text-slate-500">
+          {t("adminPages.courseEditor.sessions.subtitle", { defaultValue: "Schedule group live sessions for this hybrid course." })}
+        </p>
+      </div>
+
+      <form onSubmit={(e) => void onCreate(e)} className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-[#0F0F13]">
+        <input
+          value={form.title}
+          onChange={(e) => setForm({ ...form, title: e.target.value })}
+          placeholder={t("adminPages.courseEditor.sessions.titlePlaceholder", { defaultValue: "Session title" })}
+          className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#1A1A22] dark:text-white"
+        />
+        <select
+          value={form.instructorId}
+          onChange={(e) => setForm({ ...form, instructorId: e.target.value })}
+          className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#1A1A22] dark:text-white"
+        >
+          <option value="">{t("dashboard.admin.courses.selectInstructor", { defaultValue: "Select Instructor" })}</option>
+          {sortedInstructors.map((i) => {
+            const isOwner = i.id === (course?.instructorId || course?.instructor?.id);
+            const label = isOwner
+              ? `⭐ ${i.fullName || i.name} (${t("adminPages.courseEditor.sessions.courseOwner", { defaultValue: "Course Owner" })})`
+              : i.fullName || i.name;
+            return (
+              <option key={i.id} value={i.id}>
+                {label}
+              </option>
+            );
+          })}
+        </select>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <input type="datetime-local" value={form.startTime} onChange={(e) => setForm({ ...form, startTime: e.target.value })} className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#1A1A22] dark:text-white" />
+          <input type="datetime-local" value={form.endTime} onChange={(e) => setForm({ ...form, endTime: e.target.value })} className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#1A1A22] dark:text-white" />
+        </div>
+        <input
+          value={form.meetingUrl}
+          onChange={(e) => setForm({ ...form, meetingUrl: e.target.value })}
+          placeholder={t("adminPages.courseEditor.sessions.meetingUrl", { defaultValue: "Meeting URL (optional)" })}
+          className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#1A1A22] dark:text-white"
+        />
+        <button type="submit" disabled={createSession.isPending} className="rounded-lg bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white hover:bg-[#d9700e] disabled:opacity-50">
+          {createSession.isPending ? t("adminPages.courseEditor.actions.saving") : t("adminPages.courseEditor.sessions.add", { defaultValue: "Add session" })}
+        </button>
+      </form>
+
+      {isLoading ? <Loader2 className="h-6 w-6 animate-spin text-[#EE7C11]" /> : null}
+      <ul className="space-y-3">
+        {sessions.map((session) => (
+          <li key={session.id} className="flex items-start justify-between gap-3 rounded-xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-[#0F0F13]">
+            <div>
+              <p className="font-semibold text-slate-900 dark:text-white">{session.title || t("adminPages.courseEditor.sessions.untitled", { defaultValue: "Live session" })}</p>
+              <p className="mt-1 text-xs text-slate-500">
+                {session.instructor?.fullName || session.instructorId} · {new Date(session.startTime).toLocaleString()}
+              </p>
+              <p className="text-xs text-slate-500">{session.status}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                if (!confirm(t("adminPages.courseEditor.sessions.deleteConfirm", { defaultValue: "Delete this session?" }))) return;
+                void deleteSession.mutateAsync({ courseId: course.id, sessionId: session.id });
+              }}
+              className="text-slate-400 hover:text-red-500"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </li>
+        ))}
+      </ul>
+      {!isLoading && sessions.length === 0 ? (
+        <p className="text-sm text-slate-500">{t("adminPages.courseEditor.sessions.empty", { defaultValue: "No sessions scheduled yet." })}</p>
+      ) : null}
+    </div>
+  );
+}
+
+
 /* ═══════════════════════════════════════════════
    MAIN: CourseEditor (The Studio)
    ═══════════════════════════════════════════════ */
@@ -1243,6 +1407,7 @@ export default function CourseEditor() {
   const deleteLessonMutation = useDeleteAdminLesson();
 
   const [selectedNode, setSelectedNode] = useState(null);
+  const [editorTab, setEditorTab] = useState("curriculum");
 
   useEffect(() => {
     if (course && !selectedNode) {
@@ -1391,6 +1556,28 @@ export default function CourseEditor() {
         ))}
       </div>
 
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => setEditorTab("curriculum")}
+          className={`rounded-lg px-4 py-2 text-sm font-semibold ${editorTab === "curriculum" ? "bg-[#EE7C11] text-white" : "border border-slate-200 text-slate-700 dark:border-white/10 dark:text-slate-300"}`}
+        >
+          {t("adminPages.courseEditor.curriculum", { defaultValue: "Curriculum" })}
+        </button>
+        <button
+          type="button"
+          onClick={() => setEditorTab("sessions")}
+          className={`rounded-lg px-4 py-2 text-sm font-semibold ${editorTab === "sessions" ? "bg-[#EE7C11] text-white" : "border border-slate-200 text-slate-700 dark:border-white/10 dark:text-slate-300"}`}
+        >
+          {t("adminPages.courseEditor.sessions.title", { defaultValue: "Live sessions" })}
+        </button>
+      </div>
+
+      {editorTab === "sessions" ? (
+        <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-white/8 dark:bg-[#1A1A22]">
+          <CourseSessionsPanel course={course} />
+        </div>
+      ) : (
       <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
         {/* Left: Curriculum Tree */}
         <div className="space-y-3">
@@ -1465,6 +1652,7 @@ export default function CourseEditor() {
           )}
         </div>
       </div>
+      )}
     </section>
   );
 }

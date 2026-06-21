@@ -29,12 +29,12 @@ function PlanCard({ pkg, onGetStarted }) {
     <div
       className={`relative flex flex-col rounded-2xl p-0.5 transition-all hover:-translate-y-1 ${
         highlighted
-          ? "bg-gradient-to-b from-[#EE7C11] to-[#093443] shadow-2xl shadow-[#EE7C11]/30"
+          ? "bg-gradient-to-b from-[#EE7C11] to-[#0F172A] shadow-2xl shadow-[#EE7C11]/30"
           : "border border-slate-200 bg-white shadow-sm hover:shadow-md"
       }`}
     >
       {highlighted ? (
-        <span className="absolute -top-3.5 start-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-pioneer-teal-normal px-3 py-1 text-xs font-bold text-white shadow">
+        <span className="absolute -top-3.5 start-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-pioneer-accent-blue px-3 py-1 text-xs font-bold text-white shadow">
           <Zap className="h-3 w-3" />
           {t("subscription.mostPopular", { defaultValue: "Most Popular" })}
         </span>
@@ -57,8 +57,8 @@ function PlanCard({ pkg, onGetStarted }) {
           <ul className="mt-6 space-y-3 flex-1">
             {descriptionLines.map((line, idx) => (
               <li key={`${pkg.id}-desc-${idx}`} className="flex items-start gap-2.5 text-sm text-slate-700">
-                <span className={`mt-0.5 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full ${highlighted ? "bg-[#fdf2e9]" : "bg-pioneer-teal-light"}`}>
-                  <Check className={`h-2.5 w-2.5 ${highlighted ? "text-[#EE7C11]" : "text-pioneer-teal-normal"}`} strokeWidth={3} />
+                <span className={`mt-0.5 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full ${highlighted ? "bg-[#fdf2e9]" : "bg-pioneer-accent-blue-light"}`}>
+                  <Check className={`h-2.5 w-2.5 ${highlighted ? "text-[#EE7C11]" : "text-pioneer-accent-blue"}`} strokeWidth={3} />
                 </span>
                 <span>{line}</span>
               </li>

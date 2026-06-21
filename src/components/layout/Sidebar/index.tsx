@@ -26,7 +26,7 @@ function Sidebar({ sections, isMobileOpen, setIsMobileOpen }: SidebarProps) {
 
   return (
     <aside
-      className={`${widthClass} h-screen shrink-0 border-e border-slate-200 bg-pioneer-light-card transition-transform duration-300 ease-in-out dark:border-white/6 dark:bg-pioneer-dark-card max-lg:fixed max-lg:inset-y-0 max-lg:start-0 max-lg:z-[100] max-lg:shadow-2xl max-lg:max-w-[min(16rem,85vw)] lg:max-w-none lg:sticky lg:top-0 lg:z-30 lg:self-start lg:shadow-none lg:!translate-x-0 ${isMobileOpen
+      className={`${widthClass} h-screen shrink-0 border-e border-slate-200 bg-pioneer-light-card transition-transform duration-300 ease-in-out dark:border-white/6 dark:bg-[#1E293B] max-lg:fixed max-lg:inset-y-0 max-lg:start-0 max-lg:z-[100] max-lg:shadow-2xl max-lg:max-w-[min(16rem,85vw)] lg:max-w-none lg:sticky lg:top-0 lg:z-30 lg:self-start lg:shadow-none lg:!translate-x-0 ${isMobileOpen
           ? "max-lg:translate-x-0"
           : "max-lg:ltr:-translate-x-full max-lg:rtl:translate-x-full"
         }`}

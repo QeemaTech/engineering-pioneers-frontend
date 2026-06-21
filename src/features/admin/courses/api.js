@@ -116,3 +116,23 @@ export async function removeCourseStaff({ courseId, staffId }) {
   const response = await client.delete(`${endpoints.admin.courseStaff(courseId)}/${staffId}`);
   return response?.data?.data || null;
 }
+
+export async function fetchCourseSessions(courseId) {
+  const response = await client.get(`${endpoints.admin.courses}/${courseId}/sessions`);
+  return response?.data?.data ?? [];
+}
+
+export async function createCourseSession(courseId, body) {
+  const response = await client.post(`${endpoints.admin.courses}/${courseId}/sessions`, body);
+  return response?.data?.data ?? null;
+}
+
+export async function updateCourseSession(courseId, sessionId, body) {
+  const response = await client.patch(`${endpoints.admin.courses}/${courseId}/sessions/${sessionId}`, body);
+  return response?.data?.data ?? null;
+}
+
+export async function deleteCourseSession(courseId, sessionId) {
+  const response = await client.delete(`${endpoints.admin.courses}/${courseId}/sessions/${sessionId}`);
+  return response?.data?.data ?? null;
+}

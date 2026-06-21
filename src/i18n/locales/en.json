@@ -67,6 +67,8 @@
       "integrations": "Integrations",
       "myClasses": "My Classes",
       "myCohorts": "My Cohorts",
+      "myCourses": "My Courses",
+      "qna": "Q&A",
       "performance": "My Performance",
       "homework": "Homework",
       "availability": "Availability",
@@ -358,6 +360,12 @@
         "linkExisting": "Link existing",
         "searchPlaceholder": "Search standalone exams...",
         "noAvailableExams": "No available exams found."
+      },
+      "sessions": {
+        "title": "Live sessions",
+        "subtitle": "Schedule group live sessions for this hybrid course.",
+        "courseOwner": "Course Owner",
+        "instructor": "Instructor"
       }
     },
     "userDirectory": {
@@ -456,7 +464,35 @@
       "suspendAccount": "Suspend Account",
       "delete": "Delete",
       "tabOverview": "Overview",
-      "tabPerformance": "Performance",
+      "tabPerformance": "Academic Performance",
+      "tabExams": "Exam Results",
+      "tabHomework": "Homework Submissions",
+      "tabCourses": "Enrolled Courses",
+      "loading": "Loading student profile...",
+      "loadError": "Failed to load student details.",
+      "quickActions": "Quick Actions",
+      "exams": {
+        "title": "Exam Submissions & Outcomes",
+        "empty": "No exam submissions found for this student.",
+        "colTitle": "Exam Title",
+        "colSubmitted": "Submitted Date",
+        "colScore": "Score",
+        "colPercent": "Percentage",
+        "colStatus": "Outcome",
+        "passed": "Passed",
+        "failed": "Failed",
+        "pending": "Pending"
+      },
+      "homeworks": {
+        "title": "Homework Submissions",
+        "empty": "No homework submissions found.",
+        "colTitle": "Homework Title",
+        "colCourse": "Course",
+        "colSubmitted": "Submitted Date",
+        "colGrade": "Grade",
+        "colStatus": "Status",
+        "colGraded": "Graded Date"
+      },
       "chartCompleteVsActive": "Completed vs in progress",
       "chartProgressPerCourse": "Progress per course",
       "perf": {
@@ -512,7 +548,7 @@
       "status": "Status",
       "reviews": "Reviews",
       "totalCourses": "Total Courses",
-      "totalStudents": "Total Students",
+      "totalStudents": "Enrolled Students",
       "totalRevenue": "Total Revenue",
       "avgRating": "Avg Rating",
       "period": "Period",
@@ -526,7 +562,63 @@
       "availabilitySubtitle": "Upcoming open slots this instructor published for bookings.",
       "availabilityEmpty": "No upcoming availability.",
       "availabilityLoadError": "Could not load availability for this instructor.",
-      "availabilitySlotStatus": "Open"
+      "availabilitySlotStatus": "Available",
+      "active": "Active",
+      "inactive": "Inactive",
+      "loadingProfile": "Loading instructor profile...",
+      "loadErrorTitle": "Failed to load instructor",
+      "loadErrorDesc": "The instructor details could not be retrieved.",
+      "yearsExp": "Years Exp",
+      "tabOverview": "Overview",
+      "tabWallet": "Wallet & Financials",
+      "tabCourses": "Courses",
+      "tabReviews": "Student Reviews",
+      "walletBalance": "Wallet Balance",
+      "totalEarnings": "Total Earnings",
+      "profileInfo": "Profile Information",
+      "experience": "Experience",
+      "years": "Years",
+      "studentsPerCourse": "Students per Course",
+      "noCourses": "No courses available for this instructor yet.",
+      "courseVisibility": "Course Visibility Mix",
+      "noCoursesYet": "No courses created yet.",
+      "quickActions": "Quick Actions",
+      "wallet": {
+        "currentBalance": "Current Balance",
+        "totalRevenue": "Total Revenue",
+        "totalWithdrawn": "Total Withdrawn",
+        "earningsHistory": "Earnings History Curve",
+        "transactions": "Wallet Transactions",
+        "noTransactions": "No transactions recorded yet in this wallet.",
+        "noPayouts": "No payout requests submitted yet.",
+        "payoutRequests": "Payout Requests",
+        "requestDate": "Request Date",
+        "amountRequested": "Amount Requested",
+        "status": "Status"
+      },
+      "courses": {
+        "title": "Instructor's Courses",
+        "empty": "No courses listed for this instructor.",
+        "colTitle": "Course Title",
+        "colType": "Type",
+        "colStudents": "Enrolled Students",
+        "colRating": "Rating",
+        "colStatus": "Publishing Status"
+      },
+      "availability": {
+        "title": "Availability Slots",
+        "subtitle": "Active calendar slots configured by the instructor for student bookings",
+        "loading": "Loading availability...",
+        "loadError": "Failed to load instructor slots.",
+        "refresh": "Refresh",
+        "empty": "No upcoming availability slots published yet."
+      },
+      "reviews": {
+        "title": "Student Reviews & Ratings",
+        "empty": "No reviews published yet for this instructor.",
+        "anonymous": "Anonymous Student",
+        "ratingOnly": "Left rating only (no written review)."
+      }
     },
     "payouts": {
       "title": "Payouts",
@@ -734,6 +826,101 @@
     "certificates": {
       "title": "Certificates",
       "subtitle": "Issue and track certificates for students"
+    },
+    "assessments": {
+      "title": "All Assessments",
+      "subtitle": "Track and manage quizzes and exams across the platform",
+      "add": "Add Exam",
+      "total": "Total Assessments",
+      "active": "Active / Completed",
+      "upcoming": "Upcoming / Draft",
+      "search": "Filter by exam, course, or type...",
+      "tip1Title": "Quick Search",
+      "tip1Body": "Filter by exam title, course, or type to quickly find records.",
+      "tip2Title": "Exam Builder",
+      "tip2Body": "Use Add Exam to create new quizzes/exams with questions and grading rules.",
+      "colAssessment": "Assessment",
+      "colType": "Type",
+      "colQuestions": "Questions",
+      "colDuration": "Duration",
+      "colPoints": "Points",
+      "colStatus": "Status",
+      "colActions": "Actions",
+      "standalone": "Standalone",
+      "minutes": "min",
+      "editTitle": "Edit Questions",
+      "viewTitle": "View Submissions",
+      "loading": "Loading exams...",
+      "loadError": "Failed to load exams.",
+      "statusCompleted": "Completed",
+      "statusAvailable": "Available",
+      "statusUpcoming": "Upcoming",
+      "statusDraft": "Draft"
+    },
+    "addExam": {
+      "title": "Create New Exam",
+      "subtitle": "Set the basics, then build your question bank in the editor.",
+      "quickStartTitle": "Quick Start, Full Power",
+      "quickStartDesc": "Fill in the essentials below. Once created, you'll be taken to the Exam Editor where you can add questions, set correct answers, and configure grading.",
+      "examTitle": "Exam Title",
+      "titlePlaceholder": "e.g. HSK 2 Midterm Exam",
+      "type": "Type",
+      "duration": "Duration (min)",
+      "totalPoints": "Total Points",
+      "passingScore": "Passing Score",
+      "cancel": "Cancel",
+      "creating": "Creating...",
+      "createBtn": "Create & Open Editor",
+      "errorRequired": "Title is required.",
+      "errorCreate": "Failed to create exam.",
+      "errorId": "Exam was created but ID was not returned.",
+      "types": {
+        "STANDALONE": "Standalone Exam",
+        "FINAL": "Final Exam",
+        "UNIT": "Unit Exam",
+        "LESSON": "Lesson Quiz"
+      }
+    },
+    "tickets": {
+      "title": "Support Tickets",
+      "subtitle": "Manage student and instructor support requests",
+      "newBtn": "New Ticket",
+      "statsOpen": "Open Tickets",
+      "statsInProgress": "In Progress",
+      "statsResolved": "Resolved Today",
+      "statsTotal": "Total This Month",
+      "searchPlaceholder": "Search tickets...",
+      "loading": "Loading tickets...",
+      "loadError": "Failed to load tickets.",
+      "emptyTitle": "No tickets found",
+      "emptyDesc": "Support requests will appear here when students or instructors submit them.",
+      "noAccess": "You do not have access to support management.",
+      "noMatch": "No tickets match your filters.",
+      "tooltipView": "View Ticket",
+      "tooltipResolve": "Resolve Ticket",
+      "statuses": {
+        "All": "All Statuses",
+        "Open": "Open",
+        "In Progress": "In Progress",
+        "Resolved": "Resolved",
+        "Closed": "Closed"
+      },
+      "priorities": {
+        "All": "All Priorities",
+        "High": "High",
+        "Medium": "Medium",
+        "Low": "Low"
+      },
+      "table": {
+        "id": "#",
+        "subject": "Subject",
+        "from": "From",
+        "category": "Category",
+        "priority": "Priority",
+        "status": "Status",
+        "date": "Date",
+        "actions": "Actions"
+      }
     }
   },
   "overview": {
@@ -761,6 +948,32 @@
     "chartsUnavailable": "Detailed charts are not available in this release; key stats are shown above.",
     "lastSynced": "Last synced",
     "minAgo": "2 min ago",
+    "newThisWeek": "new this week",
+    "quickActions": {
+      "title": "Quick Operational Actions",
+      "subtitle": "Common platform tasks",
+      "createCourse": "Create New Course",
+      "enrollStudent": "Enroll Student Manually",
+      "generateCoupon": "Generate Promo Coupon"
+    },
+    "recentPlatformActivity": "Recent Platform Activity",
+    "recentPlatformActivityHint": "Instant operational heartbeat view",
+    "noRecentActivity": "No platform activity recorded yet.",
+    "activityTypeAudit": "Audit",
+    "activityTypeSession": "Session",
+    "revenueStreams": "Revenue Streams Split",
+    "revenueStreamsHint": "Recorded vs Subscriptions vs Live",
+    "recordedCourses": "Recorded Courses",
+    "packages": "Subscriptions & Packages",
+    "liveCohorts": "Live Cohorts",
+    "totalSales": "Total Sales",
+    "securityGuardrail": "Security Guardrail",
+    "concurrentSessions": "Flagged Concurrent Sessions",
+    "forceLogouts": "Force Logouts Today",
+    "operationalBottlenecks": "Operational Bottlenecks",
+    "ticketsBacklog": "Tickets Backlog",
+    "reviewQueue": "Course Review Queue",
+    "platformVolume": "Platform Volume",
     "advanced": {
       "audience": {
         "title": "Audience Overview",
@@ -1869,6 +2082,10 @@
       "actions": "Actions",
       "save": "Save",
       "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete",
+      "edit": "Edit",
+      "delete": "Delete",
       "submit": "Submit",
       "reply": "Reply",
       "active": "Active",
@@ -2062,6 +2279,10 @@
           "title": "My Cohorts",
           "subtitle": "Cohorts you teach and enrolled learners."
         },
+        "courses": {
+          "title": "My Courses",
+          "subtitle": "Courses you teach and enrolled learners."
+        },
         "homework": {
           "title": "Homework queue",
           "subtitle": "Review pending submissions and leave grades."
@@ -2101,7 +2322,7 @@
           "loadError": "Could not load this student.",
           "forbidden": "You do not have access to this student.",
           "noActivity": "No enrollment activity to show yet.",
-          "scopedNote": "Statistics and progress reflect only cohorts you teach.",
+          "scopedNote": "Statistics and progress reflect only courses you teach.",
           "viewProgress": "View progress"
         },
         "qna": {
@@ -2174,6 +2395,50 @@
         "emptyTitle": "No cohorts found",
         "emptyDescription": "No cohorts match this filter."
       },
+      "courses": {
+        "titleCol": "Course",
+        "type": "Type",
+        "published": "Published",
+        "active": "Active",
+        "inactive": "Inactive",
+        "enrollments": "Enrollments",
+        "upcomingSessions": "Upcoming sessions",
+        "viewStudents": "Students",
+        "manageSessions": "Sessions",
+        "sessionsSubtitle": "Schedule live sessions and add recording links.",
+        "addSession": "Add session",
+        "editSession": "Edit session",
+        "sessionTitle": "Session title",
+        "meetingUrl": "Meeting URL",
+        "recordingUrl": "Recording URL",
+        "sessionCreated": "Session created.",
+        "sessionUpdated": "Session updated.",
+        "sessionDeleted": "Session deleted.",
+        "sessionError": "Could not save session.",
+        "noSessions": "No sessions scheduled yet.",
+        "untitledSession": "Live session",
+        "statusUpcoming": "Upcoming",
+        "statusOngoing": "Ongoing",
+        "statusCompleted": "Completed",
+        "statusMissed": "Missed",
+        "emptyTitle": "No courses found",
+        "emptyDescription": "Courses assigned to you will appear here."
+      },
+      "overview": {
+        "totalStudents": "Total students",
+        "activeCourses": "Active courses",
+        "upcomingSessions": "Upcoming sessions",
+        "totalEarnings": "Total earnings",
+        "walletBalance": "Wallet balance",
+        "earningsTrend": "Earnings trend",
+        "earnings": "Earnings",
+        "reviewsSnapshot": "Reviews",
+        "avgRatingLine": "Avg. {{rating}} / 5",
+        "topCourses": "Top courses by enrollment",
+        "allYourCourses": "All your courses",
+        "upcomingSessionsTitle": "Next live sessions",
+        "upcomingSessionsHint": "Your nearest scheduled sessions"
+      },
       "exams": {
         "titleCol": "Exam",
         "duration": "Duration",
@@ -2238,7 +2503,7 @@
           "markOpened": "Mark opened",
           "markClosed": "Close without grade",
           "resetNew": "Mark not opened",
-          "courseLine": "{{course}} · {{cohort}}",
+          "courseLine": "{{course}}",
           "emptyFilter": "No submissions in this filter.",
           "emptyAll": "When students submit homework, they will appear here.",
           "emptyTitle": "No submissions yet",
@@ -2255,12 +2520,18 @@
       },
       "qna": {
         "lessonIdPlaceholder": "Enter lesson ID",
-        "replyPlaceholder": "Write your reply..."
+        "replyPlaceholder": "Write your reply...",
+        "selectCourse": "Select course",
+        "allCourses": "All courses",
+        "noQuestions": "No questions found for this filter."
       },
       "students": {
-        "selectClass": "Select class",
+        "selectClass": "Select course",
+        "selectCourse": "Select course",
+        "purchasedAt": "Purchased",
+        "progress": "Progress",
         "emptyTitle": "No students found",
-        "emptyDescription": "Select a class to view enrolled students."
+        "emptyDescription": "Select a course to view enrolled students."
       }
     }
   }

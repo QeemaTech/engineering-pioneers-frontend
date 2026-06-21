@@ -43,6 +43,7 @@ export function hasAdminAccess(user) {
 
   const roleName = String(user.role?.name || user.role || "").toUpperCase();
   if (roleName === "SUPER_ADMIN") return true;
+  if (roleName === "INSTRUCTOR" || roleName === "STUDENT") return false;
 
   const adminPrefixes = [
     "dashboard:",

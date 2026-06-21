@@ -9,7 +9,6 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import Explore from "./pages/Explore";
-import Subscription from "./pages/Subscription";
 import MyClasses from "./pages/MyClasses";
 import CourseView from "./pages/CourseView";
 import Homework from "./pages/Homework";
@@ -67,7 +66,7 @@ function App() {
           <Route index element={<RoleLanding />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/courses" element={<Explore />} />
-          <Route path="/subscription" element={<Subscription />} />
+          <Route path="/subscription" element={<Navigate to="/courses" replace />} />
           <Route path="/faq" element={<FaqPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/blogs" element={<BlogsPage />} />

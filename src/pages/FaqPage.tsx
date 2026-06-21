@@ -80,8 +80,8 @@ export default function FaqPage() {
         </div>
 
         <p className="mt-10 text-center text-sm text-slate-500">
-          <Link to="/subscription" className="font-semibold text-pioneer-orange-normal hover:underline">
-            {t("publicFaq.footerPlans")}
+          <Link to="/courses" className="font-semibold text-pioneer-orange-normal hover:underline">
+            {t("publicFaq.footerExplore", { defaultValue: "Browse our courses →" })}
           </Link>
         </p>
       </div>

@@ -28,7 +28,7 @@ function SettingsSection({ title, icon: Icon, children }) {
         <Icon className="h-4 w-4 text-slate-500" />
         <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">{title}</h3>
       </div>
-      <div className="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/8 dark:bg-[#1A1A22]">
+      <div className="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-[#1E293B]">
         {children}
       </div>
     </div>
@@ -64,7 +64,7 @@ function SettingsInputField({ label, value, onChange, placeholder, type = "text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#EE7C11] focus:ring-1 focus:ring-[#0D9488]/30 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white dark:focus:border-[#EE7C11] dark:focus:ring-[#0D9488]/30"
+        className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#EE7C11] focus:ring-1 focus:ring-[#3B82F6]/30 dark:border-white/10 dark:bg-[#1E293B] dark:text-white dark:focus:border-[#EE7C11] dark:focus:ring-[#3B82F6]/30"
       />
     </div>
   );

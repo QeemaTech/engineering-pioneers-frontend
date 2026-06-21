@@ -168,7 +168,7 @@ function Instructors() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={t("dashboard.common.search")}
-                className="h-10 w-64 rounded-lg border border-slate-200 bg-white ps-9 pe-4 text-sm font-medium text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-[#EE7C11] focus:ring-1 focus:ring-[#0D9488]/30 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white dark:placeholder:text-slate-600 dark:focus:border-[#EE7C11] dark:focus:ring-[#0D9488]/30"
+                className="h-10 w-64 rounded-lg border border-slate-200 bg-white ps-9 pe-4 text-sm font-medium text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-[#EE7C11] focus:ring-1 focus:ring-[#3B82F6]/30 dark:border-slate-800 dark:bg-[#1E293B] dark:text-white dark:placeholder:text-slate-600 dark:focus:border-[#EE7C11] dark:focus:ring-[#3B82F6]/30"
               />
             </div>
             <button onClick={openCreate} className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#EE7C11] px-5 text-sm font-bold text-white shadow-xl shadow-[#EE7C11]/20 transition-all hover:bg-[#d9700e] active:scale-95">
@@ -191,7 +191,7 @@ function Instructors() {
 
       {activeForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0F0F13]/80 p-4 backdrop-blur-md">
-          <form onSubmit={onSubmit} className="w-full max-w-2xl rounded-xl border border-slate-200 bg-white p-8 shadow-2xl dark:border-white/10 dark:bg-[#1A1A22]">
+          <form onSubmit={onSubmit} className="w-full max-w-2xl rounded-xl border border-slate-200 bg-white p-8 shadow-2xl dark:border-slate-800 dark:bg-[#1E293B]">
             <h3 className="mb-6 text-xl font-bold tracking-tight text-slate-900 dark:text-white">
               {activeForm.mode === "create" ? t("dashboard.admin.instructors.add") : t("dashboard.admin.instructors.edit")}
             </h3>
@@ -203,7 +203,7 @@ function Instructors() {
                   </label>
                   <input 
                     {...form.register(field)} 
-                    className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#EE7C11] focus:ring-1 focus:ring-[#0D9488]/30 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white dark:focus:border-[#EE7C11] dark:focus:ring-[#0D9488]/30"
+                    className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#EE7C11] focus:ring-1 focus:ring-[#3B82F6]/30 dark:border-slate-800 dark:bg-[#1E293B] dark:text-white dark:focus:border-[#EE7C11] dark:focus:ring-[#3B82F6]/30"
                   />
                 </div>
               ))}
@@ -216,7 +216,7 @@ function Instructors() {
                     {...form.register("password")} 
                     type="password" 
                     placeholder="••••••••" 
-                    className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#EE7C11] focus:ring-1 focus:ring-[#0D9488]/30 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white dark:focus:border-[#EE7C11] dark:focus:ring-[#0D9488]/30"
+                    className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#EE7C11] focus:ring-1 focus:ring-[#3B82F6]/30 dark:border-slate-800 dark:bg-[#1E293B] dark:text-white dark:focus:border-[#EE7C11] dark:focus:ring-[#3B82F6]/30"
                   />
                 </div>
               )}
@@ -226,7 +226,7 @@ function Instructors() {
                 </label>
                 <textarea 
                   {...form.register("bio")} 
-                  className="min-h-24 w-full rounded-lg border border-slate-200 bg-white p-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#EE7C11] focus:ring-1 focus:ring-[#0D9488]/30 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white dark:focus:border-[#EE7C11] dark:focus:ring-[#0D9488]/30"
+                  className="min-h-24 w-full rounded-lg border border-slate-200 bg-white p-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#EE7C11] focus:ring-1 focus:ring-[#3B82F6]/30 dark:border-slate-800 dark:bg-[#1E293B] dark:text-white dark:focus:border-[#EE7C11] dark:focus:ring-[#3B82F6]/30"
                 />
               </div>
             </div>
@@ -245,7 +245,7 @@ function Instructors() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="New password (min 8 chars)"
-                    className="h-11 flex-1 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#EE7C11] focus:ring-1 focus:ring-[#0D9488]/30 dark:border-white/10 dark:bg-[#1A1A22] dark:text-white"
+                    className="h-11 flex-1 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#EE7C11] focus:ring-1 focus:ring-[#3B82F6]/30 dark:border-slate-800 dark:bg-[#1E293B] dark:text-white"
                   />
                   <button
                     type="button"

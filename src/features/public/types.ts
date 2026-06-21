@@ -6,33 +6,16 @@ export type PublicPaginationMeta = {
   totalPages: number;
 };
 
-export type PublicPackage = {
-  id: string;
-  name: string;
-  description?: string | null;
-  price: number;
-  durationMonths: number;
-  isActive: boolean;
-  isRecommended: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-};
+export type CourseType = "HYBRID" | "RECORDED";
 
-export type PublicCohortSummary = {
+export type PublicLiveSession = {
   id: string;
-  name: string;
+  title: string | null;
   type: string;
   status: string;
-  startDate: string | null;
-  endDate?: string | null;
-  price: number;
-  instructor?: {
-    id: string;
-    fullName: string;
-    avatar?: string | null;
-    bio?: string | null;
-  } | null;
-  _count?: { enrollments: number };
+  startTime: string;
+  endTime: string;
+  price?: number | null;
 };
 
 export type PublicCourseCategory = {
@@ -41,15 +24,24 @@ export type PublicCourseCategory = {
   slug: string;
 } | null;
 
+export type PublicInstructor = {
+  id: string;
+  fullName: string;
+  avatar?: string | null;
+  bio?: string | null;
+} | null;
+
 export type PublicCourseListItem = {
   id: string;
   title: string;
   description: string | null;
   thumbnail: string | null;
+  type: CourseType;
+  price: number;
+  isLifetimePurchasable: boolean;
   category?: PublicCourseCategory;
-  instructor?: PublicCohortSummary["instructor"] | null;
-  availableCohorts: PublicCohortSummary[];
-  _count: { cohorts: number };
+  instructor?: PublicInstructor;
+  _count: { purchases: number };
 };
 
 export type PublicCoursesListResult = {
@@ -63,10 +55,13 @@ export type PublicCourseDetail = {
   description: string | null;
   thumbnail: string | null;
   introVideoUrl?: string | null;
+  type: CourseType;
+  price: number;
+  isLifetimePurchasable: boolean;
   category?: PublicCourseCategory;
-  instructor?: PublicCohortSummary["instructor"] | null;
-  availableCohorts: PublicCohortSummary[];
-  _count: { cohorts: number };
+  instructor?: PublicInstructor;
+  liveSessions: PublicLiveSession[];
+  _count: { purchases: number };
 };
 
 export type PublicPostAuthor = {

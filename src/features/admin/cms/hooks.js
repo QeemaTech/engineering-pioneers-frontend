@@ -12,6 +12,7 @@ import {
   fetchPosts,
   fetchSections,
   updateAboutUs,
+  updateHero,
   updateBanner,
   updateFaqItem,
   updatePost,
@@ -37,6 +38,7 @@ function invalidateCms(queryClient) {
   queryClient.invalidateQueries({ queryKey: ["admin", "cms", "sections"] });
   queryClient.invalidateQueries({ queryKey: ["admin", "cms", "posts"] });
   queryClient.invalidateQueries({ queryKey: ["admin", "cms", "banners"] });
+  queryClient.invalidateQueries({ queryKey: ["public", "landing-page"] });
 }
 
 export function useAddFaqItem() {
@@ -75,6 +77,14 @@ export function useUpdateAboutUs() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateAboutUs,
+    onSuccess: () => invalidateCms(queryClient),
+  });
+}
+
+export function useUpdateHero() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateHero,
     onSuccess: () => invalidateCms(queryClient),
   });
 }

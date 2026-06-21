@@ -20,6 +20,10 @@ import {
   updateAdminCourse,
   updateAdminLesson,
   updateAdminUnit,
+  fetchCourseSessions,
+  createCourseSession,
+  updateCourseSession,
+  deleteCourseSession,
 } from "./api";
 
 export function useAdminCourses(params) {
@@ -197,6 +201,45 @@ export function useRemoveCourseStaff() {
     mutationFn: removeCourseStaff,
     onSuccess: (_, vars) => {
       queryClient.invalidateQueries({ queryKey: ["admin", "course", vars?.courseId, "staff"] });
+    },
+  });
+}
+
+export function useCourseSessions(courseId) {
+  return useQuery({
+    queryKey: ["admin", "course", courseId, "sessions"],
+    queryFn: () => fetchCourseSessions(courseId),
+    enabled: !!courseId,
+    retry: false,
+  });
+}
+
+export function useCreateCourseSession() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ courseId, body }) => createCourseSession(courseId, body),
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "course", vars.courseId, "sessions"] });
+    },
+  });
+}
+
+export function useUpdateCourseSession() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ courseId, sessionId, body }) => updateCourseSession(courseId, sessionId, body),
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "course", vars.courseId, "sessions"] });
+    },
+  });
+}
+
+export function useDeleteCourseSession() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ courseId, sessionId }) => deleteCourseSession(courseId, sessionId),
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "course", vars.courseId, "sessions"] });
     },
   });
 }

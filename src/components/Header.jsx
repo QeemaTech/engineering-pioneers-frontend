@@ -311,7 +311,6 @@ export default function Header() {
 
   const navItems = [
     { to: "/", label: t("header.nav.home") },
-    { to: "/subscription", label: t("header.nav.subscription") },
     { to: "/explore", label: t("header.nav.explore") },
     { to: "/my-classes", label: t("header.nav.myClasses") },
     ...(isAuthenticated && isStudent ? [{ to: "/book-session", label: t("header.nav.bookPrivate") }] : []),

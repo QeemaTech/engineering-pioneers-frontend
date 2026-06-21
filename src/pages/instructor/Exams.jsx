@@ -52,16 +52,10 @@ function Exams() {
   const { data, isLoading, isError, error, refetch } = useInstructorExams({
     search: query.search || undefined,
   });
-  const { data: classesData } = useInstructorClasses({ page: 1, limit: 200, status: "" });
+  const { data: classesData } = useInstructorClasses({ page: 1, limit: 200 });
 
   const courses = useMemo(() => {
-    const m = new Map();
-    for (const c of classesData?.classes || []) {
-      const id = c.course?.id;
-      const title = c.course?.title;
-      if (id && title && !m.has(id)) m.set(id, title);
-    }
-    return Array.from(m.entries()).map(([id, title]) => ({ id, title }));
+    return (classesData?.classes || []).map((c) => ({ id: c.id, title: c.title }));
   }, [classesData]);
 
   const [courseId, setCourseId] = useState("");

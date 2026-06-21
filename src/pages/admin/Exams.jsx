@@ -99,33 +99,96 @@ function Exams() {
         />
       </div>
 
-      {isLoading ? <div className="rounded-xl border border-slate-200 bg-white p-5 text-slate-500 dark:border-white/8 dark:bg-[#1A1A22]">Loading exams...</div> : null}
-      {isError ? <div className="rounded-xl border border-red-200 bg-[#EE7C11]/10 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-[#EE7C11]/10 dark:text-red-300">{getErrorMessage(error, "Failed to load exams.")}<button onClick={() => refetch()} className="ms-3 rounded bg-[#EE7C11] px-2 py-1 text-xs font-bold text-white">Retry</button></div> : null}
+      {isLoading ? (
+        <div className="rounded-xl border border-slate-200 bg-white p-5 text-slate-500 dark:border-white/8 dark:bg-[#1A1A22]">
+          {t("adminPages.assessments.loading", { defaultValue: "Loading exams..." })}
+        </div>
+      ) : null}
+      {isError ? (
+        <div className="rounded-xl border border-red-200 bg-[#EE7C11]/10 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-[#EE7C11]/10 dark:text-red-300">
+          {getErrorMessage(error, t("adminPages.assessments.loadError", { defaultValue: "Failed to load exams." }))}
+          <button onClick={() => refetch()} className="ms-3 rounded bg-[#EE7C11] px-2 py-1 text-xs font-bold text-white">
+            {t("takeExam.retry", { defaultValue: "Retry" })}
+          </button>
+        </div>
+      ) : null}
       {!isLoading && !isError ? (
         <DataTable
           columns={[
-            { key: "title", title: "Assessment", render: (v, row) => (
-              <div className="flex flex-col">
-                <span className="font-bold text-slate-900 dark:text-white">{v}</span>
-                <span className="text-[11px] text-slate-500 dark:text-slate-400">{row?.course?.title || row?.unit?.title || row?.lesson?.title || "Standalone"}</span>
-              </div>
-            )},
-            { key: "type", title: "Type" },
-            { key: "_count", title: "Questions", render: (v) => <span className="font-bold">{v?.questions ?? 0}</span> },
-            { key: "durationMinutes", title: "Duration", render: (v) => `${v || 0} min` },
-            { key: "totalPoints", title: "Points" },
-            { key: "status", title: "Status", render: (v) => (
-              <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-bold ${v === "COMPLETED" || v === "AVAILABLE" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300" : "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300"}`}>
-                {v === "COMPLETED" || v === "AVAILABLE" ? <CheckCircle2 className="me-1 h-3 w-3" /> : <XCircle className="me-1 h-3 w-3" />}{v}
-              </span>
-            )},
-            { key: "actions", title: "Actions", render: (_, row) => (
-              <div className="flex items-center gap-1">
-                <Link to={`/admin/exams/${row.id}/edit`} className="rounded p-1.5 text-blue-500 hover:bg-blue-500/10" title="Edit Questions"><Edit3 className="h-4 w-4" /></Link>
-                <Link to={`/admin/exams/${row.id}/submissions`} className="rounded p-1.5 text-purple-500 hover:bg-purple-500/10" title="View Submissions"><Eye className="h-4 w-4" /></Link>
-                <button onClick={() => deleteMutation.mutate(row.id)} className="rounded p-1.5 text-red-500 hover:bg-[#EE7C11]/10"><Trash2 className="h-4 w-4" /></button>
-              </div>
-            )},
+            {
+              key: "title",
+              title: t("adminPages.assessments.colAssessment", { defaultValue: "Assessment" }),
+              render: (v, row) => (
+                <div className="flex flex-col">
+                  <span className="font-bold text-slate-900 dark:text-white">{v}</span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                    {row?.course?.title || row?.unit?.title || row?.lesson?.title || t("adminPages.assessments.standalone", { defaultValue: "Standalone" })}
+                  </span>
+                </div>
+              ),
+            },
+            {
+              key: "type",
+              title: t("adminPages.assessments.colType", { defaultValue: "Type" }),
+            },
+            {
+              key: "_count",
+              title: t("adminPages.assessments.colQuestions", { defaultValue: "Questions" }),
+              render: (v) => <span className="font-bold">{v?.questions ?? 0}</span>,
+            },
+            {
+              key: "durationMinutes",
+              title: t("adminPages.assessments.colDuration", { defaultValue: "Duration" }),
+              render: (v) => `${v || 0} ${t("adminPages.assessments.minutes", { defaultValue: "min" })}`,
+            },
+            {
+              key: "totalPoints",
+              title: t("adminPages.assessments.colPoints", { defaultValue: "Points" }),
+            },
+            {
+              key: "status",
+              title: t("adminPages.assessments.colStatus", { defaultValue: "Status" }),
+              render: (v) => {
+                const isAvailable = v === "COMPLETED" || v === "AVAILABLE";
+                const label = v === "COMPLETED" ? t("adminPages.assessments.statusCompleted", { defaultValue: "Completed" }) :
+                              v === "AVAILABLE" ? t("adminPages.assessments.statusAvailable", { defaultValue: "Available" }) :
+                              v === "UPCOMING" ? t("adminPages.assessments.statusUpcoming", { defaultValue: "Upcoming" }) :
+                              v === "DRAFT" ? t("adminPages.assessments.statusDraft", { defaultValue: "Draft" }) : v;
+                return (
+                  <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-bold ${isAvailable ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300" : "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300"}`}>
+                    {isAvailable ? <CheckCircle2 className="me-1 h-3 w-3" /> : <XCircle className="me-1 h-3 w-3" />}{label}
+                  </span>
+                );
+              },
+            },
+            {
+              key: "actions",
+              title: t("adminPages.assessments.colActions", { defaultValue: "Actions" }),
+              render: (_, row) => (
+                <div className="flex items-center gap-1">
+                  <Link
+                    to={`/admin/exams/${row.id}/edit`}
+                    className="rounded p-1.5 text-blue-500 hover:bg-blue-500/10"
+                    title={t("adminPages.assessments.editTitle", { defaultValue: "Edit Questions" })}
+                  >
+                    <Edit3 className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    to={`/admin/exams/${row.id}/submissions`}
+                    className="rounded p-1.5 text-purple-500 hover:bg-purple-500/10"
+                    title={t("adminPages.assessments.viewTitle", { defaultValue: "View Submissions" })}
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Link>
+                  <button
+                    onClick={() => deleteMutation.mutate(row.id)}
+                    className="rounded p-1.5 text-red-500 hover:bg-[#EE7C11]/10"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ),
+            },
           ]}
           rows={filteredExams}
         />

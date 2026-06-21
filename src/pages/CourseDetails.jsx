@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   BookOpen,
   Headphones,
   ChevronRight,
   FileText,
   Globe,
-  Layers,
+  Calendar,
   Play,
   ShieldCheck,
   Star,
@@ -44,10 +44,10 @@ function initials(name) {
   return name.slice(0, 2).toUpperCase();
 }
 
-function formatDate(iso) {
+function formatDateTime(iso) {
   if (!iso) return "—";
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleDateString();
+  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString();
 }
 
 const INCLUSIONS = [
@@ -62,8 +62,6 @@ const INCLUSIONS = [
 export default function CourseDetails() {
   const { t } = useTranslation();
   const { id } = useParams();
-  const [searchParams] = useSearchParams();
-  const cohortFromUrl = searchParams.get("cohort") || searchParams.get("cohortId") || "";
 
   const hydrated = useAuthStore((s) => s.hydrated);
   const isAuth = useAuthStore((s) => s.isAuthenticated);
@@ -77,76 +75,35 @@ export default function CourseDetails() {
     enabled: Boolean(hydrated && isAuth && isStudent),
   });
 
-  const cohorts = course?.availableCohorts ?? [];
-  const [selectedCohortId, setSelectedCohortId] = useState("");
-
-  useEffect(() => {
-    if (!cohorts.length) {
-      setSelectedCohortId("");
-      return;
-    }
-    if (cohortFromUrl && cohorts.some((c) => c.id === cohortFromUrl)) {
-      setSelectedCohortId(cohortFromUrl);
-      return;
-    }
-    setSelectedCohortId((prev) => (prev && cohorts.some((c) => c.id === prev) ? prev : cohorts[0].id));
-  }, [cohorts, cohortFromUrl]);
-
-  const enrolledCohortIds = useMemo(() => {
+  const enrolledCourseIds = useMemo(() => {
     const set = new Set();
     for (const row of myCourses) {
-      if (row?.cohortId) set.add(row.cohortId);
+      if (row?.id) set.add(row.id);
+      if (row?.courseId) set.add(row.courseId);
     }
     return set;
   }, [myCourses]);
 
-  const isEnrolledInSelected = Boolean(isStudent && selectedCohortId && enrolledCohortIds.has(selectedCohortId));
+  const isEnrolled = Boolean(isStudent && course?.id && enrolledCourseIds.has(course.id));
+  const showAuthHydrating = Boolean(course?.id && !hydrated);
+  const showEnrollmentSpinner = Boolean(course?.id && hydrated && isAuth && isStudent && enrollmentsLoading);
 
-  /** Wait for persisted auth before choosing guest vs logged-in CTAs. */
-  const showAuthHydrating = Boolean(selectedCohortId && !hydrated);
-
-  /** Students: wait for my-courses to know enrolled vs checkout CTA. */
-  const showEnrollmentSpinner = Boolean(
-    selectedCohortId && hydrated && isAuth && isStudent && enrollmentsLoading
-  );
-
-  const selectedCohort = useMemo(
-    () => cohorts.find((c) => c.id === selectedCohortId) ?? null,
-    [cohorts, selectedCohortId]
-  );
-
-  const enrollQuery = useMemo(() => {
-    if (!course?.id || !selectedCohortId) return "";
-    const p = new URLSearchParams({ courseId: course.id, cohortId: selectedCohortId });
-    return p.toString();
-  }, [course?.id, selectedCohortId]);
-
-  const coursePathWithCohort = useMemo(() => {
-    if (!course?.id) return `/courses/${id ?? ""}`;
-    const base = `/courses/${course.id}`;
-    return selectedCohortId ? `${base}?cohort=${encodeURIComponent(selectedCohortId)}` : base;
-  }, [course?.id, id, selectedCohortId]);
+  const coursePath = course?.id ? `/courses/${course.id}` : `/courses/${id ?? ""}`;
 
   const loginHref = useMemo(() => {
-    const redirect = encodeURIComponent(coursePathWithCohort);
+    const redirect = encodeURIComponent(coursePath);
     return `/login?redirect=${redirect}`;
-  }, [coursePathWithCohort]);
+  }, [coursePath]);
 
-  const checkoutHref = useMemo(() => {
-    if (!course?.id || !selectedCohortId) return "/checkout";
-    const q = new URLSearchParams({ courseId: course.id, cohortId: selectedCohortId });
-    return `/checkout?${q.toString()}`;
-  }, [course?.id, selectedCohortId]);
+  const checkoutHref = course?.id ? `/checkout?courseId=${encodeURIComponent(course.id)}` : "/checkout";
+  const continueLearningHref = course?.id ? `/course/${course.id}` : "/my-classes";
 
-  const continueLearningHref = useMemo(() => {
-    if (!course?.id || !selectedCohortId) return "/my-classes";
-    const q = new URLSearchParams({ cohortId: selectedCohortId });
-    return `/course/${course.id}?${q.toString()}`;
-  }, [course?.id, selectedCohortId]);
-
-  const instructorForCard = selectedCohort?.instructor || course?.instructor;
+  const displayPrice = course?.isLifetimePurchasable ? Number(course.price) : null;
+  const liveSessions = course?.type === "HYBRID" ? course.liveSessions ?? [] : [];
+  const instructorForCard = course?.instructor;
   const displayRating = 4.8;
   const reviewCount = 0;
+  const purchaseCount = course?._count?.purchases ?? 0;
 
   if (isLoading) {
     return (
@@ -204,27 +161,51 @@ export default function CourseDetails() {
                 </div>
                 <span className="flex items-center gap-1.5 text-sm text-slate-500">
                   <Users className="h-4 w-4 text-slate-400" />
-                  {cohorts.reduce((acc, c) => acc + Number(c._count?.enrollments ?? 0), 0)} {t("courseDetails.students")}
+                  {purchaseCount} {t("courseDetails.students")}
                 </span>
-                <span className="flex items-center gap-1.5 text-sm text-slate-500">
-                  <LayersIcon cohorts={cohorts} />
+                <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-700">
+                  {course.type === "HYBRID"
+                    ? t("courseDetails.type.hybrid", { defaultValue: "Hybrid (live + recorded)" })
+                    : t("courseDetails.type.recorded", { defaultValue: "Recorded" })}
                 </span>
               </div>
             </div>
 
-            <section className="overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
-              <h2 className="mb-2 text-xl font-bold text-slate-900">{t("courseDetails.cohorts.title")}</h2>
-              <p className="mb-5 text-sm text-slate-500">{t("courseDetails.cohorts.subtitle")}</p>
-              {cohorts.length === 0 ? (
-                <p className="text-sm text-amber-700">{t("courseDetails.cohorts.none")}</p>
-              ) : (
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {cohorts.map((c) => (
-                    <CohortOption key={c.id} cohort={c} selected={c.id === selectedCohortId} onSelect={() => setSelectedCohortId(c.id)} />
-                  ))}
-                </div>
-              )}
-            </section>
+            {course.type === "HYBRID" ? (
+              <section className="overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
+                <h2 className="mb-2 text-xl font-bold text-slate-900">
+                  {t("courseDetails.liveSessions.title", { defaultValue: "Upcoming live sessions" })}
+                </h2>
+                <p className="mb-5 text-sm text-slate-500">
+                  {t("courseDetails.liveSessions.subtitle", { defaultValue: "Included with your course purchase." })}
+                </p>
+                {liveSessions.length === 0 ? (
+                  <p className="text-sm text-amber-700">
+                    {t("courseDetails.liveSessions.none", { defaultValue: "No upcoming sessions scheduled yet." })}
+                  </p>
+                ) : (
+                  <ul className="space-y-3">
+                    {liveSessions.map((session) => (
+                      <li
+                        key={session.id}
+                        className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4"
+                      >
+                        <Calendar className="mt-0.5 h-4 w-4 shrink-0 text-pioneer-orange-normal" />
+                        <div>
+                          <p className="font-semibold text-slate-900">{session.title || t("courseDetails.liveSessions.untitled", { defaultValue: "Live session" })}</p>
+                          <p className="mt-1 text-xs text-slate-500">
+                            {formatDateTime(session.startTime)} → {formatDateTime(session.endTime)}
+                          </p>
+                          <p className="mt-1 text-xs text-slate-500">
+                            {t("courseDetails.liveSessions.status", { defaultValue: "Status" })}: {session.status}
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+            ) : null}
 
             <section className="overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
               <h2 className="mb-4 text-xl font-bold text-slate-900">{t("courseDetails.curriculum.title")}</h2>
@@ -269,20 +250,27 @@ export default function CourseDetails() {
               </div>
 
               <div className="p-5">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("courseDetails.cohorts.selected")}</p>
-                <p className="mt-1 text-sm font-bold text-slate-900">{selectedCohort?.name || "—"}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  {t("courseDetails.card.priceLabel", { defaultValue: "Course price" })}
+                </p>
 
                 <div className="mb-4 mt-3 flex items-end gap-2">
                   <span className="text-3xl font-extrabold text-slate-900">
-                    {selectedCohort ? `$${Number(selectedCohort.price).toFixed(0)}` : "—"}
+                    {displayPrice == null
+                      ? "—"
+                      : displayPrice === 0
+                        ? t("explore.free", { defaultValue: "Free" })
+                        : `$${displayPrice.toFixed(0)}`}
                   </span>
                 </div>
 
-                {!selectedCohortId ? (
-                  <p className="mb-3 text-xs text-amber-700">{t("courseDetails.cohorts.pickFirst")}</p>
+                {!course.isLifetimePurchasable ? (
+                  <p className="mb-3 text-xs text-amber-700">
+                    {t("courseDetails.card.notPurchasable", { defaultValue: "This course is not available for purchase." })}
+                  </p>
                 ) : null}
 
-                {!selectedCohortId ? null : showAuthHydrating ? (
+                {showAuthHydrating ? (
                   <div className="mb-3 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-200 py-3 text-sm font-semibold text-slate-600 dark:bg-white/10 dark:text-slate-300">
                     {t("courseDetails.card.loadingSession", { defaultValue: "Loading…" })}
                   </div>
@@ -301,13 +289,13 @@ export default function CourseDetails() {
                       {t("courseDetails.card.logInToEnroll", { defaultValue: "Log in to Enroll" })}
                     </Link>
                     <Link
-                      to={`/signup?${enrollQuery}`}
+                      to={`/signup?redirect=${encodeURIComponent(coursePath)}`}
                       className="flex w-full items-center justify-center rounded-xl border border-slate-200 py-3 text-sm font-semibold text-slate-800 transition hover:border-pioneer-orange-normal hover:text-pioneer-orange-normal dark:border-white/10 dark:text-slate-200"
                     >
                       {t("courseDetails.cohorts.continueSignup")}
                     </Link>
                   </div>
-                ) : isStudent && isEnrolledInSelected ? (
+                ) : isStudent && isEnrolled ? (
                   <Link
                     to={continueLearningHref}
                     className="flex w-full items-center justify-center gap-2 rounded-xl bg-pioneer-teal-normal py-3 text-sm font-bold text-white transition hover:bg-pioneer-teal-hover"
@@ -315,17 +303,17 @@ export default function CourseDetails() {
                     <BookOpen className="h-4 w-4" />
                     {t("courseDetails.card.continueLearning")}
                   </Link>
-                ) : (
+                ) : course.isLifetimePurchasable ? (
                   <Link
                     to={checkoutHref}
                     className="flex w-full items-center justify-center gap-2 rounded-xl bg-pioneer-orange-normal py-3 text-sm font-bold text-white transition hover:bg-pioneer-orange-hover"
                   >
                     <BookOpen className="h-4 w-4" />
                     {t("courseDetails.card.enrollWithPrice", {
-                      price: selectedCohort ? `$${Number(selectedCohort.price).toFixed(0)}` : "—",
+                      price: displayPrice != null ? `$${displayPrice.toFixed(0)}` : "—",
                     })}
                   </Link>
-                )}
+                ) : null}
 
                 <p className="mt-3 text-center text-xs text-slate-400">{t("courseDetails.card.guarantee")}</p>
 
@@ -346,44 +334,5 @@ export default function CourseDetails() {
         </div>
       </div>
     </div>
-  );
-}
-
-function LayersIcon({ cohorts }) {
-  const { t } = useTranslation();
-  const n = cohorts.length;
-  return (
-    <span className="flex items-center gap-1.5 text-sm text-slate-500">
-      <Layers className="h-4 w-4 text-slate-400" />
-      {n > 1 ? t("explore.cohorts.multiple", { count: n }) : t("explore.cohorts.single", { count: n || 0 })}
-    </span>
-  );
-}
-
-function CohortOption({ cohort, selected, onSelect }) {
-  const { t } = useTranslation();
-  return (
-    <button
-      type="button"
-      onClick={onSelect}
-      className={`rounded-xl border p-4 text-start transition ${
-        selected ? "border-pioneer-orange-normal bg-pioneer-orange-light ring-1 ring-pioneer-orange-normal" : "border-slate-200 bg-white hover:border-pioneer-orange-normal/50"
-      }`}
-    >
-      <p className="font-bold text-slate-900">{cohort.name}</p>
-      <p className="mt-1 text-xs text-slate-500">
-        {t("courseDetails.cohorts.type")}: {cohort.type} · {t("courseDetails.cohorts.status")}: {cohort.status}
-      </p>
-      <p className="mt-1 text-xs text-slate-500">
-        {t("courseDetails.cohorts.starts")}: {formatDate(cohort.startDate)}
-      </p>
-      <p className="mt-1 text-xs text-slate-500">
-        {t("courseDetails.cohorts.instructor")}: {cohort.instructor?.fullName || t("explore.instructorFallback", { defaultValue: "Instructor TBA" })}
-      </p>
-      <p className="mt-1 text-xs text-slate-500">
-        {t("courseDetails.cohorts.enrolled")}: {cohort._count?.enrollments ?? 0}
-      </p>
-      <p className="mt-2 text-lg font-extrabold text-pioneer-orange-normal">${Number(cohort.price).toFixed(0)}</p>
-    </button>
   );
 }

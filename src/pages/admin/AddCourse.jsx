@@ -24,6 +24,7 @@ function AddCourse() {
     introVideoUrl: "",
     instructorId: "",
     categoryId: "",
+    type: "RECORDED",
     price: "",
     isLifetimePurchasable: true,
     isActive: false,
@@ -51,6 +52,7 @@ function AddCourse() {
         introVideoUrl: form.introVideoUrl.trim() || undefined,
         instructorId: form.instructorId,
         categoryId: form.categoryId || undefined,
+        type: form.type,
         price,
         isLifetimePurchasable: form.isLifetimePurchasable,
         isActive: form.isActive,
@@ -155,6 +157,20 @@ function AddCourse() {
           <div className="grid gap-5 sm:grid-cols-2">
             <label className="block space-y-1.5">
               <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                {t("adminPages.addCourse.courseType", { defaultValue: "Course type" })}
+              </span>
+              <select
+                value={form.type}
+                onChange={(e) => set("type", e.target.value)}
+                className={inputClass}
+              >
+                <option value="RECORDED">{t("adminPages.addCourse.typeRecorded", { defaultValue: "Recorded" })}</option>
+                <option value="HYBRID">{t("adminPages.addCourse.typeHybrid", { defaultValue: "Hybrid (live + recorded)" })}</option>
+              </select>
+            </label>
+
+            <label className="block space-y-1.5">
+              <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
                 {t("adminPages.addCourse.price", { defaultValue: "Lifetime purchase price" })}
               </span>
               <input
@@ -167,7 +183,10 @@ function AddCourse() {
                 className={inputClass}
               />
             </label>
-            <label className="flex items-center gap-2 pt-7 text-sm text-slate-700 dark:text-slate-300">
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            <label className="flex items-center gap-2 pt-2 text-sm text-slate-700 dark:text-slate-300">
               <input
                 type="checkbox"
                 checked={form.isLifetimePurchasable}

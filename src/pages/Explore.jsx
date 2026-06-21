@@ -25,21 +25,16 @@ function slugToCategoryKey(slug, title) {
   return "beginner";
 }
 
-function minCohortPrice(cohorts) {
-  const nums = (cohorts || []).map((c) => Number(c.price)).filter((n) => !Number.isNaN(n) && n >= 0);
-  return nums.length ? Math.min(...nums) : null;
-}
-
-function totalEnrollments(cohorts) {
-  return (cohorts || []).reduce((acc, c) => acc + Number(c._count?.enrollments ?? 0), 0);
+function coursePrice(course) {
+  const n = Number(course?.price);
+  return Number.isNaN(n) ? null : n;
 }
 
 function CourseCard({ course }) {
   const { t } = useTranslation();
-  const cohorts = course.availableCohorts || [];
-  const cohortCount = Number(course._count?.cohorts ?? cohorts.length);
-  const minPrice = minCohortPrice(cohorts);
-  const enrollTotal = totalEnrollments(cohorts);
+  const price = coursePrice(course);
+  const purchaseCount = Number(course._count?.purchases ?? 0);
+  const isHybrid = course.type === "HYBRID";
   const isOneToOne = course.displayCategory === "oneToOne";
 
   const palette = [
@@ -79,24 +74,24 @@ function CourseCard({ course }) {
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
           <span className="flex items-center gap-1">
             <Layers className="h-3.5 w-3.5 shrink-0" />
-            {cohortCount > 1
-              ? t("explore.cohorts.multiple", { count: cohortCount })
-              : t("explore.cohorts.single", { count: cohortCount })}
+            {isHybrid
+              ? t("courseDetails.type.hybrid", { defaultValue: "Hybrid" })
+              : t("courseDetails.type.recorded", { defaultValue: "Recorded" })}
           </span>
           <span className="flex items-center gap-1">
             <Users className="h-3.5 w-3.5 shrink-0" />
-            {enrollTotal} {t("explore.enrollmentsLabel", { defaultValue: "enrollments" })}
+            {purchaseCount} {t("explore.enrollmentsLabel", { defaultValue: "students" })}
           </span>
         </div>
 
         <div className="mt-auto flex items-center justify-between pt-4">
           <span className="text-lg font-bold text-slate-900">
-            {minPrice == null ? (
+            {price == null ? (
               <span className="text-sm font-semibold text-slate-500">{t("explore.pricing.contact", { defaultValue: "See details" })}</span>
-            ) : minPrice === 0 ? (
+            ) : price === 0 ? (
               <span className="text-green-600">{t("explore.free")}</span>
             ) : (
-              t("explore.pricing.from", { price: minPrice.toFixed(0), defaultValue: `From $${minPrice.toFixed(0)}` })
+              `$${price.toFixed(0)}`
             )}
           </span>
           <Link
@@ -154,13 +149,13 @@ export default function Explore() {
   const sorted = useMemo(() => {
     const list = [...filtered];
     if (sortBy === "price-low") {
-      list.sort((a, b) => (minCohortPrice(a.availableCohorts) ?? Infinity) - (minCohortPrice(b.availableCohorts) ?? Infinity));
+      list.sort((a, b) => (coursePrice(a) ?? Infinity) - (coursePrice(b) ?? Infinity));
     } else if (sortBy === "price-high") {
-      list.sort((a, b) => (minCohortPrice(b.availableCohorts) ?? -1) - (minCohortPrice(a.availableCohorts) ?? -1));
+      list.sort((a, b) => (coursePrice(b) ?? -1) - (coursePrice(a) ?? -1));
     } else if (sortBy === "rating") {
-      list.sort((a, b) => totalEnrollments(b.availableCohorts) - totalEnrollments(a.availableCohorts));
+      list.sort((a, b) => Number(b._count?.purchases ?? 0) - Number(a._count?.purchases ?? 0));
     } else {
-      list.sort((a, b) => totalEnrollments(b.availableCohorts) - totalEnrollments(a.availableCohorts));
+      list.sort((a, b) => Number(b._count?.purchases ?? 0) - Number(a._count?.purchases ?? 0));
     }
     return list;
   }, [filtered, sortBy]);

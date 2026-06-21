@@ -1,12 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchQuestionsByLesson, replyToQuestion, toggleResolveQuestion } from "./api";
+import { fetchInstructorQuestions, replyToQuestion, toggleResolveQuestion } from "./api";
+
+export function useInstructorQuestions(params) {
+  return useQuery({
+    queryKey: ["instructor", "qna", "questions", params],
+    queryFn: () => fetchInstructorQuestions(params),
+  });
+}
 
 export function useQuestionsByLesson(lessonId) {
-  return useQuery({
-    queryKey: ["instructor", "qna", "questions", lessonId],
-    queryFn: () => fetchQuestionsByLesson(lessonId),
-    enabled: Boolean(lessonId),
-  });
+  return useInstructorQuestions({ lessonId });
 }
 
 export function useReplyToQuestion() {

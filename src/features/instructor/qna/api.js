@@ -1,9 +1,8 @@
 import client from "../../../api/client";
 import endpoints from "../../../api/endpoints";
 
-// Backend currently exposes list endpoint on student scope by lesson.
-export async function fetchQuestionsByLesson(lessonId) {
-  const response = await client.get(`${endpoints.student.qna}/lessons/${lessonId}/questions`);
+export async function fetchInstructorQuestions(params) {
+  const response = await client.get(`${endpoints.instructor.qna}/questions`, { params });
   return response?.data?.data || [];
 }
 

@@ -66,6 +66,11 @@
       "emailTemplates": "قوالب البريد",
       "integrations": "الربط",
       "myClasses": "حصصي",
+      "myCourses": "كورساتي",
+      "qna": "الأسئلة والأجوبة",
+      "performance": "أدائي",
+      "homework": "الواجبات",
+      "availability": "التوفر",
       "exams": "الاختبارات",
       "wallet": "المحفظة",
       "coupons": "الكوبونات",
@@ -354,6 +359,12 @@
         "linkExisting": "ربط اختبار موجود",
         "searchPlaceholder": "ابحث في الاختبارات غير المرتبطة...",
         "noAvailableExams": "لا توجد اختبارات متاحة."
+      },
+      "sessions": {
+        "title": "المحاضرات المباشرة",
+        "subtitle": "جدولة جلسات البث المباشر الجماعية لهذا الكورس المدمج.",
+        "courseOwner": "صاحب الكورس",
+        "instructor": "المحاضر"
       }
     },
     "userDirectory": {
@@ -452,7 +463,35 @@
       "suspendAccount": "إيقاف الحساب",
       "delete": "حذف",
       "tabOverview": "نظرة عامة",
-      "tabPerformance": "الأداء",
+      "tabPerformance": "الأداء الأكاديمي",
+      "tabExams": "نتائج الامتحانات",
+      "tabHomework": "تسجيلات الواجبات",
+      "tabCourses": "الكورسات المسجلة",
+      "loading": "جاري تحميل ملف الطالب...",
+      "loadError": "تعذر تحميل تفاصيل الطالب.",
+      "quickActions": "إجراءات سريعة",
+      "exams": {
+        "title": "تقديمات ونتائج الامتحانات",
+        "empty": "لا توجد امتحانات مقدمة لهذا الطالب.",
+        "colTitle": "اسم الامتحان",
+        "colSubmitted": "تاريخ التقديم",
+        "colScore": "الدرجة",
+        "colPercent": "النسبة المئوية",
+        "colStatus": "النتيجة",
+        "passed": "ناجح",
+        "failed": "راسب",
+        "pending": "معلق"
+      },
+      "homeworks": {
+        "title": "تقديمات الواجبات",
+        "empty": "لا توجد واجبات مقدمة.",
+        "colTitle": "عنوان الواجب",
+        "colCourse": "الكورس",
+        "colSubmitted": "تاريخ التقديم",
+        "colGrade": "الدرجة",
+        "colStatus": "الحالة",
+        "colGraded": "تاريخ التصحيح"
+      },
       "chartCompleteVsActive": "مكتمل مقابل قيد التقدم",
       "chartProgressPerCourse": "التقدم لكل كورس",
       "perf": {
@@ -508,7 +547,7 @@
       "status": "الحالة",
       "reviews": "التقييمات",
       "totalCourses": "إجمالي الكورسات",
-      "totalStudents": "إجمالي الطلاب",
+      "totalStudents": "الطلاب المسجلون",
       "totalRevenue": "إجمالي الإيراد",
       "avgRating": "متوسط التقييم",
       "period": "الفترة",
@@ -522,7 +561,63 @@
       "availabilitySubtitle": "الفترات المفتوحة القادمة التي نشرها المدرس للحجز.",
       "availabilityEmpty": "لا يوجد توفر قادم.",
       "availabilityLoadError": "تعذر تحميل جدول التوفر.",
-      "availabilitySlotStatus": "متاح"
+      "availabilitySlotStatus": "متاح",
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "loadingProfile": "جاري تحميل ملف المدرس...",
+      "loadErrorTitle": "تعذر تحميل بيانات المدرس",
+      "loadErrorDesc": "لا يمكن استرداد تفاصيل المدرس.",
+      "yearsExp": "سنوات خبرة",
+      "tabOverview": "نظرة عامة",
+      "tabWallet": "المحفظة والمالية",
+      "tabCourses": "الكورسات",
+      "tabReviews": "تقييمات الطلاب",
+      "walletBalance": "رصيد المحفظة",
+      "totalEarnings": "إجمالي الأرباح",
+      "profileInfo": "معلومات الملف الشخصي",
+      "experience": "الخبرة",
+      "years": "سنوات",
+      "studentsPerCourse": "الطلاب لكل كورس",
+      "noCourses": "لا توجد كورسات متاحة لهذا المدرس بعد.",
+      "courseVisibility": "مزيج ظهور الكورسات",
+      "noCoursesYet": "لم يتم إنشاء أي كورسات بعد.",
+      "quickActions": "إجراءات سريعة",
+      "wallet": {
+        "currentBalance": "الرصيد الحالي",
+        "totalRevenue": "إجمالي الإيرادات",
+        "totalWithdrawn": "إجمالي المسحوبات",
+        "earningsHistory": "منحنى سجل الأرباح",
+        "transactions": "معاملات المحفظة",
+        "noTransactions": "لا توجد معاملات مسجلة في هذه المحفظة بعد.",
+        "noPayouts": "لم يتم تقديم طلبات دفع بعد.",
+        "payoutRequests": "طلبات الدفع",
+        "requestDate": "تاريخ الطلب",
+        "amountRequested": "المبلغ المطلوب",
+        "status": "الحالة"
+      },
+      "courses": {
+        "title": "كورسات المدرس",
+        "empty": "لا توجد كورسات مدرجة لهذا المدرس.",
+        "colTitle": "عنوان الكورس",
+        "colType": "النوع",
+        "colStudents": "الطلاب المسجلون",
+        "colRating": "التقييم",
+        "colStatus": "حالة النشر"
+      },
+      "availability": {
+        "title": "فترات التوفر",
+        "subtitle": "فترات التقويم النشطة التي قام المدرس بتكوينها لحجوزات الطلاب",
+        "loading": "جاري تحميل التوفر...",
+        "loadError": "فشل تحميل فترات المدرس.",
+        "refresh": "تحديث",
+        "empty": "لا توجد فترات توفر قادمة منشورة بعد."
+      },
+      "reviews": {
+        "title": "تقييمات ومراجعات الطلاب",
+        "empty": "لا توجد مراجعات منشورة لهذا المدرس بعد.",
+        "anonymous": "طالب مجهول",
+        "ratingOnly": "ترك تقييماً فقط (لا توجد مراجعة مكتوبة)."
+      }
     },
     "payouts": {
       "title": "الدفعات",
@@ -730,6 +825,101 @@
     "certificates": {
       "title": "الشهادات",
       "subtitle": "إصدار ومتابعة شهادات الطلاب"
+    },
+    "assessments": {
+      "title": "جميع الامتحانات / التقييمات",
+      "subtitle": "متابعة وإدارة الاختبارات والامتحانات عبر المنصة",
+      "add": "إضافة امتحان",
+      "total": "إجمالي التقييمات",
+      "active": "نشط / مكتمل",
+      "upcoming": "قادم / مسودة",
+      "search": "تصفية حسب الامتحان أو الكورس أو النوع...",
+      "tip1Title": "بحث سريع",
+      "tip1Body": "قم بالتصفية حسب عنوان الامتحان أو الكورس أو النوع للعثور على السجلات بسرعة.",
+      "tip2Title": "منشئ الامتحانات",
+      "tip2Body": "استخدم 'إضافة امتحان' لإنشاء اختبارات/امتحانات جديدة مع الأسئلة وقواعد التصحيح.",
+      "colAssessment": "التقييم / الامتحان",
+      "colType": "النوع",
+      "colQuestions": "الأسئلة",
+      "colDuration": "المدة",
+      "colPoints": "النقاط",
+      "colStatus": "الحالة",
+      "colActions": "الإجراءات",
+      "standalone": "مستقل",
+      "minutes": "دقيقة",
+      "editTitle": "تعديل الأسئلة",
+      "viewTitle": "عرض التقديمات",
+      "loading": "جاري تحميل الامتحانات...",
+      "loadError": "تعذر تحميل الامتحانات.",
+      "statusCompleted": "مكتمل",
+      "statusAvailable": "متاح",
+      "statusUpcoming": "قادم",
+      "statusDraft": "مسودة"
+    },
+    "addExam": {
+      "title": "إنشاء امتحان جديد",
+      "subtitle": "اضبط الإعدادات الأساسية، ثم قم ببناء بنك الأسئلة الخاص بك في المحرر.",
+      "quickStartTitle": "بداية سريعة، تحكم كامل",
+      "quickStartDesc": "املأ البيانات الأساسية أدناه. بمجرد الإنشاء، سيتم نقلك إلى محرر الامتحانات حيث يمكنك إضافة الأسئلة وتحديد الإجابات الصحيحة وتهيئة قواعد التصحيح.",
+      "examTitle": "عنوان الامتحان",
+      "titlePlaceholder": "مثال: امتحان منتصف الفصل للمستوى الثاني HSK",
+      "type": "النوع",
+      "duration": "المدة (دقائق)",
+      "totalPoints": "النقاط الإجمالية",
+      "passingScore": "درجة النجاح",
+      "cancel": "إلغاء",
+      "creating": "جاري الإنشاء...",
+      "createBtn": "إنشاء وفتح المحرر",
+      "errorRequired": "العنوان مطلوب.",
+      "errorCreate": "فشل إنشاء الامتحان.",
+      "errorId": "تم إنشاء الامتحان ولكن لم يتم إرجاع المعرف.",
+      "types": {
+        "STANDALONE": "امتحان مستقل",
+        "FINAL": "امتحان نهائي",
+        "UNIT": "امتحان وحدة",
+        "LESSON": "اختبار درس قصير"
+      }
+    },
+    "tickets": {
+      "title": "تذاكر الدعم الفني",
+      "subtitle": "إدارة طلبات الدعم المقدمة من الطلاب والمدرسين",
+      "newBtn": "تذكرة جديدة",
+      "statsOpen": "التذاكر المفتوحة",
+      "statsInProgress": "قيد المعالجة",
+      "statsResolved": "تم حلها اليوم",
+      "statsTotal": "الإجمالي هذا الشهر",
+      "searchPlaceholder": "البحث في التذاكر...",
+      "loading": "جاري تحميل التذاكر...",
+      "loadError": "فشل تحميل تذاكر الدعم.",
+      "emptyTitle": "لم يتم العثور على تذاكر",
+      "emptyDesc": "ستظهر طلبات الدعم هنا بمجرد أن يقوم الطلاب أو المدرسون بتقديمها.",
+      "noAccess": "ليس لديك صلاحية لإدارة تذاكر الدعم الفني.",
+      "noMatch": "لا توجد تذاكر تطابق عوامل التصفية الخاصة بك.",
+      "tooltipView": "عرض التذكرة",
+      "tooltipResolve": "حل التذكرة",
+      "statuses": {
+        "All": "كل الحالات",
+        "Open": "مفتوحة",
+        "In Progress": "قيد المعالجة",
+        "Resolved": "تم حلها",
+        "Closed": "مغلقة"
+      },
+      "priorities": {
+        "All": "كل الأولويات",
+        "High": "عالية",
+        "Medium": "متوسطة",
+        "Low": "منخفضة"
+      },
+      "table": {
+        "id": "#",
+        "subject": "الموضوع",
+        "from": "من",
+        "category": "الفئة",
+        "priority": "الأولوية",
+        "status": "الحالة",
+        "date": "التاريخ",
+        "actions": "الإجراءات"
+      }
     }
   },
   "overview": {
@@ -757,6 +947,32 @@
     "chartsUnavailable": "الرسوم التفصيلية غير متوفرة في هذا الإصدار؛ تظهر الأرقام الأساسية أعلاه.",
     "lastSynced": "آخر مزامنة",
     "minAgo": "دقيقتين مضت",
+    "newThisWeek": "جديد هذا الأسبوع",
+    "quickActions": {
+      "title": "الإجراءات التشغيلية السريعة",
+      "subtitle": "مهام المنصة الشائعة",
+      "createCourse": "إنشاء كورس جديد",
+      "enrollStudent": "تسجيل طالب يدوياً",
+      "generateCoupon": "إنشاء كوبون خصم"
+    },
+    "recentPlatformActivity": "آخر العمليات النشطة",
+    "recentPlatformActivityHint": "نبض العمليات الحية للمنصة",
+    "noRecentActivity": "لا توجد عمليات نشطة بالمنصة بعد.",
+    "activityTypeAudit": "سجل تدقيق",
+    "activityTypeSession": "جلسة نشطة",
+    "revenueStreams": "توزيع مصادر الإيرادات",
+    "revenueStreamsHint": "مسجلة مقابل اشتراكات مقابل تفاعلية",
+    "recordedCourses": "كورس مسجل",
+    "packages": "باقات واشتراكات",
+    "liveCohorts": "محاضرات حية",
+    "totalSales": "إجمالي المبيعات",
+    "securityGuardrail": "حماية المنصة",
+    "concurrentSessions": "جلسات متزامنة مشبوهة",
+    "forceLogouts": "تسجيل خروج إجباري اليوم",
+    "operationalBottlenecks": "عقبات التشغيل",
+    "ticketsBacklog": "تذاكر معلقة",
+    "reviewQueue": "انتظار مراجعة الكورسات",
+    "platformVolume": "حجم المنصة",
     "advanced": {
       "audience": {
         "title": "نظرة عامة على الجمهور",
@@ -1864,6 +2080,10 @@
       "actions": "الإجراءات",
       "save": "حفظ",
       "cancel": "إلغاء",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "edit": "تعديل",
+      "delete": "حذف",
       "submit": "إرسال",
       "reply": "رد",
       "active": "نشط",
@@ -2052,6 +2272,10 @@
           "title": "حصصي",
           "subtitle": "راقب الحصص القادمة والمكتملة."
         },
+        "courses": {
+          "title": "كورساتي",
+          "subtitle": "الكورسات التي تدرّسها والطلاب المسجّلون."
+        },
         "exams": {
           "title": "الاختبارات",
           "subtitle": "إدارة محتوى الاختبارات والتسليمات."
@@ -2065,7 +2289,7 @@
           "loadError": "تعذر تحميل بيانات هذا الطالب.",
           "forbidden": "ليس لديك صلاحية لعرض هذا الطالب.",
           "noActivity": "لا يوجد نشاط تسجيل لعرضه بعد.",
-          "scopedNote": "الإحصائيات والتقدم تخص المجموعات التي تدرّسها فقط.",
+          "scopedNote": "الإحصائيات والتقدم تخص الكورسات التي تدرّسها فقط.",
           "viewProgress": "عرض التقدم"
         },
         "qna": {
@@ -2146,6 +2370,50 @@
         "emptyTitle": "لا توجد حصص",
         "emptyDescription": "لا توجد نتائج مطابقة للفلاتر الحالية."
       },
+      "courses": {
+        "titleCol": "الكورس",
+        "type": "النوع",
+        "published": "منشور",
+        "active": "نشط",
+        "inactive": "غير نشط",
+        "enrollments": "المشتركون",
+        "upcomingSessions": "جلسات قادمة",
+        "viewStudents": "الطلاب",
+        "manageSessions": "الجلسات",
+        "sessionsSubtitle": "جدولة الجلسات المباشرة وإضافة روابط التسجيل.",
+        "addSession": "إضافة جلسة",
+        "editSession": "تعديل الجلسة",
+        "sessionTitle": "عنوان الجلسة",
+        "meetingUrl": "رابط الاجتماع",
+        "recordingUrl": "رابط التسجيل",
+        "sessionCreated": "تم إنشاء الجلسة.",
+        "sessionUpdated": "تم تحديث الجلسة.",
+        "sessionDeleted": "تم حذف الجلسة.",
+        "sessionError": "تعذّر حفظ الجلسة.",
+        "noSessions": "لا توجد جلسات مجدولة بعد.",
+        "untitledSession": "جلسة مباشرة",
+        "statusUpcoming": "قادمة",
+        "statusOngoing": "جارية",
+        "statusCompleted": "مكتملة",
+        "statusMissed": "فائتة",
+        "emptyTitle": "لا توجد كورسات",
+        "emptyDescription": "ستظهر هنا الكورسات المسندة إليك."
+      },
+      "overview": {
+        "totalStudents": "إجمالي الطلاب",
+        "activeCourses": "كورسات نشطة",
+        "upcomingSessions": "جلسات قادمة",
+        "totalEarnings": "إجمالي الأرباح",
+        "walletBalance": "رصيد المحفظة",
+        "earningsTrend": "اتجاه الأرباح",
+        "earnings": "الأرباح",
+        "reviewsSnapshot": "التقييمات",
+        "avgRatingLine": "متوسط {{rating}} / 5",
+        "topCourses": "أعلى الكورسات بالتسجيل",
+        "allYourCourses": "كل كورساتك",
+        "upcomingSessionsTitle": "أقرب الجلسات المباشرة",
+        "upcomingSessionsHint": "أقرب جلساتك المجدولة"
+      },
       "exams": {
         "titleCol": "الاختبار",
         "duration": "المدة",
@@ -2210,7 +2478,7 @@
           "markOpened": "تعليم كمفتوح",
           "markClosed": "إغلاق بدون درجة",
           "resetNew": "تعليم كغير مفتوح",
-          "courseLine": "{{course}} · {{cohort}}",
+          "courseLine": "{{course}}",
           "emptyFilter": "لا توجد تسليمات في هذا الفلتر.",
           "emptyAll": "عندما يسلّم الطلاب الواجبات ستظهر هنا.",
           "emptyTitle": "لا توجد تسليمات بعد",
@@ -2227,12 +2495,18 @@
       },
       "qna": {
         "lessonIdPlaceholder": "أدخل معرف الدرس",
-        "replyPlaceholder": "اكتب ردك..."
+        "replyPlaceholder": "اكتب ردك...",
+        "selectCourse": "اختر الكورس",
+        "allCourses": "كل الكورسات",
+        "noQuestions": "لا توجد أسئلة لهذا الفلتر."
       },
       "students": {
-        "selectClass": "اختر الحصة",
+        "selectClass": "اختر الكورس",
+        "selectCourse": "اختر الكورس",
+        "purchasedAt": "تاريخ الشراء",
+        "progress": "التقدم",
         "emptyTitle": "لا يوجد طلاب",
-        "emptyDescription": "اختر حصة لعرض الطلاب المسجلين."
+        "emptyDescription": "اختر كورساً لعرض الطلاب المسجّلين."
       }
     }
   }

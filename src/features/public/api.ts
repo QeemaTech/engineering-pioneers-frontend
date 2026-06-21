@@ -3,7 +3,6 @@ import endpoints from "../../api/endpoints";
 import type {
   PublicCourseDetail,
   PublicCoursesListResult,
-  PublicPackage,
   PublicPostDetail,
   PublicPostsListResult,
   PublicPostListItem,
@@ -31,12 +30,6 @@ export async function fetchPublicCourses(params: PublicCoursesQuery = {}): Promi
 export async function fetchPublicCourseById(id: string): Promise<PublicCourseDetail | null> {
   const res = await client.get(`${endpoints.public.courses}/${id}`);
   return (res?.data?.data as PublicCourseDetail) ?? null;
-}
-
-export async function fetchPublicPackages(): Promise<PublicPackage[]> {
-  const res = await client.get(endpoints.public.packages);
-  const data = res?.data?.data;
-  return Array.isArray(data) ? data : [];
 }
 
 export type LandingPageSection = {

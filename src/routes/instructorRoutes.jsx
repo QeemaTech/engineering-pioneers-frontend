@@ -3,7 +3,7 @@ import { APP_ROLES } from "../config/permissions";
 import GuardedRoute from "./guardedRoute";
 import InstructorLayout from "../layouts/InstructorLayout";
 import InstructorOverview from "../pages/instructor/Overview";
-import InstructorCohorts from "../pages/instructor/Cohorts";
+import InstructorMyCourses from "../pages/instructor/MyCourses";
 import InstructorExams from "../pages/instructor/Exams";
 import InstructorExamDetailPage from "../pages/instructor/ExamDetail";
 import InstructorStudents from "../pages/instructor/Students";
@@ -20,8 +20,9 @@ function InstructorRoutes() {
     <Route element={<GuardedRoute allowedRoles={[APP_ROLES.INSTRUCTOR]} />}>
       <Route path="/instructor" element={<InstructorLayout />}>
         <Route index element={<InstructorOverview />} />
-        <Route path="classes" element={<Navigate to="/instructor/cohorts" replace />} />
-        <Route path="cohorts" element={<InstructorCohorts />} />
+        <Route path="classes" element={<Navigate to="/instructor/courses" replace />} />
+        <Route path="cohorts" element={<Navigate to="/instructor/courses" replace />} />
+        <Route path="courses" element={<InstructorMyCourses />} />
         <Route path="homework" element={<InstructorHomework />} />
         <Route path="availability" element={<InstructorAvailability />} />
         <Route path="exams" element={<InstructorExams />} />

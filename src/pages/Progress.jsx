@@ -1,8 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { BookOpen, CheckCircle2, Star, TrendingUp, Video } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import client from "../api/client";
 import { getErrorMessage } from "../api/error";
+import { useMyCourses } from "../features/student/courses/hooks";
+import { fetchCourseProgressStats } from "../features/student/progress/api";
 
 function CourseProgress({ course }) {
   const { t } = useTranslation();
@@ -38,41 +39,37 @@ function CourseProgress({ course }) {
 
 export default function Progress() {
   const { t } = useTranslation();
-  const { data: myCourses = [], isLoading, isError, error, refetch } = useQuery({
-    queryKey: ["student", "courses", "my"],
-    queryFn: async () => {
-      const res = await client.get("/student/courses/my-courses");
-      return res?.data?.data || [];
-    },
-    retry: false,
-  });
+  const { data: myCourses = [], isLoading, isError, error, refetch } = useMyCourses();
 
   const { data: progressStats = [] } = useQuery({
-    queryKey: ["student", "progress", "cohorts", myCourses.map((c) => c.cohortId).join(",")],
+    queryKey: ["student", "progress", "courses", myCourses.map((c) => c.id).join(",")],
     enabled: myCourses.length > 0,
     queryFn: async () => {
       const results = await Promise.all(
         myCourses.map(async (course) => {
-          const cohortId = course.cohortId;
-          if (!cohortId) {
+          const courseId = course.id;
+          if (!courseId) {
             return {
-              cohortId: "",
-              courseId: course.id,
+              courseId: "",
               completedLessons: 0,
               percentage: 0,
               isCourseCompleted: false,
             };
           }
           try {
-            const res = await client.get(`/student/progress/cohorts/${cohortId}/stats`);
-            return { cohortId, courseId: course.id, ...(res?.data?.data || {}) };
+            const stat = await fetchCourseProgressStats(courseId);
+            return {
+              courseId,
+              completedLessons: Number(stat?.completedLessons) || 0,
+              percentage: Number(stat?.percentage) || 0,
+              isCourseCompleted: Boolean(stat?.isCourseCompleted),
+            };
           } catch {
             return {
-              cohortId,
-              courseId: course.id,
+              courseId,
               completedLessons: Number(course.completedLessonsCount) || 0,
               percentage: Number(course.progressPercentage) || 0,
-              isCourseCompleted: false,
+              isCourseCompleted: Boolean(course.isCompleted),
             };
           }
         })
@@ -83,25 +80,21 @@ export default function Progress() {
   });
 
   const courses = myCourses.map((course, idx) => {
-    const stat =
-      progressStats.find((s) => s.cohortId === course.cohortId) ||
-      progressStats.find((s) => s.courseId === course.id) ||
-      {};
+    const stat = progressStats.find((s) => s.courseId === course.id) || {};
     const palette = ["bg-pioneer-orange-normal", "bg-pioneer-teal-normal", "bg-green-500", "bg-blue-500"];
     const pct = Math.round(Number(stat.percentage ?? course.progressPercentage ?? 0));
     const completed = Number(stat.completedLessons ?? course.completedLessonsCount ?? 0);
     const total =
       pct > 0 ? Math.max(1, Math.round((completed * 100) / pct)) : Math.max(completed, 1);
     return {
-      key: `${course.id}-${course.cohortId ?? idx}`,
+      key: course.id ?? String(idx),
       courseId: course.id,
-      cohortId: course.cohortId,
       name: course.title,
       teacher: course?.instructor?.fullName || "Instructor",
       progress: pct,
       lessons: completed,
       total,
-      isCourseCompleted: Boolean(stat.isCourseCompleted),
+      isCourseCompleted: Boolean(stat.isCourseCompleted ?? course.isCompleted),
       colour: palette[idx % palette.length],
     };
   });
@@ -116,10 +109,10 @@ export default function Progress() {
   ];
 
   const activity = myCourses.slice(0, 5).map((course, idx) => ({
-    key: `${course.id}-${course.cohortId}-${idx}`,
+    key: `${course.id}-${idx}`,
     type: idx % 2 === 0 ? "course" : "progress",
     text: `${course.title} - ${course?.instructor?.fullName || "Instructor"}`,
-    date: course?.joinedAt ? new Date(course.joinedAt).toLocaleDateString() : "-",
+    date: course?.purchasedAt ? new Date(course.purchasedAt).toLocaleDateString() : "-",
     colour:
       idx % 2 === 0
         ? "bg-pioneer-orange-light text-pioneer-orange-normal"
@@ -138,7 +131,6 @@ export default function Progress() {
           </div>
         ) : null}
 
-        {/* Header */}
         <div className="text-center">
           <h1 className="text-3xl font-bold text-slate-900 md:text-4xl lg:text-5xl">
             {t("progress.titlePrefix")}{" "}
@@ -149,7 +141,6 @@ export default function Progress() {
 
         {!isError ? (
           <>
-            {/* Stat cards */}
             <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
               {statCards.map(({ key, value, icon: Icon, color, bg }) => (
                 <div key={key} className="flex flex-col items-center gap-2 rounded-2xl border border-slate-100 bg-white p-5 text-center shadow-sm">
@@ -162,9 +153,7 @@ export default function Progress() {
               ))}
             </div>
 
-            {/* Two-column lower area */}
             <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
-              {/* Course progress (2/3) */}
               <div className="space-y-4 lg:col-span-2">
                 <h2 className="text-lg font-bold text-slate-900">
                   {t("progress.myCourses")}{" "}
@@ -181,7 +170,6 @@ export default function Progress() {
                 )}
               </div>
 
-              {/* Recent activity (1/3) */}
               <div>
                 <h2 className="mb-4 text-lg font-bold text-slate-900">{t("progress.recentActivity")}</h2>
                 <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">

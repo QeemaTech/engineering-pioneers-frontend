@@ -28,7 +28,7 @@ function AddExam() {
     e.preventDefault();
     setError("");
     try {
-      if (!form.title.trim()) throw new Error("Title is required.");
+      if (!form.title.trim()) throw new Error(t("adminPages.addExam.errorRequired", { defaultValue: "Title is required." }));
       const exam = await createMutation.mutateAsync({
         title: form.title.trim(),
         type: form.type,
@@ -36,10 +36,10 @@ function AddExam() {
         totalPoints: Number(form.totalPoints),
         passingScore: Number(form.passingScore),
       });
-      if (!exam?.id) throw new Error("Exam was created but ID was not returned.");
+      if (!exam?.id) throw new Error(t("adminPages.addExam.errorId", { defaultValue: "Exam was created but ID was not returned." }));
       navigate(`/admin/exams/${exam.id}/edit`);
     } catch (err) {
-      setError(getErrorMessage(err, "Failed to create exam."));
+      setError(getErrorMessage(err, t("adminPages.addExam.errorCreate", { defaultValue: "Failed to create exam." })));
     }
   };
 
@@ -55,10 +55,13 @@ function AddExam() {
           <Sparkles className="h-5 w-5" />
         </div>
         <div>
-          <p className="text-sm font-bold text-blue-900 dark:text-blue-200">Quick Start, Full Power</p>
+          <p className="text-sm font-bold text-blue-900 dark:text-blue-200">
+            {t("adminPages.addExam.quickStartTitle", { defaultValue: "Quick Start, Full Power" })}
+          </p>
           <p className="mt-1 text-sm text-blue-700 dark:text-blue-300">
-            Fill in the essentials below. Once created, you'll be taken to the
-            <strong> Exam Editor</strong> where you can add questions, set correct answers, and configure grading.
+            {t("adminPages.addExam.quickStartDesc", {
+              defaultValue: "Fill in the essentials below. Once created, you'll be taken to the Exam Editor where you can add questions, set correct answers, and configure grading."
+            })}
           </p>
         </div>
       </div>
@@ -66,27 +69,51 @@ function AddExam() {
       <form onSubmit={onSubmit} className="space-y-6">
         <div className="space-y-5 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/8 dark:bg-[#1A1A22]">
           <label className="block space-y-1.5">
-            <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Exam Title <span className="text-[#EE7C11]">*</span></span>
-            <input required value={form.title} onChange={(e) => set("title", e.target.value)} placeholder="e.g. HSK 2 Midterm Exam" className="h-12 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#EE7C11]/50 focus:ring-2 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
+            <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+              {t("adminPages.addExam.examTitle", { defaultValue: "Exam Title" })} <span className="text-[#EE7C11]">*</span>
+            </span>
+            <input 
+              required 
+              value={form.title} 
+              onChange={(e) => set("title", e.target.value)} 
+              placeholder={t("adminPages.addExam.titlePlaceholder", { defaultValue: "e.g. HSK 2 Midterm Exam" })} 
+              className="h-12 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 outline-none transition-all focus:border-[#EE7C11]/50 focus:ring-2 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" 
+            />
           </label>
 
           <div className="grid gap-5 sm:grid-cols-2">
             <label className="block space-y-1.5">
-              <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Type</span>
-              <select value={form.type} onChange={(e) => set("type", e.target.value)} className="h-12 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition-all focus:border-[#EE7C11]/50 focus:ring-2 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white">
-                {EXAM_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+              <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                {t("adminPages.addExam.type", { defaultValue: "Type" })}
+              </span>
+              <select 
+                value={form.type} 
+                onChange={(e) => set("type", e.target.value)} 
+                className="h-12 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition-all focus:border-[#EE7C11]/50 focus:ring-2 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+              >
+                {EXAM_TYPES.map((typeVal) => (
+                  <option key={typeVal} value={typeVal}>
+                    {t(`adminPages.addExam.types.${typeVal}`, { defaultValue: typeVal })}
+                  </option>
+                ))}
               </select>
             </label>
             <label className="block space-y-1.5">
-              <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Duration (min)</span>
+              <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                {t("adminPages.addExam.duration", { defaultValue: "Duration (min)" })}
+              </span>
               <input type="number" min={1} value={form.durationMinutes} onChange={(e) => set("durationMinutes", e.target.value)} className="h-12 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition-all focus:border-[#EE7C11]/50 focus:ring-2 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
             </label>
             <label className="block space-y-1.5">
-              <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Total Points</span>
+              <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                {t("adminPages.addExam.totalPoints", { defaultValue: "Total Points" })}
+              </span>
               <input type="number" min={1} value={form.totalPoints} onChange={(e) => set("totalPoints", e.target.value)} className="h-12 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition-all focus:border-[#EE7C11]/50 focus:ring-2 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
             </label>
             <label className="block space-y-1.5">
-              <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Passing Score</span>
+              <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                {t("adminPages.addExam.passingScore", { defaultValue: "Passing Score" })}
+              </span>
               <input type="number" min={1} value={form.passingScore} onChange={(e) => set("passingScore", e.target.value)} className="h-12 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition-all focus:border-[#EE7C11]/50 focus:ring-2 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
             </label>
           </div>
@@ -95,10 +122,19 @@ function AddExam() {
         {error ? <div className="rounded-lg border border-red-200 bg-[#EE7C11]/10 px-4 py-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-[#EE7C11]/10 dark:text-red-300">{error}</div> : null}
 
         <div className="flex items-center justify-between">
-          <button type="button" onClick={() => navigate("/admin/exams")} className="rounded-lg border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-white/10 dark:text-slate-300 dark:hover:bg-white/5">Cancel</button>
+          <button 
+            type="button" 
+            onClick={() => navigate("/admin/exams")} 
+            className="rounded-lg border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-white/10 dark:text-slate-300 dark:hover:bg-white/5"
+          >
+            {t("adminPages.addExam.cancel", { defaultValue: "Cancel" })}
+          </button>
           <button disabled={createMutation.isPending} type="submit" className="inline-flex items-center gap-2.5 rounded-lg bg-[#EE7C11] px-6 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-[#d9700e] disabled:opacity-60">
             <ClipboardList className="h-4 w-4" />
-            {createMutation.isPending ? "Creating..." : "Create & Open Editor"}
+            {createMutation.isPending 
+              ? t("adminPages.addExam.creating", { defaultValue: "Creating..." }) 
+              : t("adminPages.addExam.createBtn", { defaultValue: "Create & Open Editor" })
+            }
             {!createMutation.isPending && <ArrowRight className="h-4 w-4" />}
           </button>
         </div>

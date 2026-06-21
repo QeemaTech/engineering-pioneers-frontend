@@ -36,6 +36,11 @@ export async function updateAboutUs(body) {
   return response?.data?.data;
 }
 
+export async function updateHero(body) {
+  const response = await client.patch(`${endpoints.admin.cms}/hero`, body);
+  return response?.data?.data;
+}
+
 export async function fetchPosts(params = {}) {
   const response = await client.get(`${endpoints.admin.cms}/posts`, { params });
   const data = response?.data?.data;

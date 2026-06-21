@@ -35,14 +35,14 @@ function InstructorStudentDetail() {
       id: e.enrollmentId,
       title: e.courseTitle || "-",
       progress: Math.round(Number(e.progressPercentage) || 0),
-      status: e.isCompleted ? "COMPLETED" : e.cohortStatus || "ENROLLED",
+      status: e.isCompleted ? "COMPLETED" : "ENROLLED",
       enrolledDate: "-",
     }));
   }, [overview]);
 
   const sidebarStats = useMemo(() => {
     const coursesEnrolled = overview?.coursesEnrolled ?? 0;
-    const completed = overview?.cohortsCompleted ?? 0;
+    const completed = overview?.coursesCompleted ?? 0;
     const examsTaken = overview?.examsTaken ?? "—";
     const examCount = overview?.examsTaken;
     const avgExam =

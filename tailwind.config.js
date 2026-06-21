@@ -8,28 +8,51 @@ export default {
   theme: {
     extend: {
       colors: {
+        "pioneer-orange": "#EE7C11",
+        "pioneer-bg-dark": "#0F172A",
+        "pioneer-card-dark": "#1E293B",
+        "pioneer-accent-blue": {
+          light: "rgba(59, 130, 246, 0.1)",
+          DEFAULT: "#3B82F6",
+          hover: "#2563EB",
+          active: "#1D4ED8",
+          dark: "#1E293B",
+        },
         pioneer: {
           orange: {
             light: "#fdf2e9",
             normal: "#EE7C11",
             hover: "#d9700e",
             active: "#c4640d",
-            dark: "#093443",
+            dark: "#1E293B",
             DEFAULT: "#EE7C11",
           },
+          "bg-dark": "#0F172A",
+          "card-dark": "#1E293B",
+          "accent-blue": {
+            light: "rgba(59, 130, 246, 0.1)",
+            normal: "#3B82F6",
+            hover: "#2563EB",
+            active: "#1D4ED8",
+            dark: "#1E293B",
+            DEFAULT: "#3B82F6",
+          },
           teal: {
-            light: "#f0fdf4",
-            normal: "#0D9488",
-            hover: "#0f766e",
-            active: "#115e59",
-            dark: "#093443",
-            DEFAULT: "#0D9488",
+            light: "rgba(59, 130, 246, 0.1)",
+            normal: "#3B82F6",
+            hover: "#2563EB",
+            active: "#1D4ED8",
+            dark: "#1E293B",
+            DEFAULT: "#3B82F6",
           },
           navy: {
-            DEFAULT: "#093443",
+            DEFAULT: "#1E293B",
+          },
+          accent: {
+            blue: "#3B82F6",
           },
           primary: "#EE7C11",
-          secondary: "#0D9488",
+          secondary: "#3B82F6",
           light: {
             bg: "#F8FAFC",
             card: "#FFFFFF",
@@ -37,8 +60,8 @@ export default {
             textSecondary: "#475569",
           },
           dark: {
-            bg: "#06242F",
-            card: "#093443",
+            bg: "#0F172A",
+            card: "#1E293B",
             textPrimary: "#F8FAFC",
             textSecondary: "#94A3B8",
           },

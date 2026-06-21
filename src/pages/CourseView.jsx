@@ -2,12 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, BookOpen, ChevronDown, ChevronLeft, ChevronRight, ClipboardCheck, FileText, Menu, Play, X } from "lucide-react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useCourseUnits } from "../features/student/courses/hooks";
 import {
   useCompletedLessonIds,
-  useCohortProgressStats,
-  useCohortResume,
+  useCourseProgressStats,
+  useCourseResume,
   useMarkLessonComplete,
   useTrackLessonAccess,
 } from "../features/student/progress/hooks";
@@ -78,8 +78,6 @@ function UnitBlock({ unit, activeId, doneSet, onSelect }) {
 export default function CourseView() {
   const { t } = useTranslation();
   const { id: courseId } = useParams();
-  const [searchParams] = useSearchParams();
-  const cohortId = searchParams.get("cohortId") || "";
 
   const {
     data: units = [],
@@ -87,9 +85,9 @@ export default function CourseView() {
     isError: unitsError,
     refetch: refetchUnits,
   } = useCourseUnits(courseId);
-  const { data: stats } = useCohortProgressStats(cohortId || undefined);
-  const { data: resume } = useCohortResume(cohortId || undefined);
-  const { data: completedIds = [], refetch: refetchCompleted } = useCompletedLessonIds(cohortId || undefined);
+  const { data: stats } = useCourseProgressStats(courseId || undefined);
+  const { data: resume } = useCourseResume(courseId || undefined);
+  const { data: completedIds = [], refetch: refetchCompleted } = useCompletedLessonIds(courseId || undefined);
   const doneSet = useMemo(() => new Set(completedIds), [completedIds]);
 
   const markComplete = useMarkLessonComplete();
@@ -112,17 +110,17 @@ export default function CourseView() {
   }, [activeLesson?.id, flatLessons]);
 
   useEffect(() => {
-    if (!cohortId || flatLessons.length === 0) return;
+    if (!courseId || flatLessons.length === 0) return;
     if (activeLesson && flatLessons.some((l) => l.id === activeLesson.id)) return;
     const rid = resume?.lessonId;
     const pick = rid ? flatLessons.find((l) => l.id === rid) : flatLessons[0];
     if (pick) setActiveLesson(pick);
-  }, [cohortId, flatLessons, resume, activeLesson]);
+  }, [courseId, flatLessons, resume, activeLesson]);
 
   useEffect(() => {
-    if (!cohortId || !activeLesson?.id) return;
-    trackLessonAccess({ lessonId: activeLesson.id, cohortId, watchPercentage: 5 });
-  }, [cohortId, activeLesson?.id, trackLessonAccess]);
+    if (!courseId || !activeLesson?.id) return;
+    trackLessonAccess({ lessonId: activeLesson.id, courseId, watchPercentage: 5 });
+  }, [courseId, activeLesson?.id, trackLessonAccess]);
 
   useEffect(() => {
     if (activeLesson?.id) window.scrollTo({ top: 0, behavior: "smooth" });
@@ -134,16 +132,16 @@ export default function CourseView() {
   const completedCount = stats?.completedLessons ?? doneSet.size;
 
   const handleMarkDone = async () => {
-    if (!cohortId || !activeLesson) return;
+    if (!courseId || !activeLesson) return;
     try {
-      await markComplete.mutateAsync({ lessonId: activeLesson.id, cohortId });
+      await markComplete.mutateAsync({ lessonId: activeLesson.id, courseId });
       await refetchCompleted();
     } catch {
       /* toast optional */
     }
   };
 
-  if (!cohortId) {
+  if (!courseId) {
     return (
       <div className="mx-auto max-w-lg px-4 py-20 text-center">
         <BookOpen className="mx-auto h-12 w-12 text-slate-300" />

@@ -173,11 +173,9 @@ function Homework() {
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">
           {filtered.map((sub) => {
-            const courseTitle = sub.homework?.cohort?.course?.title || "";
-            const cohortName = sub.homework?.cohort?.name || "";
+            const courseTitle = sub.homework?.course?.title || "";
             const ctx = t("dashboard.instructor.homework.queue.courseLine", {
               course: courseTitle || "—",
-              cohort: cohortName || "—",
             });
             return (
               <article

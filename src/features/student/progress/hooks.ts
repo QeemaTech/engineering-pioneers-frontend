@@ -1,35 +1,35 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   fetchCompletedLessonIds,
-  fetchCohortProgressStats,
-  fetchCohortResume,
+  fetchCourseProgressStats,
+  fetchCourseResume,
   postLessonAccess,
   postLessonComplete,
 } from "./api";
 
-export function useCohortProgressStats(cohortId: string | undefined) {
+export function useCourseProgressStats(courseId: string | undefined) {
   return useQuery({
-    queryKey: ["student", "progress-stats", cohortId],
-    queryFn: () => fetchCohortProgressStats(cohortId as string),
-    enabled: !!cohortId,
+    queryKey: ["student", "progress-stats", courseId],
+    queryFn: () => fetchCourseProgressStats(courseId as string),
+    enabled: !!courseId,
     retry: false,
   });
 }
 
-export function useCohortResume(cohortId: string | undefined) {
+export function useCourseResume(courseId: string | undefined) {
   return useQuery({
-    queryKey: ["student", "progress-resume", cohortId],
-    queryFn: () => fetchCohortResume(cohortId as string),
-    enabled: !!cohortId,
+    queryKey: ["student", "progress-resume", courseId],
+    queryFn: () => fetchCourseResume(courseId as string),
+    enabled: !!courseId,
     retry: false,
   });
 }
 
-export function useCompletedLessonIds(cohortId: string | undefined) {
+export function useCompletedLessonIds(courseId: string | undefined) {
   return useQuery({
-    queryKey: ["student", "completed-lessons", cohortId],
-    queryFn: () => fetchCompletedLessonIds(cohortId as string),
-    enabled: !!cohortId,
+    queryKey: ["student", "completed-lessons", courseId],
+    queryFn: () => fetchCompletedLessonIds(courseId as string),
+    enabled: !!courseId,
     retry: false,
   });
 }
@@ -39,16 +39,16 @@ export function useTrackLessonAccess() {
   return useMutation({
     mutationFn: ({
       lessonId,
-      cohortId,
+      courseId,
       watchPercentage,
     }: {
       lessonId: string;
-      cohortId: string;
+      courseId: string;
       watchPercentage?: number;
-    }) => postLessonAccess(lessonId, cohortId, watchPercentage),
+    }) => postLessonAccess(lessonId, courseId, watchPercentage),
     retry: false,
     onSuccess: (_, v) => {
-      void qc.invalidateQueries({ queryKey: ["student", "progress-stats", v.cohortId] });
+      void qc.invalidateQueries({ queryKey: ["student", "progress-stats", v.courseId] });
     },
   });
 }
@@ -56,11 +56,17 @@ export function useTrackLessonAccess() {
 export function useMarkLessonComplete() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ lessonId, cohortId }: { lessonId: string; cohortId: string }) => postLessonComplete(lessonId, cohortId),
+    mutationFn: ({ lessonId, courseId }: { lessonId: string; courseId: string }) =>
+      postLessonComplete(lessonId, courseId),
     onSuccess: (_, v) => {
-      void qc.invalidateQueries({ queryKey: ["student", "progress-stats", v.cohortId] });
-      void qc.invalidateQueries({ queryKey: ["student", "completed-lessons", v.cohortId] });
-      void qc.invalidateQueries({ queryKey: ["student", "progress-resume", v.cohortId] });
+      void qc.invalidateQueries({ queryKey: ["student", "progress-stats", v.courseId] });
+      void qc.invalidateQueries({ queryKey: ["student", "completed-lessons", v.courseId] });
+      void qc.invalidateQueries({ queryKey: ["student", "progress-resume", v.courseId] });
     },
   });
 }
+
+/** @deprecated Use useCourseProgressStats */
+export const useCohortProgressStats = useCourseProgressStats;
+/** @deprecated Use useCourseResume */
+export const useCohortResume = useCourseResume;

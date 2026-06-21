@@ -1,9 +1,9 @@
 function DataTable({ columns = [], rows = [], pagination = null, className = "" }) {
   return (
-    <div className={`overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-white/8 dark:bg-[#1A1A22] ${className}`}>
+    <div className={`overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-[#1E293B] ${className}`}>
       <div className="overflow-x-auto overscroll-x-contain [-webkit-overflow-scrolling:touch]">
         <table className="w-full min-w-[920px] border-collapse text-start">
-          <thead className="bg-slate-50 dark:bg-white/5">
+          <thead className="bg-slate-50 dark:bg-[#0F172A]">
             <tr>
               {columns.map((col) => (
                 <th
@@ -17,7 +17,7 @@ function DataTable({ columns = [], rows = [], pagination = null, className = "" 
           </thead>
           <tbody>
             {rows.map((row, idx) => (
-              <tr key={row.id || idx} className="border-t border-slate-100 hover:bg-slate-50 dark:border-white/5 dark:hover:bg-white/5">
+              <tr key={row.id || idx} className="border-t border-slate-100 hover:bg-slate-50 dark:border-slate-800/50 dark:hover:bg-slate-800/30">
                 {columns.map((col) => (
                   <td key={col.key} className="px-4 py-3 text-start text-sm text-slate-700 dark:text-slate-300">
                     {col.render ? col.render(row[col.key], row, idx) : row[col.key]}

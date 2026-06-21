@@ -70,7 +70,7 @@ function Topbar({ onMenuClick }) {
   const currentLng = lang;
 
   return (
-    <header className="sticky top-0 z-20 border-b border-slate-200 bg-pioneer-light-card dark:border-white/5 dark:bg-pioneer-dark-card">
+    <header className="sticky top-0 z-20 border-b border-slate-200 bg-pioneer-light-card dark:border-slate-800 dark:bg-[#1E293B]">
       <div className="flex h-16 min-h-16 items-center justify-between gap-2 px-3 sm:h-20 sm:min-h-20 sm:px-6 md:px-10">
         <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-6 md:gap-8">
           <div className="flex min-w-0 items-center gap-2 sm:gap-4 md:gap-6">
@@ -148,7 +148,7 @@ function Topbar({ onMenuClick }) {
             </button>
 
             {isNotificationsOpen && (
-              <div className="absolute end-0 z-50 mt-3 w-[min(20rem,calc(100vw-1.5rem))] max-w-[calc(100vw-1.5rem)] rounded-2xl border border-slate-200 bg-pioneer-light-card p-3 shadow-md sm:mt-4 sm:w-80 sm:max-w-none sm:p-4 dark:border-white/10 dark:bg-pioneer-dark-card dark:shadow-2xl dark:shadow-black/50 dark:backdrop-blur-xl">
+              <div className="absolute end-0 z-50 mt-3 w-[min(20rem,calc(100vw-1.5rem))] max-w-[calc(100vw-1.5rem)] rounded-2xl border border-slate-200 bg-pioneer-light-card p-3 shadow-md sm:mt-4 sm:w-80 sm:max-w-none sm:p-4 dark:border-slate-800 dark:bg-[#1E293B] dark:shadow-2xl dark:shadow-black/50 dark:backdrop-blur-xl">
                 <div className="mb-4 flex items-center justify-between">
                   <h3 className="text-sm font-bold text-pioneer-light-textPrimary dark:text-pioneer-dark-textPrimary">{t("header.notifications")}</h3>
                   <button className="text-[10px] font-bold text-pioneer-orange hover:underline">Mark all read</button>
@@ -215,7 +215,7 @@ function Topbar({ onMenuClick }) {
             </button>
 
             {isProfileOpen && (
-              <div className="absolute end-0 z-50 mt-3 w-[min(14rem,calc(100vw-1.5rem))] rounded-2xl border border-slate-200 bg-pioneer-light-card p-2 shadow-md sm:mt-4 sm:w-56 dark:border-white/10 dark:bg-pioneer-dark-card dark:shadow-2xl dark:shadow-black/50">
+              <div className="absolute end-0 z-50 mt-3 w-[min(14rem,calc(100vw-1.5rem))] rounded-2xl border border-slate-200 bg-pioneer-light-card p-2 shadow-md sm:mt-4 sm:w-56 dark:border-slate-800 dark:bg-[#1E293B] dark:shadow-2xl dark:shadow-black/50">
                 <div className="mb-1 border-b border-slate-100 p-2 dark:border-white/5">
                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                     {t("header.dashboardMenu.accountActions")}

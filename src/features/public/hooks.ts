@@ -3,7 +3,6 @@ import {
   fetchPublicCourseById,
   fetchPublicCourses,
   fetchPublicLandingPage,
-  fetchPublicPackages,
   fetchPublicPostBySlug,
   fetchPublicPosts,
   type PublicCoursesQuery,
@@ -23,14 +22,6 @@ export function usePublicCourse(id: string | undefined) {
     queryKey: ["public", "course", id],
     queryFn: () => fetchPublicCourseById(id as string),
     enabled: !!id,
-    retry: false,
-  });
-}
-
-export function usePublicPackages() {
-  return useQuery({
-    queryKey: ["public", "packages"],
-    queryFn: () => fetchPublicPackages(),
     retry: false,
   });
 }

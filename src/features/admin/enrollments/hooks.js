@@ -15,8 +15,6 @@ export function useCreateAdminEnrollment() {
     mutationFn: createAdminEnrollment,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "enrollments"] });
-      queryClient.invalidateQueries({ queryKey: ["admin", "cohorts"] });
-      queryClient.invalidateQueries({ queryKey: ["admin", "subscriptions", "enrollments"] });
     },
   });
 }

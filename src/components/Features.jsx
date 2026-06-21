@@ -44,7 +44,7 @@ const ClipboardIcon = () => (
 
 const ITEMS = [
   { key: "liveClasses", Icon: VideoIcon, to: "/explore" },
-  { key: "groupAndOneToOne", Icon: UsersIcon, to: "/subscription" },
+  { key: "groupAndOneToOne", Icon: UsersIcon, to: "/book-session" },
   { key: "homeworkAndPractice", Icon: DocIcon, to: "/signup" },
   { key: "recordedSessions", Icon: ClipboardIcon, to: "/recordings" },
 ];

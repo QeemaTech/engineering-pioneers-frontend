@@ -30,7 +30,7 @@ export default function CTA() {
                 {t("cta.actions.createAccount")}
               </Link>
               <Link
-                to="/subscription"
+                to="/explore"
                 className="w-full rounded-xl border border-pioneer-orange-normal/30 bg-transparent px-8 py-3.5 text-center text-sm font-semibold text-pioneer-orange-normal transition hover:bg-white/30 sm:w-auto"
               >
                 {t("cta.actions.learnMore")}

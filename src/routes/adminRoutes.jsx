@@ -38,8 +38,6 @@ const AdminExamSubmissions = lazy(() => import("../pages/admin/ExamSubmissions")
 const AdminPerformance = lazy(() => import("../pages/admin/Performance"));
 const AdminCoupons = lazy(() => import("../pages/admin/Coupons"));
 const AdminCertificates = lazy(() => import("../pages/admin/Certificates"));
-const AdminCohorts = lazy(() => import("../pages/admin/Cohorts"));
-const AdminPackages = lazy(() => import("../pages/admin/Packages"));
 const AdminReviewQueue = lazy(() => import("../pages/admin/ReviewQueue"));
 const AdminAuditLogs = lazy(() => import("../pages/admin/AuditLogs"));
 
@@ -54,8 +52,6 @@ function AdminRoutes() {
         <Route index element={wrap(<AdminOverview />)} />
         <Route path="dashboard" element={wrap(<AdminOverview />)} />
         <Route path="finance" element={wrap(<AdminFinance />)} />
-        <Route path="packages" element={wrap(<AdminPackages />)} />
-        <Route path="cohorts" element={wrap(<AdminCohorts />)} />
         <Route path="performance" element={wrap(<AdminPerformance />)} />
         <Route path="coupons" element={wrap(<AdminCoupons />)} />
         <Route path="certificates" element={wrap(<AdminCertificates />)} />
