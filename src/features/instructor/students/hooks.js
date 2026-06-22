@@ -14,9 +14,8 @@ export function useInstructorClassesForStudents(params) {
 
 export function useClassStudents(classId) {
   return useQuery({
-    queryKey: ["instructor", "students", "list", classId],
+    queryKey: ["instructor", "students", "list", classId || "all"],
     queryFn: () => fetchClassStudents(classId),
-    enabled: Boolean(classId),
   });
 }
 

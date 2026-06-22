@@ -33,3 +33,23 @@ export async function addInstructorExamQuestion(examId, body) {
   const response = await client.post(`${endpoints.instructor.exams}/${examId}/questions`, body);
   return response?.data?.data;
 }
+
+export async function updateInstructorExam({ examId, body }) {
+  const response = await client.patch(`${endpoints.instructor.exams}/${examId}`, body);
+  return response?.data?.data;
+}
+
+export async function deleteInstructorExam(examId) {
+  const response = await client.delete(`${endpoints.instructor.exams}/${examId}`);
+  return response?.data?.data;
+}
+
+export async function updateInstructorExamQuestion({ examId, questionId, body }) {
+  const response = await client.patch(`${endpoints.instructor.exams}/${examId}/questions/${questionId}`, body);
+  return response?.data?.data;
+}
+
+export async function deleteInstructorExamQuestion({ examId, questionId }) {
+  const response = await client.delete(`${endpoints.instructor.exams}/${examId}/questions/${questionId}`);
+  return response?.data?.data;
+}

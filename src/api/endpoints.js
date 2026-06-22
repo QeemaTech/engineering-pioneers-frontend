@@ -58,6 +58,7 @@ const endpoints = {
     availability: "/instructor/availability",
     exams: "/instructor/exams",
     wallet: "/instructor/wallet",
+    attendance: "/instructor/attendance",
     qna: "/instructor",
   },
   student: {

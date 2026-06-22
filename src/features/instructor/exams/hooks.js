@@ -6,6 +6,10 @@ import {
   fetchInstructorExamDetail,
   fetchInstructorExamSubmissions,
   fetchInstructorExams,
+  updateInstructorExam,
+  deleteInstructorExam,
+  updateInstructorExamQuestion,
+  deleteInstructorExamQuestion,
 } from "./api";
 
 export function useInstructorExams(params) {
@@ -55,6 +59,48 @@ export function useAddInstructorExamQuestion(examId) {
     mutationFn: (body) => addInstructorExamQuestion(examId, body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["instructor", "exams", examId] });
+      queryClient.invalidateQueries({ queryKey: ["instructor", "exams", examId, "detail"] });
+    },
+  });
+}
+
+export function useUpdateInstructorExam() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateInstructorExam,
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["instructor", "exams"] });
+      queryClient.invalidateQueries({ queryKey: ["instructor", "exams", vars.examId, "detail"] });
+    },
+  });
+}
+
+export function useDeleteInstructorExam() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteInstructorExam,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["instructor", "exams"] });
+    },
+  });
+}
+
+export function useUpdateInstructorExamQuestion(examId) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body) => updateInstructorExamQuestion({ examId, ...body }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["instructor", "exams", examId, "detail"] });
+    },
+  });
+}
+
+export function useDeleteInstructorExamQuestion(examId) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body) => deleteInstructorExamQuestion({ examId, ...body }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["instructor", "exams", examId, "detail"] });
     },
   });
 }

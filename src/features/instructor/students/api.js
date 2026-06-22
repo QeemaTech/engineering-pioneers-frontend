@@ -7,7 +7,10 @@ export async function fetchInstructorClassesForStudents(params) {
 }
 
 export async function fetchClassStudents(classId) {
-  const response = await client.get(`${endpoints.instructor.classes}/${classId}/students`);
+  const url = classId
+    ? `${endpoints.instructor.classes}/${classId}/students`
+    : `${endpoints.instructor.classes}/students`;
+  const response = await client.get(url);
   return response?.data?.data || [];
 }
 

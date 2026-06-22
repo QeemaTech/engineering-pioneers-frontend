@@ -33,3 +33,13 @@ export async function gradeHomeworkSubmission(submissionId, body) {
   const response = await client.patch(endpoints.homework.gradeSubmission(submissionId), body);
   return response?.data?.data;
 }
+
+export async function createInstructorHomework(body) {
+  const response = await client.post("/homework/instructor", body);
+  return response?.data?.data;
+}
+
+export async function deleteInstructorHomework(homeworkId) {
+  const response = await client.delete(`/homework/instructor/${homeworkId}`);
+  return response?.data?.data;
+}

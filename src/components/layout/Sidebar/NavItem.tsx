@@ -21,7 +21,7 @@ function NavItem({ item, isSubItem = false, isCollapsed = false }: Props) {
         to={item.path}
         className={`relative mx-1 flex items-center gap-2 rounded-md py-1.5 pe-3 ps-8 text-[13px] transition-all duration-150 ${
         isActive
-          ? "border-s-2 border-pioneer-orange bg-pioneer-orange/10 ps-[30px] text-pioneer-orange dark:bg-pioneer-orange/20 dark:text-pioneer-orange"
+          ? "bg-[#EE7C11] text-white dark:bg-[#EE7C11] dark:text-white font-medium"
           : "text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-white/5 dark:hover:text-slate-300"
       }`}
     >
@@ -40,14 +40,18 @@ function NavItem({ item, isSubItem = false, isCollapsed = false }: Props) {
         isCollapsed ? "justify-center px-2" : "gap-2.5 px-3"
       } ${
         isActive
-          ? "border-s-2 border-pioneer-orange bg-pioneer-orange/10 ps-[10px] text-pioneer-orange dark:bg-white/10 dark:text-white"
+          ? "bg-[#EE7C11] text-white dark:bg-[#EE7C11] dark:text-white font-medium"
           : "text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
       }`}
     >
       <Icon className="h-4 w-4" />
       {!isCollapsed ? <span className="truncate">{t(item.labelKey)}</span> : null}
       {typeof item.badge === "number" && item.badge > 0 && !isCollapsed ? (
-        <span className="ms-auto rounded-full bg-pioneer-orange px-1.5 py-0.5 text-[10px] font-bold text-white">
+        <span className={`ms-auto rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
+          isActive
+            ? "bg-white text-[#EE7C11]"
+            : "bg-pioneer-orange text-white"
+        }`}>
           {item.badge}
         </span>
       ) : null}

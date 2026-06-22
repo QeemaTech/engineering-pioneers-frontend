@@ -16,6 +16,7 @@ import {
   Shield,
   UserCog,
   Users,
+  UserCheck,
 } from "lucide-react";
 
 export type NavItem = {
@@ -317,16 +318,32 @@ export function getAdminNavigation(openTicketsCount = 0): NavSection[] {
 export function getInstructorNavigation(): NavSection[] {
   return [
     {
-      labelKey: "sidebarNav.sections.instructor",
+      labelKey: "sidebarNav.sections.analytics",
       items: [
-        { labelKey: "sidebarNav.items.overview", path: "/instructor", icon: LayoutDashboard, exact: true },
+        { labelKey: "sidebarNav.items.overview", path: "/instructor/dashboard", icon: LayoutDashboard, exact: true },
+        { labelKey: "sidebarNav.items.performance", path: "/instructor/performance", icon: BarChart2 },
+      ],
+    },
+    {
+      labelKey: "sidebarNav.sections.academicMatrix",
+      items: [
         { labelKey: "sidebarNav.items.myCourses", path: "/instructor/courses", icon: BookOpen },
         { labelKey: "sidebarNav.items.qna", path: "/instructor/qna", icon: MessageSquare },
-        { labelKey: "sidebarNav.items.performance", path: "/instructor/performance", icon: BarChart2 },
         { labelKey: "sidebarNav.items.homework", path: "/instructor/homework", icon: ClipboardCheck },
-        { labelKey: "sidebarNav.items.availability", path: "/instructor/availability", icon: CalendarClock },
         { labelKey: "sidebarNav.items.exams", path: "/instructor/exams", icon: ClipboardList },
+      ],
+    },
+    {
+      labelKey: "sidebarNav.sections.liveOps",
+      items: [
         { labelKey: "sidebarNav.items.students", path: "/instructor/students", icon: Users },
+        { labelKey: "sidebarNav.items.attendance", path: "/instructor/attendance", icon: UserCheck },
+        { labelKey: "sidebarNav.items.availability", path: "/instructor/availability", icon: CalendarClock },
+      ],
+    },
+    {
+      labelKey: "sidebarNav.sections.financialsSecurity",
+      items: [
         { labelKey: "sidebarNav.items.wallet", path: "/instructor/wallet", icon: DollarSign },
         { labelKey: "sidebarNav.items.settings", path: "/instructor/settings", icon: Settings2 },
       ],

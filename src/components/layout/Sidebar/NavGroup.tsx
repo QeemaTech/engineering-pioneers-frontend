@@ -33,7 +33,7 @@ function NavGroup({ group, isCollapsed = false }: { group: NavGroupType; isColla
         title={t(group.labelKey)}
         className={`mx-1 flex items-center justify-center rounded-md px-2 py-2 transition-all duration-150 ${
           isAnyChildActive
-            ? "border-s-2 border-pioneer-orange bg-pioneer-orange/10 text-pioneer-orange dark:bg-white/10 dark:text-white"
+            ? "bg-[#EE7C11] text-white dark:bg-[#EE7C11] dark:text-white"
             : "text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
         }`}
       >
