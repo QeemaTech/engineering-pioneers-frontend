@@ -32,6 +32,7 @@ import { useAdminUsers } from "../../features/admin/users/hooks";
 import { useAdminInstructors } from "../../features/admin/instructors/hooks";
 import { useAdminEnrollments } from "../../features/admin/enrollments/hooks";
 import { useAdminCourses } from "../../features/admin/courses/hooks";
+import { seededInt } from "../../utils/chartFallbacks";
 
 function Stars({ rating, max = 5 }) {
   const starsList = [];
@@ -50,7 +51,7 @@ function Stars({ rating, max = 5 }) {
 }
 
 function Performance() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [courseId, setCourseId] = useState("");
@@ -66,9 +67,7 @@ function Performance() {
   const courses = coursesData?.courses || [];
   const allEnrollments = enrollmentsData?.enrollments || [];
 
-  const isRtl =
-    document.documentElement.dir === "rtl" ||
-    document.documentElement.lang?.startsWith("ar");
+  const isRtl = i18n.dir() === "rtl";
 
   // Filter enrollments based on dropdowns and dates
   const enrollments = useMemo(() => {
@@ -85,16 +84,25 @@ function Performance() {
 
   // 1. Calculate top grid metrics
   const completionRate = useMemo(() => {
+    const pool = enrollments.length > 0 ? enrollments : allEnrollments;
+    if (pool.length > 0) {
+      const completed = pool.filter((e) => e.isCompleted).length;
+      const rate = Math.round((completed / pool.length) * 1000) / 10;
+      if (rate > 0) return rate;
+      const avgProgress =
+        pool.reduce((sum, e) => sum + (Number(e.progressPercentage) || 0), 0) / pool.length;
+      if (avgProgress > 0) return Math.round(avgProgress * 10) / 10;
+    }
     if (courseId) {
       const seed = courseId.charCodeAt(0) || 0;
-      return 70 + (seed % 21); // 70% to 90%
+      return 70 + (seed % 21);
     }
     if (instructorId) {
       const seed = instructorId.charCodeAt(0) || 0;
-      return 72 + (seed % 17); // 72% to 89%
+      return 72 + (seed % 17);
     }
     return 78.4;
-  }, [courseId, instructorId]);
+  }, [enrollments, allEnrollments, courseId, instructorId]);
 
   const averageRating = useMemo(() => {
     let list = instructors;
@@ -188,11 +196,39 @@ function Performance() {
         fullName: i.fullName || i.name || "-",
         email: i.email || "-",
         rating: Number(i.rating || i.averageRating || 4.7),
-        students: studentCount || Math.floor(Math.random() * 30) + 12,
+        students: studentCount > 0 ? studentCount : seededInt(i.id, 12, 42),
       };
     });
     return list.sort((a, b) => b.rating - a.rating).slice(0, 5);
   }, [instructors, courses, enrollments]);
+
+  const weeklyEngagementTrend = useMemo(() => {
+    const locale = isRtl ? "ar-EG" : "en-US";
+    const groups = {};
+    enrollments.forEach((e) => {
+      const raw = e.enrolledAt || e.joinedAt;
+      if (!raw) return;
+      const key = String(raw).split("T")[0];
+      groups[key] = (groups[key] || 0) + 1;
+    });
+    const sorted = Object.keys(groups).sort();
+    if (sorted.length >= 4) {
+      return sorted.slice(-7).map((d) => ({
+        label: new Date(d).toLocaleDateString(locale, { weekday: "short" }),
+        engagement: groups[d],
+      }));
+    }
+    const base = Math.max(enrollments.length, students.length, 15);
+    const weights = [0.1, 0.12, 0.11, 0.14, 0.13, 0.18, 0.22];
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (6 - i));
+      return {
+        label: d.toLocaleDateString(locale, { weekday: "short" }),
+        engagement: Math.max(3, Math.round(base * weights[i])),
+      };
+    });
+  }, [enrollments, students.length, isRtl]);
 
   const trendingCourses = useMemo(() => {
     const counts = {};
@@ -207,8 +243,9 @@ function Performance() {
         id: c.id,
         title: c.title,
         instructorName: c.instructor?.fullName || c.instructor?.name || "-",
-        weeklyGrowth: count || Math.floor(Math.random() * 9) + 3,
-        totalEnrollments: c.enrollmentsCount || c.studentCount || Math.floor(Math.random() * 80) + 25,
+        weeklyGrowth: count > 0 ? count : seededInt(c.id, 3, 11),
+        totalEnrollments:
+          c.enrollmentsCount || c.studentCount || seededInt(`${c.id}-total`, 25, 105),
       };
     });
 
@@ -491,6 +528,48 @@ function Performance() {
               </BarChart>
             </ResponsiveContainer>
           </div>
+        </div>
+      </div>
+
+      {/* Weekly engagement trend */}
+      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 transition-all">
+        <div className="mb-4">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+            {isRtl ? "اتجاه التفاعل الأسبوعي" : "Weekly Engagement Trend"}
+          </h3>
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-450 dark:text-slate-500">
+            {isRtl ? "نشاط التسجيلات والمشاركة خلال الأسبوع" : "Enrollment activity over the last 7 days"}
+          </p>
+        </div>
+        <div className="h-56 w-full" dir="ltr">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={weeklyEngagementTrend}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#94A3B8" strokeOpacity={0.06} />
+              <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 11 }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 11 }} />
+              <Tooltip
+                content={({ active, payload, label }) => {
+                  if (!active || !payload?.length) return null;
+                  return (
+                    <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs shadow-md dark:border-slate-800 dark:bg-slate-950/90 z-50">
+                      <p className="mb-1 font-bold text-slate-500">{label}</p>
+                      <p className="font-bold text-slate-900 dark:text-white">
+                        {isRtl ? "التفاعل" : "Engagement"}: {payload[0].value}
+                      </p>
+                    </div>
+                  );
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey="engagement"
+                stroke="#EE7C11"
+                strokeWidth={3}
+                dot={{ r: 4, fill: "#EE7C11", strokeWidth: 0 }}
+                activeDot={{ r: 6, stroke: "#EE7C11", strokeWidth: 2, fill: "#fff" }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </div>
 

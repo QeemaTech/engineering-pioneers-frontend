@@ -22,11 +22,6 @@ function Courses() {
   const updateMutation = useUpdateAdminCourse();
   const submitReviewMutation = useSubmitCourseForReview();
   const instructors = instructorsData?.instructors || [];
-  const [editing, setEditing] = useState(null);
-  const [editTitle, setEditTitle] = useState("");
-  const [editDesc, setEditDesc] = useState("");
-  const [editThumb, setEditThumb] = useState("");
-  const [editIntroVideoUrl, setEditIntroVideoUrl] = useState("");
 
   const deleteMutation = useDeleteAdminCourse();
 
@@ -209,44 +204,6 @@ function Courses() {
           />
         }
       />
-      {editing ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-lg rounded-xl border border-slate-200 bg-white p-5 shadow-xl dark:border-white/10 dark:bg-[#1A1A22]">
-            <h3 className="mb-4 text-lg font-bold text-slate-900 dark:text-white">{t("dashboard.admin.courses.editCourse")}</h3>
-            <div className="space-y-3">
-              <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" placeholder={t("adminPages.courseEditor.fields.title")} />
-              <input value={editThumb} onChange={(e) => setEditThumb(e.target.value)} className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" placeholder={t("adminPages.courseEditor.fields.thumbnailUrl")} />
-              <input value={editIntroVideoUrl} onChange={(e) => setEditIntroVideoUrl(e.target.value)} className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" placeholder={t("dashboard.admin.courses.introVideoUrl")} />
-              <textarea value={editDesc} onChange={(e) => setEditDesc(e.target.value)} className="min-h-24 w-full rounded-lg border border-slate-200 bg-white p-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" placeholder={t("adminPages.courseEditor.fields.description")} />
-              <div className="flex justify-end gap-2">
-                <button onClick={() => setEditing(null)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-white/10 dark:text-white">{t("adminPages.common.cancel")}</button>
-                <button
-                  onClick={async () => {
-                    try {
-                      await updateMutation.mutateAsync({
-                        id: editing.id,
-                        body: {
-                          title: editTitle,
-                          description: editDesc || undefined,
-                          thumbnail: editThumb || undefined,
-                          introVideoUrl: editIntroVideoUrl || null,
-                        },
-                      });
-                      toast.success(t("dashboard.admin.courses.updated"));
-                      setEditing(null);
-                    } catch {
-                      toast.error(t("dashboard.admin.courses.updateFailed"));
-                    }
-                  }}
-                  className="rounded-lg bg-[#EE7C11] px-3 py-2 text-sm font-bold text-white"
-                >
-                  {t("adminPages.common.save")}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
     </section>
   );
 }

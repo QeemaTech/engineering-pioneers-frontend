@@ -6,6 +6,7 @@ import type {
   PublicPostDetail,
   PublicPostsListResult,
   PublicPostListItem,
+  RecommendedCoursesResult,
 } from "./types";
 
 export type PublicCoursesQuery = {
@@ -13,6 +14,21 @@ export type PublicCoursesQuery = {
   limit?: number;
   search?: string;
 };
+
+export async function fetchRecommendedCourses(params: { filter?: string; limit?: number } = {}): Promise<RecommendedCoursesResult> {
+  const res = await client.get(`${endpoints.public.courses}/recommended`, {
+    params: {
+      filter: params.filter ?? "bestseller",
+      limit: params.limit ?? 8,
+    },
+  });
+  const data = res?.data?.data;
+  return {
+    tabs: Array.isArray(data?.tabs) ? data.tabs : [],
+    courses: Array.isArray(data?.courses) ? data.courses : [],
+    filter: data?.filter ?? params.filter ?? "bestseller",
+  };
+}
 
 export async function fetchPublicCourses(params: PublicCoursesQuery = {}): Promise<PublicCoursesListResult> {
   const res = await client.get(endpoints.public.courses, {
@@ -49,6 +65,23 @@ export async function fetchPublicLandingPage(): Promise<PublicLandingPageData> {
   const res = await client.get("/public/landing-page");
   const data = res?.data?.data;
   return data && typeof data === "object" ? (data as PublicLandingPageData) : {};
+}
+
+export type PublicCmsPage = {
+  slug: string;
+  titleEn: string;
+  titleAr: string;
+  subtitleEn?: string;
+  subtitleAr?: string;
+  sectionsEn?: unknown;
+  sectionsAr?: unknown;
+  isPublished?: boolean;
+  updatedAt?: string;
+};
+
+export async function fetchPublicCmsPage(slug: string): Promise<PublicCmsPage | null> {
+  const res = await client.get(`/public/pages/${encodeURIComponent(slug)}`);
+  return (res?.data?.data as PublicCmsPage) ?? null;
 }
 
 export async function fetchPublicPosts(params: PublicPostsQuery = {}): Promise<PublicPostsListResult> {

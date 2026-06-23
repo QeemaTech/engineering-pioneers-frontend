@@ -1,11 +1,13 @@
 import { 
   CalendarDays, Clock, MessageSquare, ShieldCheck, Star, UserX, 
   Wallet as WalletIcon, TrendingUp, CreditCard, ArrowUpRight, 
-  ArrowDownLeft, BookOpen, Users, Award, Calendar, ChevronRight, Activity, DollarSign
+  ArrowDownLeft, BookOpen, Users, Award, Calendar, ChevronRight, Activity, DollarSign,
+  Percent, Loader2, Pencil, X
 } from "lucide-react";
-import { useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
 import {
   Area,
   AreaChart,
@@ -24,21 +26,69 @@ import {
   useAdminInstructorAvailability,
   useAdminInstructorById,
   useAdminInstructorPerformance,
+  useUpdateInstructor,
 } from "../../features/admin/instructors/hooks";
 import DataTable from "../../components/ui/DataTable";
 import { getErrorMessage } from "../../api/error";
-import { useAdminPayouts } from "../../features/admin/finance/hooks";
+import { useUpdateInstructorCommission } from "../../features/admin/finance/hooks";
+import { useSetAdminUserPassword } from "../../features/admin/users/hooks";
+import { useCreateAdminTicket } from "../../features/admin/tickets/hooks";
+import { usePermissions } from "../../hooks/usePermissions";
+import PermissionGate from "../../components/ui/PermissionGate";
 
 const COLORS = ["#EE7C11", "#14B8A6", "#8B5CF6", "#EF4444", "#3B82F6"];
+const PHONE_REGEX = /^\+?[0-9]{7,15}$/;
 
 function InstructorDetail() {
   const { t, i18n } = useTranslation();
+  const isRtl = i18n.dir() === "rtl";
+  const navigate = useNavigate();
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("overview");
   const { data: entity, isLoading, isError, error, refetch } = useAdminInstructorById(id);
   const performanceQuery = useAdminInstructorPerformance(id, { enabled: Boolean(id) && activeTab === "performance" });
   const availabilityQuery = useAdminInstructorAvailability(id, { enabled: Boolean(id) && activeTab === "availability" });
-  const { data: payouts = [] } = useAdminPayouts({});
+  const updateCommission = useUpdateInstructorCommission();
+  const updateInstructor = useUpdateInstructor();
+  const setPasswordMutation = useSetAdminUserPassword();
+  const createTicketMutation = useCreateAdminTicket();
+  const { hasPermission } = usePermissions();
+  const canManageCommission = hasPermission("payout:manage");
+  const canManageInstructor = hasPermission("instructor:manage");
+  const [commissionInput, setCommissionInput] = useState("");
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [profileForm, setProfileForm] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    bio: "",
+    experience: 0,
+    isActive: true,
+  });
+  const [newPassword, setNewPassword] = useState("");
+  const [ticketModalOpen, setTicketModalOpen] = useState(false);
+  const [ticketSubject, setTicketSubject] = useState("");
+  const [ticketMessage, setTicketMessage] = useState("");
+  const [ticketPriority, setTicketPriority] = useState("MEDIUM");
+  const profileSectionRef = useRef(null);
+
+  useEffect(() => {
+    if (!entity) return;
+    setProfileForm({
+      fullName: entity.fullName || "",
+      email: entity.email || "",
+      phone: entity.phone || "",
+      bio: entity.bio || "",
+      experience: entity.experience ?? 0,
+      isActive: entity.isActive !== false,
+    });
+  }, [entity]);
+
+  useEffect(() => {
+    if (entity?.commissionRate != null) {
+      setCommissionInput(String(entity.commissionRate));
+    }
+  }, [entity?.commissionRate]);
 
   const instructor = useMemo(() => {
     if (!entity) return null;
@@ -61,6 +111,7 @@ function InstructorDetail() {
       coursesCount: courses.length,
       totalStudents,
       rating: entity.averageRating || 0,
+      commissionRate: entity.commissionRate ?? 80,
       wallet: {
         balance,
         totalEarned,
@@ -83,10 +134,8 @@ function InstructorDetail() {
     }));
   }, [entity, t]);
 
-  // Filter payouts for this instructor
-  const payRows = useMemo(() => {
-    return payouts.filter((p) => p?.instructor?.id === id).slice(0, 10);
-  }, [payouts, id]);
+  // Payout requests embedded in instructor profile from API
+  const payRows = useMemo(() => entity?.payoutRequests || [], [entity?.payoutRequests]);
 
   const coursesPie = useMemo(() => {
     const active = courseRows.filter((c) => c.status === t("adminPages.instructorDetail.active", { defaultValue: "Active" })).length;
@@ -115,6 +164,125 @@ function InstructorDetail() {
       }))
       .reverse();
   }, [instructor]);
+
+  const commissionRateNum = Number(commissionInput);
+  const commissionValid = !Number.isNaN(commissionRateNum) && commissionRateNum >= 0 && commissionRateNum <= 100;
+  const platformShare = commissionValid ? 100 - commissionRateNum : 0;
+  const exampleSale = 1000;
+  const exampleInstructor = commissionValid ? Math.round((exampleSale * commissionRateNum) / 100) : 0;
+  const examplePlatform = commissionValid ? exampleSale - exampleInstructor : 0;
+  const commissionDirty = commissionValid && commissionRateNum !== instructor?.commissionRate;
+
+  async function handleSaveCommission() {
+    if (!commissionValid) {
+      toast.error(t("adminPages.instructorDetail.wallet.commissionInvalid", { defaultValue: "Enter a rate between 0 and 100" }));
+      return;
+    }
+    try {
+      await updateCommission.mutateAsync({ instructorId: id, commissionRate: commissionRateNum });
+      toast.success(t("adminPages.instructorDetail.wallet.commissionSaved", { defaultValue: "Commission rate updated" }));
+    } catch (err) {
+      toast.error(getErrorMessage(err, t("adminPages.instructorDetail.wallet.commissionSaveFailed", { defaultValue: "Failed to update commission rate" })));
+    }
+  }
+
+  function resetProfileForm() {
+    if (!entity) return;
+    setProfileForm({
+      fullName: entity.fullName || "",
+      email: entity.email || "",
+      phone: entity.phone || "",
+      bio: entity.bio || "",
+      experience: entity.experience ?? 0,
+      isActive: entity.isActive !== false,
+    });
+    setNewPassword("");
+  }
+
+  async function handleSaveProfile() {
+    const phone = profileForm.phone?.trim() || "";
+    if (phone && !PHONE_REGEX.test(phone)) {
+      toast.error(t("adminPages.instructorDetail.phoneInvalid", { defaultValue: "Phone must be 7–15 digits, optionally starting with +" }));
+      return;
+    }
+    const experience = Number(profileForm.experience);
+    if (Number.isNaN(experience) || experience < 0) {
+      toast.error(t("adminPages.instructorDetail.profileSaveFailed", { defaultValue: "Failed to update instructor profile" }));
+      return;
+    }
+    try {
+      await updateInstructor.mutateAsync({
+        id,
+        body: {
+          fullName: profileForm.fullName.trim(),
+          email: profileForm.email.trim(),
+          phone: phone || undefined,
+          bio: profileForm.bio?.trim() || "",
+          experience: Math.floor(experience),
+          isActive: profileForm.isActive,
+        },
+      });
+      toast.success(t("adminPages.instructorDetail.profileSaved", { defaultValue: "Instructor profile updated" }));
+      setIsEditingProfile(false);
+      setNewPassword("");
+    } catch (err) {
+      toast.error(getErrorMessage(err, t("adminPages.instructorDetail.profileSaveFailed", { defaultValue: "Failed to update instructor profile" })));
+    }
+  }
+
+  async function handleToggleStatus(nextActive) {
+    try {
+      await updateInstructor.mutateAsync({ id, body: { isActive: nextActive } });
+      toast.success(t("adminPages.instructorDetail.statusUpdated", { defaultValue: "Instructor status updated" }));
+    } catch (err) {
+      toast.error(getErrorMessage(err, t("adminPages.instructorDetail.statusUpdateFailed", { defaultValue: "Failed to update instructor status" })));
+    }
+  }
+
+  async function handleChangePassword() {
+    if (!newPassword || newPassword.length < 8) {
+      toast.error(t("adminPages.instructorDetail.passwordTooShort", { defaultValue: "Password must be at least 8 characters" }));
+      return;
+    }
+    try {
+      await setPasswordMutation.mutateAsync({ id, newPassword });
+      toast.success(t("adminPages.instructorDetail.passwordUpdated", { defaultValue: "Password updated successfully" }));
+      setNewPassword("");
+    } catch (err) {
+      toast.error(getErrorMessage(err, t("adminPages.instructorDetail.passwordUpdateFailed", { defaultValue: "Failed to update password" })));
+    }
+  }
+
+  async function handleCreateTicket(e) {
+    e.preventDefault();
+    if (!ticketSubject.trim() || ticketMessage.trim().length < 10) {
+      toast.error(t("adminPages.studentDetail.ticketValidation", { defaultValue: "Subject and message (min 10 chars) are required." }));
+      return;
+    }
+    try {
+      const ticket = await createTicketMutation.mutateAsync({
+        creatorId: id,
+        subject: ticketSubject.trim(),
+        description: ticketMessage.trim(),
+        priority: ticketPriority,
+      });
+      toast.success(t("adminPages.studentDetail.ticketCreated", { defaultValue: "Support ticket created." }));
+      setTicketModalOpen(false);
+      setTicketSubject("");
+      setTicketMessage("");
+      if (ticket?.id) navigate(`/admin/tickets/${ticket.id}`);
+    } catch (err) {
+      toast.error(getErrorMessage(err, t("adminPages.studentDetail.ticketFailed", { defaultValue: "Could not create ticket." })));
+    }
+  }
+
+  function openProfileEditor() {
+    setActiveTab("overview");
+    setIsEditingProfile(true);
+    requestAnimationFrame(() => {
+      profileSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
 
   if (isLoading) {
     return (
@@ -173,6 +341,14 @@ function InstructorDetail() {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={openProfileEditor}
+              className="inline-flex items-center gap-2 rounded-xl bg-[#EE7C11] px-4 py-2.5 text-sm font-bold text-white shadow-sm shadow-[#EE7C11]/20 transition hover:bg-[#d9700e]"
+            >
+              <Pencil className="h-4 w-4" />
+              {t("adminPages.instructorDetail.editProfile", { defaultValue: "Edit profile" })}
+            </button>
             <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2 text-sm font-bold text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
               <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
               <span>{Number(instructor.rating || 0).toFixed(1)}</span>
@@ -284,38 +460,189 @@ function InstructorDetail() {
             {/* Left: General Info and Enrollments */}
             <div className="space-y-6 lg:col-span-3">
               {/* Profile Bio Details */}
-              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-[#1A1A22]">
-                <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-slate-400">
-                  {t("adminPages.instructorDetail.profileInfo", { defaultValue: "Profile Information" })}
-                </h3>
-                <dl className="grid gap-y-4 text-sm sm:grid-cols-2 sm:gap-x-6">
-                  <div>
-                    <dt className="text-xs font-semibold text-slate-400">
-                      {t("adminPages.userDirectory.slideDetails.fullName", { defaultValue: "Full Name" })}
-                    </dt>
-                    <dd className="mt-1 font-bold text-slate-900 dark:text-white">{instructor.name}</dd>
+              <div ref={profileSectionRef} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-[#1A1A22]">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400">
+                    {t("adminPages.instructorDetail.profileInfo", { defaultValue: "Profile Information" })}
+                  </h3>
+                  {!isEditingProfile ? (
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingProfile(true)}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:bg-slate-50 dark:border-white/10 dark:text-slate-300 dark:hover:bg-white/5"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                      {t("adminPages.instructorDetail.editProfile", { defaultValue: "Edit profile" })}
+                    </button>
+                  ) : null}
+                </div>
+
+                {isEditingProfile ? (
+                  <div className="space-y-4">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-slate-400">
+                          {t("adminPages.userDirectory.slideDetails.fullName", { defaultValue: "Full Name" })}
+                        </label>
+                        <input
+                          value={profileForm.fullName}
+                          onChange={(e) => setProfileForm((prev) => ({ ...prev, fullName: e.target.value }))}
+                          className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-900 outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-slate-400">
+                          {t("adminPages.userDirectory.slideDetails.email", { defaultValue: "Email Address" })}
+                        </label>
+                        <input
+                          type="email"
+                          value={profileForm.email}
+                          onChange={(e) => setProfileForm((prev) => ({ ...prev, email: e.target.value }))}
+                          className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-900 outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-slate-400">
+                          {t("adminPages.userDirectory.slideDetails.phone", { defaultValue: "Phone Number" })}
+                        </label>
+                        <input
+                          value={profileForm.phone}
+                          onChange={(e) => setProfileForm((prev) => ({ ...prev, phone: e.target.value }))}
+                          placeholder="+201234567890"
+                          className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-900 outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-slate-400">
+                          {t("adminPages.instructorDetail.experience", { defaultValue: "Experience" })}
+                        </label>
+                        <input
+                          type="number"
+                          min={0}
+                          value={profileForm.experience}
+                          onChange={(e) => setProfileForm((prev) => ({ ...prev, experience: e.target.value }))}
+                          className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-900 outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-400">
+                        {t("adminPages.instructorDetail.bio", { defaultValue: "Bio" })}
+                      </label>
+                      <textarea
+                        value={profileForm.bio}
+                        onChange={(e) => setProfileForm((prev) => ({ ...prev, bio: e.target.value }))}
+                        rows={4}
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                      />
+                    </div>
+                    <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
+                      <input
+                        type="checkbox"
+                        checked={profileForm.isActive}
+                        onChange={(e) => setProfileForm((prev) => ({ ...prev, isActive: e.target.checked }))}
+                        className="h-4 w-4 rounded border-slate-300 accent-[#EE7C11]"
+                      />
+                      {t("adminPages.instructorDetail.active", { defaultValue: "Active" })}
+                    </label>
+
+                    <div className="rounded-xl border border-amber-200 bg-amber-50/80 p-4 dark:border-amber-500/20 dark:bg-amber-500/10">
+                      <p className="text-xs font-bold text-amber-800 dark:text-amber-200">
+                        {t("adminPages.instructorDetail.changePassword", { defaultValue: "Change password" })}
+                      </p>
+                      <p className="mt-1 text-xs text-amber-700/90 dark:text-amber-200/80">
+                        {t("adminPages.instructorDetail.passwordHint", { defaultValue: "Changing the password signs the instructor out of existing sessions." })}
+                      </p>
+                      <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                        <input
+                          type="password"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder={t("adminPages.instructorDetail.newPassword", { defaultValue: "New password" })}
+                          className="h-10 flex-1 rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleChangePassword}
+                          disabled={setPasswordMutation.isPending || !newPassword}
+                          className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-amber-300 bg-amber-100 px-4 text-xs font-bold text-amber-900 transition hover:bg-amber-200 disabled:opacity-60 dark:border-amber-500/30 dark:bg-amber-500/20 dark:text-amber-100"
+                        >
+                          {setPasswordMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                          {t("adminPages.instructorDetail.changePassword", { defaultValue: "Change password" })}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-4 dark:border-white/5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          resetProfileForm();
+                          setIsEditingProfile(false);
+                        }}
+                        className="rounded-lg border border-slate-200 px-4 py-2 text-xs font-bold text-slate-600 transition hover:bg-slate-50 dark:border-white/10 dark:text-slate-300 dark:hover:bg-white/5"
+                      >
+                        {t("adminPages.instructorDetail.cancelEdit", { defaultValue: "Cancel" })}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleSaveProfile}
+                        disabled={updateInstructor.isPending}
+                        className="inline-flex items-center gap-2 rounded-lg bg-[#EE7C11] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#d9700e] disabled:opacity-60"
+                      >
+                        {updateInstructor.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                        {t("adminPages.instructorDetail.saveProfile", { defaultValue: "Save changes" })}
+                      </button>
+                    </div>
                   </div>
-                  <div>
-                    <dt className="text-xs font-semibold text-slate-400">
-                      {t("adminPages.userDirectory.slideDetails.email", { defaultValue: "Email Address" })}
-                    </dt>
-                    <dd className="mt-1 font-semibold text-slate-900 dark:text-white">{instructor.email}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs font-semibold text-slate-400">
-                      {t("adminPages.userDirectory.slideDetails.phone", { defaultValue: "Phone Number" })}
-                    </dt>
-                    <dd className="mt-1 font-semibold text-slate-900 dark:text-white">{instructor.phone || "—"}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs font-semibold text-slate-400">
-                      {t("adminPages.instructorDetail.experience", { defaultValue: "Experience" })}
-                    </dt>
-                    <dd className="mt-1 font-semibold text-slate-900 dark:text-white">
-                      {instructor.experience} {t("adminPages.instructorDetail.years", { defaultValue: "Years" })}
-                    </dd>
-                  </div>
-                </dl>
+                ) : (
+                  <dl className="grid gap-y-4 text-sm sm:grid-cols-2 sm:gap-x-6">
+                    <div>
+                      <dt className="text-xs font-semibold text-slate-400">
+                        {t("adminPages.userDirectory.slideDetails.fullName", { defaultValue: "Full Name" })}
+                      </dt>
+                      <dd className="mt-1 font-bold text-slate-900 dark:text-white">{instructor.name}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold text-slate-400">
+                        {t("adminPages.userDirectory.slideDetails.email", { defaultValue: "Email Address" })}
+                      </dt>
+                      <dd className="mt-1 font-semibold text-slate-900 dark:text-white">{instructor.email}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold text-slate-400">
+                        {t("adminPages.userDirectory.slideDetails.phone", { defaultValue: "Phone Number" })}
+                      </dt>
+                      <dd className="mt-1 font-semibold text-slate-900 dark:text-white">{instructor.phone || "—"}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold text-slate-400">
+                        {t("adminPages.instructorDetail.experience", { defaultValue: "Experience" })}
+                      </dt>
+                      <dd className="mt-1 font-semibold text-slate-900 dark:text-white">
+                        {instructor.experience} {t("adminPages.instructorDetail.years", { defaultValue: "Years" })}
+                      </dd>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <dt className="text-xs font-semibold text-slate-400">
+                        {t("adminPages.instructorDetail.bio", { defaultValue: "Bio" })}
+                      </dt>
+                      <dd className="mt-1 font-medium leading-relaxed text-slate-700 dark:text-slate-300">
+                        {instructor.bio && instructor.bio !== "-" ? instructor.bio : "—"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold text-slate-400">
+                        {t("adminPages.instructorDetail.commissionRate", { defaultValue: "Commission rate" })}
+                      </dt>
+                      <dd className="mt-1 font-semibold text-slate-900 dark:text-white">
+                        {instructor.commissionRate}% {t("adminPages.instructorDetail.wallet.commissionInstructor", { defaultValue: "Instructor share" }).toLowerCase()}
+                        <span className="text-slate-400"> · </span>
+                        {100 - instructor.commissionRate}% {t("adminPages.instructorDetail.wallet.commissionPlatform", { defaultValue: "Platform share" }).toLowerCase()}
+                      </dd>
+                    </div>
+                  </dl>
+                )}
               </div>
 
               {/* Bar Chart: Enrollments */}
@@ -385,21 +712,38 @@ function InstructorDetail() {
                 <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-400">
                   {t("adminPages.instructorDetail.quickActions", { defaultValue: "Quick Actions" })}
                 </h3>
-                {[
-                  [ShieldCheck, t("adminPages.instructorDetail.approve")],
-                  [UserX, t("adminPages.instructorDetail.suspend")],
-                  [MessageSquare, t("adminPages.instructorDetail.sendMessage")],
-                ].map(([Icon, label]) => (
+                <button
+                  type="button"
+                  onClick={() => handleToggleStatus(true)}
+                  disabled={!canManageInstructor || instructor.isActive || updateInstructor.isPending}
+                  className="flex w-full items-center gap-2.5 rounded-xl border border-slate-200/80 bg-white px-4 py-3 text-sm font-bold transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-[#0F0F13] dark:text-slate-200 dark:hover:bg-emerald-500/10"
+                >
+                  <ShieldCheck className="h-4.5 w-4.5 text-emerald-600" />
+                  {t("adminPages.instructorDetail.approve")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleToggleStatus(false)}
+                  disabled={!canManageInstructor || !instructor.isActive || updateInstructor.isPending}
+                  className="flex w-full items-center gap-2.5 rounded-xl border border-slate-200/80 bg-white px-4 py-3 text-sm font-bold transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-[#0F0F13] dark:text-slate-200 dark:hover:bg-amber-500/10"
+                >
+                  <UserX className="h-4.5 w-4.5 text-amber-600" />
+                  {t("adminPages.instructorDetail.suspend")}
+                </button>
+                <PermissionGate permission="support:manage">
                   <button
-                    key={label}
-                    disabled
-                    className="flex w-full cursor-not-allowed items-center gap-2.5 rounded-xl border border-slate-200/80 bg-white px-4 py-3 text-sm font-bold opacity-60 dark:border-white/10 dark:bg-[#0F0F13] dark:text-slate-200"
-                    title="Workflow configuration pending"
+                    type="button"
+                    onClick={() => {
+                      setTicketSubject(isRtl ? `رسالة للمدرّس: ${instructor.name}` : `Message to instructor: ${instructor.name}`);
+                      setTicketMessage("");
+                      setTicketModalOpen(true);
+                    }}
+                    className="flex w-full items-center gap-2.5 rounded-xl border border-slate-200/80 bg-white px-4 py-3 text-sm font-bold text-slate-800 transition hover:border-[#EE7C11]/40 hover:bg-[#EE7C11]/5 dark:border-white/10 dark:bg-[#0F0F13] dark:text-slate-200"
                   >
-                    <Icon className="h-4.5 w-4.5 text-slate-500" />
-                    {label}
+                    <MessageSquare className="h-4.5 w-4.5 text-[#EE7C11]" />
+                    {t("adminPages.instructorDetail.sendMessage")}
                   </button>
-                ))}
+                </PermissionGate>
               </div>
             </div>
           </div>
@@ -409,6 +753,108 @@ function InstructorDetail() {
       {/* Wallet & Financials Tab */}
       {activeTab === "wallet" ? (
         <div className="space-y-6">
+          {/* Commission rate settings */}
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-[#1A1A22]">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400">
+                    <Percent className="h-4 w-4" />
+                  </div>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                    {t("adminPages.instructorDetail.wallet.commissionTitle", { defaultValue: "Revenue Share" })}
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {t("adminPages.instructorDetail.wallet.commissionSubtitle", {
+                    defaultValue: "Percentage of each sale credited to this instructor. The platform keeps the remainder.",
+                  })}
+                </p>
+              </div>
+              {commissionDirty && canManageCommission ? (
+                <button
+                  type="button"
+                  onClick={handleSaveCommission}
+                  disabled={updateCommission.isPending}
+                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#EE7C11] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#d9700e] disabled:opacity-60"
+                >
+                  {updateCommission.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                  {t("adminPages.instructorDetail.wallet.commissionSave", { defaultValue: "Save commission rate" })}
+                </button>
+              ) : null}
+            </div>
+
+            <div className="mt-5 grid gap-5 lg:grid-cols-2">
+              <div className="space-y-4">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-400">
+                  {t("adminPages.instructorDetail.wallet.commissionRate", { defaultValue: "Instructor rate (%)" })}
+                </label>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={commissionValid ? commissionRateNum : instructor.commissionRate}
+                    onChange={(e) => setCommissionInput(e.target.value)}
+                    disabled={!canManageCommission}
+                    className="h-2 flex-1 cursor-pointer appearance-none rounded-full bg-slate-200 accent-[#EE7C11] disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white/10"
+                  />
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      step={1}
+                      value={commissionInput}
+                      onChange={(e) => setCommissionInput(e.target.value)}
+                      disabled={!canManageCommission}
+                      className="w-16 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-center text-sm font-bold text-slate-900 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                    />
+                    <span className="text-sm font-bold text-slate-500">%</span>
+                  </div>
+                </div>
+                {!commissionValid ? (
+                  <p className="text-xs text-red-600 dark:text-red-400">
+                    {t("adminPages.instructorDetail.wallet.commissionInvalid", { defaultValue: "Enter a rate between 0 and 100" })}
+                  </p>
+                ) : null}
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex h-3 overflow-hidden rounded-full bg-slate-100 dark:bg-white/10">
+                  <div
+                    className="bg-emerald-500 transition-all"
+                    style={{ width: `${commissionValid ? commissionRateNum : instructor.commissionRate}%` }}
+                    title={t("adminPages.instructorDetail.wallet.commissionInstructor", { defaultValue: "Instructor share" })}
+                  />
+                  <div
+                    className="bg-slate-400 transition-all dark:bg-slate-500"
+                    style={{ width: `${commissionValid ? platformShare : 100 - instructor.commissionRate}%` }}
+                    title={t("adminPages.instructorDetail.wallet.commissionPlatform", { defaultValue: "Platform share" })}
+                  />
+                </div>
+                <div className="flex justify-between text-xs font-bold">
+                  <span className="text-emerald-600 dark:text-emerald-400">
+                    {t("adminPages.instructorDetail.wallet.commissionInstructor", { defaultValue: "Instructor share" })}: {commissionValid ? commissionRateNum : instructor.commissionRate}%
+                  </span>
+                  <span className="text-slate-500">
+                    {t("adminPages.instructorDetail.wallet.commissionPlatform", { defaultValue: "Platform share" })}: {commissionValid ? platformShare : 100 - instructor.commissionRate}%
+                  </span>
+                </div>
+                <p className="rounded-xl border border-slate-100 bg-slate-50/80 px-3 py-2 text-xs text-slate-600 dark:border-white/5 dark:bg-white/5 dark:text-slate-300">
+                  {t("adminPages.instructorDetail.wallet.commissionExample", {
+                    defaultValue: "On a {{amount}} {{currency}} sale, instructor earns {{instructorAmount}} {{currency}} and platform keeps {{platformAmount}} {{currency}}.",
+                    amount: exampleSale.toLocaleString(),
+                    currency: instructor.wallet.currency,
+                    instructorAmount: exampleInstructor.toLocaleString(),
+                    platformAmount: examplePlatform.toLocaleString(),
+                  })}
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Financial summary banner */}
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="rounded-2xl border border-indigo-100 bg-indigo-50/50 p-5 dark:border-indigo-500/10 dark:bg-[#1A1A22]">
@@ -528,9 +974,19 @@ function InstructorDetail() {
 
             {/* Payout Requests */}
             <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-[#1A1A22]">
-              <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-slate-400">
-                {t("adminPages.instructorDetail.wallet.payoutRequests", { defaultValue: "Payout Requests" })}
-              </h3>
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400">
+                  {t("adminPages.instructorDetail.wallet.payoutRequests", { defaultValue: "Payout Requests" })}
+                </h3>
+                {payRows.length > 0 ? (
+                  <Link
+                    to="/admin/instructors/payouts"
+                    className="text-xs font-bold text-[#EE7C11] hover:underline"
+                  >
+                    {t("adminPages.instructorDetail.wallet.managePayouts", { defaultValue: "Manage all payouts" })}
+                  </Link>
+                ) : null}
+              </div>
               {payRows.length === 0 ? (
                 <div className="py-12 text-center text-sm text-slate-500">
                   {t("adminPages.instructorDetail.wallet.noPayouts", { defaultValue: "No payout requests submitted yet." })}
@@ -547,6 +1003,11 @@ function InstructorDetail() {
                       key: "amount",
                       title: t("adminPages.instructorDetail.wallet.amountRequested", { defaultValue: "Amount Requested" }),
                       render: (v) => `${Number(v || 0).toLocaleString()} ${instructor.wallet.currency}`,
+                    },
+                    {
+                      key: "payoutMethod",
+                      title: t("adminPages.instructorDetail.wallet.payoutMethod", { defaultValue: "Method" }),
+                      render: (v) => (v === "MOBILE_WALLET" ? "Mobile wallet" : v === "BANK" ? "Bank" : v || "—"),
                     },
                     { 
                       key: "status", 
@@ -693,6 +1154,61 @@ function InstructorDetail() {
               ))}
             </div>
           )}
+        </div>
+      ) : null}
+
+      {ticketModalOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <form onSubmit={handleCreateTicket} className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#1A1A22]">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                {t("adminPages.instructorDetail.sendMessage")}
+              </h3>
+              <button type="button" onClick={() => setTicketModalOpen(false)} className="text-slate-500">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <p className="mb-3 text-xs text-slate-500">
+              {t("adminPages.instructorDetail.ticketHint", { defaultValue: "Creates a support ticket linked to this instructor." })}
+            </p>
+            <input
+              value={ticketSubject}
+              onChange={(e) => setTicketSubject(e.target.value)}
+              className="mb-3 h-10 w-full rounded-xl border border-slate-200 px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+              placeholder={t("adminPages.tickets.table.subject", { defaultValue: "Subject" })}
+              required
+            />
+            <textarea
+              value={ticketMessage}
+              onChange={(e) => setTicketMessage(e.target.value)}
+              rows={4}
+              className="mb-3 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+              placeholder={isRtl ? "نص الرسالة للمدرّس..." : "Message to the instructor..."}
+              required
+            />
+            <select
+              value={ticketPriority}
+              onChange={(e) => setTicketPriority(e.target.value)}
+              className="mb-4 h-10 w-full rounded-xl border border-slate-200 px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+            >
+              {["LOW", "MEDIUM", "HIGH", "URGENT"].map((p) => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </select>
+            <div className="flex justify-end gap-2">
+              <button type="button" onClick={() => setTicketModalOpen(false)} className="rounded-xl border px-4 py-2 text-sm font-semibold dark:border-white/10 dark:text-slate-200">
+                {t("dashboard.common.cancel")}
+              </button>
+              <button
+                type="submit"
+                disabled={createTicketMutation.isPending}
+                className="inline-flex items-center gap-2 rounded-xl bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+              >
+                {createTicketMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                {t("adminPages.studentDetail.sendAndOpenTicket", { defaultValue: "Send & open ticket" })}
+              </button>
+            </div>
+          </form>
         </div>
       ) : null}
     </section>

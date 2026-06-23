@@ -49,7 +49,7 @@ export default function QuotaUpgradeModalHost() {
             {t("quotaModal.close")}
           </button>
           <Link
-            to="/subscription"
+            to="/explore"
             className="inline-flex flex-1 items-center justify-center rounded-xl bg-pioneer-orange-normal px-4 py-2.5 text-sm font-bold text-white hover:bg-pioneer-orange-hover"
           >
             {t("quotaModal.cta")}

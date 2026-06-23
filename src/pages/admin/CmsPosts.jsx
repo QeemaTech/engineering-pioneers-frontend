@@ -37,10 +37,12 @@ function CmsPosts() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({
     title: "",
+    titleAr: "",
     slug: "",
     thumbnail: "",
     published: false,
     bodyMd: "",
+    bodyMdAr: "",
   });
 
   const posts = Array.isArray(data) ? data : [];
@@ -49,10 +51,12 @@ function CmsPosts() {
     if (!editing) return;
     setForm({
       title: editing.title || "",
+      titleAr: editing.titleAr || "",
       slug: editing.slug || "",
       thumbnail: editing.thumbnail || "",
       published: Boolean(editing.published),
       bodyMd: markdownBodyFromContent(editing.content),
+      bodyMdAr: markdownBodyFromContent(editing.contentAr),
     });
   }, [editing]);
 
@@ -197,11 +201,23 @@ function CmsPosts() {
         {editing ? (
           <div className="space-y-4">
             <div>
-              <label className="mb-1 block text-xs font-bold uppercase text-slate-500">{t("adminPages.cmsPosts.fieldTitle")}</label>
+              <label className="mb-1 block text-xs font-bold uppercase text-slate-500">{t("adminPages.cmsPosts.fieldTitle")} (EN)</label>
               <input
                 value={form.title}
                 onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                 className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                dir="ltr"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-bold uppercase text-slate-500">
+                {t("adminPages.cmsPosts.fieldTitleAr", { defaultValue: "Title (Arabic)" })}
+              </label>
+              <input
+                value={form.titleAr}
+                onChange={(e) => setForm((f) => ({ ...f, titleAr: e.target.value }))}
+                className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                dir="rtl"
               />
             </div>
             <div>
@@ -229,11 +245,23 @@ function CmsPosts() {
               {t("adminPages.cmsPosts.publishedLabel")}
             </label>
             <div>
-              <label className="mb-1 block text-xs font-bold uppercase text-slate-500">{t("adminPages.cmsPosts.body")}</label>
+              <label className="mb-1 block text-xs font-bold uppercase text-slate-500">{t("adminPages.cmsPosts.body")} (EN)</label>
               <textarea
                 value={form.bodyMd}
                 onChange={(e) => setForm((f) => ({ ...f, bodyMd: e.target.value }))}
-                className="min-h-48 w-full rounded-lg border border-slate-200 p-3 font-mono text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-slate-200"
+                className="min-h-40 w-full rounded-lg border border-slate-200 p-3 font-mono text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-slate-200"
+                dir="ltr"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-bold uppercase text-slate-500">
+                {t("adminPages.cmsPosts.bodyAr", { defaultValue: "Body (Arabic)" })}
+              </label>
+              <textarea
+                value={form.bodyMdAr}
+                onChange={(e) => setForm((f) => ({ ...f, bodyMdAr: e.target.value }))}
+                className="min-h-40 w-full rounded-lg border border-slate-200 p-3 font-mono text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-slate-200"
+                dir="rtl"
               />
             </div>
             <div className="flex gap-2 pt-2">
@@ -247,9 +275,13 @@ function CmsPosts() {
                       id: editing.id,
                       body: {
                         title: form.title.trim(),
+                        titleAr: form.titleAr.trim() || null,
                         slug,
                         published: form.published,
                         content: { format: "markdown", body: form.bodyMd },
+                        contentAr: form.bodyMdAr.trim()
+                          ? { format: "markdown", body: form.bodyMdAr }
+                          : null,
                         ...(form.thumbnail.trim() ? { thumbnail: form.thumbnail.trim() } : { thumbnail: "" }),
                       },
                     },

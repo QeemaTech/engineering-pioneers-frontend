@@ -86,7 +86,7 @@ export default function LearningStyle() {
               ))}
             </ul>
             <Link
-              to="/subscription"
+              to="/explore"
               className="mt-8 w-full rounded-xl bg-pioneer-teal-normal py-3 text-center text-sm font-semibold text-slate-900 transition hover:bg-pioneer-teal-hover"
             >
               {t("learningStyle.cards.privateSessions.button")}

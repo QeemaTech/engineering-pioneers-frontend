@@ -34,3 +34,8 @@ export async function updateAdminPaymentStatus({ id, status }) {
   const response = await client.patch(`${endpoints.admin.financials}/payments/${id}/status`, { status });
   return response?.data?.data;
 }
+
+export async function updateInstructorCommission({ instructorId, commissionRate }) {
+  const response = await client.patch(endpoints.admin.instructorCommission(instructorId), { commissionRate });
+  return response?.data?.data;
+}

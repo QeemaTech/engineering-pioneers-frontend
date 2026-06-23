@@ -2,11 +2,20 @@ import { useMemo, useState } from "react";
 import { 
   Lock, MessageSquare, Trash2, UserX, BookOpen, Calendar, Clock, DollarSign, 
   Award, GraduationCap, ChevronRight, CheckCircle2, AlertCircle, ShieldCheck, Mail, Phone,
-  Activity, Inbox, ListChecks
+  Activity, Inbox, ListChecks, Loader2, X
 } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useAdminStudentPerformance, useAdminUserById } from "../../features/admin/users/hooks";
+import toast from "react-hot-toast";
+import {
+  useAdminStudentPerformance,
+  useAdminUserById,
+  useDeleteAdminUser,
+  useSetAdminUserPassword,
+  useToggleAdminUserActive,
+} from "../../features/admin/users/hooks";
+import { useCreateAdminTicket } from "../../features/admin/tickets/hooks";
+import PermissionGate from "../../components/ui/PermissionGate";
 import StatusBadge from "../../components/ui/StatusBadge";
 import DataTable from "../../components/ui/DataTable";
 import { getErrorMessage } from "../../api/error";
@@ -18,8 +27,24 @@ const COLORS = ["#10B981", "#6366F1", "#EE7C11", "#8B5CF6", "#EF4444"];
 
 function StudentDetail() {
   const { t, i18n } = useTranslation();
+  const isRtl = i18n.dir() === "rtl";
+  const navigate = useNavigate();
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("overview");
+
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [ticketModalOpen, setTicketModalOpen] = useState(false);
+  const [ticketSubject, setTicketSubject] = useState("");
+  const [ticketMessage, setTicketMessage] = useState("");
+  const [ticketPriority, setTicketPriority] = useState("MEDIUM");
+  const [deleteStep, setDeleteStep] = useState(0);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+
+  const toggleActiveMutation = useToggleAdminUserActive();
+  const setPasswordMutation = useSetAdminUserPassword();
+  const deleteUserMutation = useDeleteAdminUser();
+  const createTicketMutation = useCreateAdminTicket();
   
   const { data: user, isLoading, isError, error, refetch } = useAdminUserById(id);
   const { data: enrollData } = useAdminEnrollments({ studentId: id, page: 1, limit: 50 });
@@ -247,6 +272,92 @@ function StudentDetail() {
       </div>
     );
   }
+
+  const handleResetPassword = async () => {
+    if (!newPassword || newPassword.length < 8) {
+      toast.error(t("adminPages.students.passwordMin", { defaultValue: "Password must be at least 8 characters." }));
+      return;
+    }
+    try {
+      await setPasswordMutation.mutateAsync({ id, newPassword });
+      toast.success(t("adminPages.studentDetail.passwordResetDone", { defaultValue: "Password updated." }));
+      setPasswordModalOpen(false);
+      setNewPassword("");
+    } catch (e) {
+      toast.error(getErrorMessage(e, t("adminPages.studentDetail.passwordResetFailed", { defaultValue: "Could not reset password." })));
+    }
+  };
+
+  const handleToggleSuspend = async () => {
+    const activating = !user?.isActive;
+    const msg = activating
+      ? t("adminPages.studentDetail.confirmActivate", { defaultValue: "Re-activate this student account?" })
+      : t("adminPages.studentDetail.confirmSuspend", { defaultValue: "Suspend this student account? They will not be able to sign in." });
+    if (!window.confirm(msg)) return;
+    try {
+      await toggleActiveMutation.mutateAsync(id);
+      toast.success(
+        activating
+          ? t("adminPages.studentDetail.activated", { defaultValue: "Account activated." })
+          : t("adminPages.studentDetail.suspended", { defaultValue: "Account suspended." })
+      );
+      void refetch();
+    } catch (e) {
+      toast.error(getErrorMessage(e, t("adminPages.studentDetail.suspendFailed", { defaultValue: "Could not update account status." })));
+    }
+  };
+
+  const handleCreateTicket = async (e) => {
+    e.preventDefault();
+    if (!ticketSubject.trim() || ticketMessage.trim().length < 10) {
+      toast.error(t("adminPages.studentDetail.ticketValidation", { defaultValue: "Subject and message (min 10 chars) are required." }));
+      return;
+    }
+    try {
+      const ticket = await createTicketMutation.mutateAsync({
+        creatorId: id,
+        subject: ticketSubject.trim(),
+        description: ticketMessage.trim(),
+        priority: ticketPriority,
+      });
+      toast.success(t("adminPages.studentDetail.ticketCreated", { defaultValue: "Support ticket created." }));
+      setTicketModalOpen(false);
+      setTicketSubject("");
+      setTicketMessage("");
+      if (ticket?.id) navigate(`/admin/tickets/${ticket.id}`);
+      else navigate("/admin/tickets");
+    } catch (e) {
+      toast.error(getErrorMessage(e, t("adminPages.studentDetail.ticketFailed", { defaultValue: "Could not create ticket." })));
+    }
+  };
+
+  const handleDeleteStart = () => {
+    const msg = t("adminPages.studentDetail.deleteWarn1", {
+      defaultValue: "This will permanently remove the student account (soft delete). Continue?",
+    });
+    if (!window.confirm(msg)) return;
+    setDeleteStep(1);
+    setDeleteConfirmText("");
+  };
+
+  const handleDeleteConfirm = async () => {
+    const expected = user?.email || "DELETE";
+    if (deleteConfirmText.trim() !== expected) {
+      toast.error(
+        t("adminPages.studentDetail.deleteTypeEmail", {
+          defaultValue: "Type the student email exactly to confirm deletion.",
+        })
+      );
+      return;
+    }
+    try {
+      await deleteUserMutation.mutateAsync(id);
+      toast.success(t("adminPages.studentDetail.deleted", { defaultValue: "Student account deleted." }));
+      navigate("/admin/students");
+    } catch (e) {
+      toast.error(getErrorMessage(e, t("adminPages.studentDetail.deleteFailed", { defaultValue: "Could not delete account." })));
+    }
+  };
 
   return (
     <section className="space-y-6 antialiased">
@@ -548,22 +659,49 @@ function StudentDetail() {
                 <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-400">
                   {t("adminPages.studentDetail.quickActions", { defaultValue: "Quick Actions" })}
                 </h3>
-                {[
-                  [MessageSquare, t("adminPages.studentDetail.sendMessage"), "Message student"],
-                  [Lock, t("adminPages.studentDetail.resetPassword"), "Reset security credentials"],
-                  [UserX, t("adminPages.studentDetail.suspendAccount"), "Deactivate student access"],
-                  [Trash2, t("adminPages.studentDetail.delete"), "Permanently delete student account"],
-                ].map(([Icon, label, title]) => (
+                <PermissionGate permission="support:manage">
                   <button
-                    key={label}
-                    disabled
-                    className="flex w-full cursor-not-allowed items-center gap-2.5 rounded-xl border border-slate-200/80 bg-white px-4 py-3 text-sm font-bold opacity-60 dark:border-white/10 dark:bg-[#0F0F13] dark:text-slate-200"
-                    title={title}
+                    type="button"
+                    onClick={() => {
+                      setTicketSubject(isRtl ? `رسالة للطالب: ${student.name}` : `Message to student: ${student.name}`);
+                      setTicketMessage("");
+                      setTicketModalOpen(true);
+                    }}
+                    className="flex w-full items-center gap-2.5 rounded-xl border border-slate-200/80 bg-white px-4 py-3 text-sm font-bold text-slate-800 transition hover:border-[#EE7C11]/40 hover:bg-[#EE7C11]/5 dark:border-white/10 dark:bg-[#0F0F13] dark:text-slate-200"
                   >
-                    <Icon className="h-4.5 w-4.5 text-slate-500" />
-                    {label}
+                    <MessageSquare className="h-4.5 w-4.5 text-[#EE7C11]" />
+                    {t("adminPages.studentDetail.sendMessage")}
                   </button>
-                ))}
+                </PermissionGate>
+                <PermissionGate permission="user:manage">
+                  <button
+                    type="button"
+                    onClick={() => setPasswordModalOpen(true)}
+                    className="flex w-full items-center gap-2.5 rounded-xl border border-slate-200/80 bg-white px-4 py-3 text-sm font-bold text-slate-800 transition hover:border-[#EE7C11]/40 dark:border-white/10 dark:bg-[#0F0F13] dark:text-slate-200"
+                  >
+                    <Lock className="h-4.5 w-4.5 text-slate-500" />
+                    {t("adminPages.studentDetail.resetPassword")}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={toggleActiveMutation.isPending}
+                    onClick={() => void handleToggleSuspend()}
+                    className="flex w-full items-center gap-2.5 rounded-xl border border-slate-200/80 bg-white px-4 py-3 text-sm font-bold text-slate-800 transition hover:border-amber-500/40 dark:border-white/10 dark:bg-[#0F0F13] dark:text-slate-200"
+                  >
+                    <UserX className="h-4.5 w-4.5 text-amber-600" />
+                    {user?.isActive
+                      ? t("adminPages.studentDetail.suspendAccount")
+                      : t("adminPages.studentDetail.activateAccount", { defaultValue: "Activate account" })}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDeleteStart}
+                    className="flex w-full items-center gap-2.5 rounded-xl border border-rose-500/30 bg-rose-500/5 px-4 py-3 text-sm font-bold text-rose-700 transition hover:bg-rose-500/10 dark:text-rose-400"
+                  >
+                    <Trash2 className="h-4.5 w-4.5" />
+                    {t("adminPages.studentDetail.delete")}
+                  </button>
+                </PermissionGate>
               </div>
             </div>
           </div>
@@ -682,6 +820,145 @@ function StudentDetail() {
           )}
         </div>
       )}
+
+      {passwordModalOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#1A1A22]">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                {t("adminPages.studentDetail.resetPassword")}
+              </h3>
+              <button type="button" onClick={() => setPasswordModalOpen(false)} className="text-slate-500">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <p className="mb-3 text-sm text-slate-500">
+              {t("adminPages.studentDetail.passwordHint", { defaultValue: "The student will need the new password on next login." })}
+            </p>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder={t("adminPages.students.newPassword", { defaultValue: "New password" })}
+              className="h-10 w-full rounded-xl border border-slate-200 px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+            />
+            <div className="mt-4 flex justify-end gap-2">
+              <button type="button" onClick={() => setPasswordModalOpen(false)} className="rounded-xl border px-4 py-2 text-sm font-semibold dark:border-white/10 dark:text-slate-200">
+                {t("dashboard.common.cancel")}
+              </button>
+              <button
+                type="button"
+                disabled={setPasswordMutation.isPending}
+                onClick={() => void handleResetPassword()}
+                className="inline-flex items-center gap-2 rounded-xl bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+              >
+                {setPasswordMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                {t("dashboard.common.save")}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {ticketModalOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <form onSubmit={handleCreateTicket} className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#1A1A22]">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                {t("adminPages.studentDetail.sendMessage")}
+              </h3>
+              <button type="button" onClick={() => setTicketModalOpen(false)} className="text-slate-500">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <p className="mb-3 text-xs text-slate-500">
+              {t("adminPages.studentDetail.ticketHint", { defaultValue: "Creates a support ticket linked to this student." })}
+            </p>
+            <input
+              value={ticketSubject}
+              onChange={(e) => setTicketSubject(e.target.value)}
+              className="mb-3 h-10 w-full rounded-xl border border-slate-200 px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+              placeholder={t("adminPages.tickets.table.subject", { defaultValue: "Subject" })}
+              required
+            />
+            <textarea
+              value={ticketMessage}
+              onChange={(e) => setTicketMessage(e.target.value)}
+              rows={4}
+              className="mb-3 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+              placeholder={isRtl ? "نص الرسالة للطالب..." : "Message to the student..."}
+              required
+            />
+            <select
+              value={ticketPriority}
+              onChange={(e) => setTicketPriority(e.target.value)}
+              className="mb-4 h-10 w-full rounded-xl border border-slate-200 px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+            >
+              {["LOW", "MEDIUM", "HIGH", "URGENT"].map((p) => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </select>
+            <div className="flex justify-end gap-2">
+              <button type="button" onClick={() => setTicketModalOpen(false)} className="rounded-xl border px-4 py-2 text-sm font-semibold dark:border-white/10 dark:text-slate-200">
+                {t("dashboard.common.cancel")}
+              </button>
+              <button
+                type="submit"
+                disabled={createTicketMutation.isPending}
+                className="inline-flex items-center gap-2 rounded-xl bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+              >
+                {createTicketMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                {t("adminPages.studentDetail.openTicket", { defaultValue: "Open ticket" })}
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : null}
+
+      {deleteStep === 1 ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-rose-500/30 bg-white p-6 shadow-2xl dark:border-rose-500/20 dark:bg-[#1A1A22]">
+            <h3 className="text-lg font-bold text-rose-700 dark:text-rose-400">
+              {t("adminPages.studentDetail.deleteConfirmTitle", { defaultValue: "Confirm deletion" })}
+            </h3>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+              {t("adminPages.studentDetail.deleteConfirmBody", {
+                defaultValue: "Type the student email to permanently delete this account:",
+              })}
+            </p>
+            <p className="mt-2 rounded-lg bg-slate-100 px-3 py-2 text-xs font-mono text-slate-700 dark:bg-white/5 dark:text-slate-300">
+              {user?.email}
+            </p>
+            <input
+              value={deleteConfirmText}
+              onChange={(e) => setDeleteConfirmText(e.target.value)}
+              className="mt-3 h-10 w-full rounded-xl border border-rose-300 px-3 text-sm dark:border-rose-500/30 dark:bg-[#0F0F13] dark:text-white"
+              placeholder={user?.email}
+            />
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setDeleteStep(0);
+                  setDeleteConfirmText("");
+                }}
+                className="rounded-xl border px-4 py-2 text-sm font-semibold dark:border-white/10 dark:text-slate-200"
+              >
+                {t("dashboard.common.cancel")}
+              </button>
+              <button
+                type="button"
+                disabled={deleteUserMutation.isPending}
+                onClick={() => void handleDeleteConfirm()}
+                className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+              >
+                {deleteUserMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                {t("adminPages.studentDetail.deleteForever", { defaultValue: "Delete permanently" })}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

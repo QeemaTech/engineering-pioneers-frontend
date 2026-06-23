@@ -2,7 +2,6 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-// Import translation JSON files
 import enTranslation from './locales/en.json';
 import arTranslation from './locales/ar.json';
 
@@ -15,12 +14,19 @@ i18n
       ar: { translation: arTranslation }
     },
     fallbackLng: 'en',
+
+    // ✅ أضف الـ detection config
+    detection: {
+      order: ['localStorage', 'navigator'],  // ابص في localStorage الأول
+      caches: ['localStorage'],              // احفظ فيه لما تتغير
+      lookupLocalStorage: 'i18nextLng',      // اسم الـ key
+    },
+
     interpolation: {
-      escapeValue: false 
+      escapeValue: false
     }
   });
 
-// Setup default document text direction and language
 document.documentElement.dir = i18n.language?.startsWith('ar') ? 'rtl' : 'ltr';
 document.documentElement.lang = i18n.language;
 

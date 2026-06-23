@@ -85,3 +85,28 @@ export async function deleteBanner(id) {
 export async function deleteFaqItem(id) {
   await client.delete(`${endpoints.admin.cms}/faq/${id}`);
 }
+
+export async function fetchCmsPages() {
+  const response = await client.get(`${endpoints.admin.cms}/pages`);
+  return response?.data?.data || [];
+}
+
+export async function fetchCmsPage(slug) {
+  const response = await client.get(`${endpoints.admin.cms}/pages/${encodeURIComponent(slug)}`);
+  return response?.data?.data;
+}
+
+export async function updateCmsPage(slug, body) {
+  const response = await client.patch(`${endpoints.admin.cms}/pages/${encodeURIComponent(slug)}`, body);
+  return response?.data?.data;
+}
+
+export async function fetchContactSubmissions(params = {}) {
+  const response = await client.get("/admin/contact-submissions", { params });
+  return response?.data?.data?.submissions || response?.data?.data || [];
+}
+
+export async function updateContactSubmission(id, body) {
+  const response = await client.patch(`/admin/contact-submissions/${id}`, body);
+  return response?.data?.data;
+}

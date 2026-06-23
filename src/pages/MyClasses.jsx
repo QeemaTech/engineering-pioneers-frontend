@@ -8,9 +8,8 @@ export default function MyClasses() {
   const { data: rows = [], isLoading, isError, refetch } = useMyCourses();
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 md:py-16">
-      <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
-        <div className="text-center md:text-start">
+    <div className="space-y-8">
+      <div className="text-center md:text-start">
           <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
             {t("myCohorts.titlePrefix")}{" "}
             <span className="text-pioneer-orange-normal">{t("myCohorts.titleAccent")}</span>
@@ -72,7 +71,7 @@ export default function MyClasses() {
                   </div>
                   <div className="mt-auto pt-5">
                     <Link
-                      to={`/course/${c.id}`}
+                      to={`/student/courses/${c.id}/learn`}
                       className="inline-flex w-full items-center justify-center rounded-xl bg-pioneer-orange-normal py-3 text-sm font-bold text-white transition hover:bg-pioneer-orange-hover"
                     >
                       {t("myCohorts.continue")}
@@ -83,7 +82,6 @@ export default function MyClasses() {
             ))}
           </div>
         ) : null}
-      </div>
     </div>
   );
 }

@@ -31,6 +31,35 @@ export type PublicInstructor = {
   bio?: string | null;
 } | null;
 
+export type RecommendedCourseTab = {
+  id: string;
+  label: string;
+  labelAr: string;
+  courseCount: number;
+};
+
+export type RecommendedCourseItem = {
+  id: string;
+  title: string;
+  description: string | null;
+  thumbnail: string | null;
+  type: CourseType;
+  price: number;
+  isLifetimePurchasable: boolean;
+  category?: PublicCourseCategory;
+  instructor?: PublicInstructor;
+  purchaseCount: number;
+  rating: number | null;
+  reviewCount: number;
+  isBestSeller: boolean;
+};
+
+export type RecommendedCoursesResult = {
+  tabs: RecommendedCourseTab[];
+  courses: RecommendedCourseItem[];
+  filter: string;
+};
+
 export type PublicCourseListItem = {
   id: string;
   title: string;

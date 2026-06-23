@@ -106,7 +106,7 @@ function CreateCourse() {
         );
       }
 
-      navigate("/instructor/courses");
+      navigate(`/instructor/courses/${course.id}/edit?tab=curriculum`);
     } catch (err) {
       console.error(err);
       toast.error(

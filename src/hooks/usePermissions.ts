@@ -36,6 +36,7 @@ export function usePermissions() {
 
   const hasPermission = (permission: string) => {
     if (permissions.includes("*")) return true;
+    if (permissions.includes(permission)) return true;
     return checkPermission(user, permission);
   };
 

@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { Route } from "react-router-dom";
+import { Navigate, Route, useParams } from "react-router-dom";
 import AdminGuard from "./adminGuard";
 import AdminLayout from "../layouts/AdminLayout";
 import { AdminSuspense } from "../components/admin/AdminSuspense";
@@ -28,6 +28,7 @@ const AdminEnrollments = lazy(() => import("../pages/admin/Enrollments"));
 const AdminEnrollStudent = lazy(() => import("../pages/admin/EnrollStudent"));
 const AdminCmsPosts = lazy(() => import("../pages/admin/CmsPosts"));
 const AdminCmsBanners = lazy(() => import("../pages/admin/CmsBanners"));
+const AdminCmsPages = lazy(() => import("../pages/admin/CmsPages"));
 const AdminSettingsRoles = lazy(() => import("../pages/admin/SettingsRoles"));
 const AdminRoleEditor = lazy(() => import("../pages/admin/RoleEditor"));
 const AdminSettingsEmails = lazy(() => import("../pages/admin/SettingsEmails"));
@@ -40,6 +41,11 @@ const AdminCoupons = lazy(() => import("../pages/admin/Coupons"));
 const AdminCertificates = lazy(() => import("../pages/admin/Certificates"));
 const AdminReviewQueue = lazy(() => import("../pages/admin/ReviewQueue"));
 const AdminAuditLogs = lazy(() => import("../pages/admin/AuditLogs"));
+
+function AdminCourseIdRedirect() {
+  const { id } = useParams();
+  return <Navigate to={`/admin/courses/${id}/edit`} replace />;
+}
 
 function wrap(node) {
   return <AdminSuspense>{node}</AdminSuspense>;
@@ -59,17 +65,17 @@ function AdminRoutes() {
         <Route path="students" element={wrap(<AdminStudents />)} />
         <Route path="students/:id" element={wrap(<AdminStudentDetail />)} />
 
-        <Route path="instructors" element={wrap(<AdminInstructors />)} />
-        <Route path="instructors/list" element={wrap(<AdminInstructorsList />)} />
-        <Route path="instructors/:id" element={wrap(<AdminInstructorDetail />)} />
         <Route path="instructors/payouts" element={wrap(<AdminInstructorPayouts />)} />
+        <Route path="instructors/list" element={wrap(<AdminInstructorsList />)} />
+        <Route path="instructors" element={wrap(<AdminInstructors />)} />
+        <Route path="instructors/:id" element={wrap(<AdminInstructorDetail />)} />
 
         <Route path="courses" element={wrap(<AdminCourses />)} />
         <Route path="courses/new" element={wrap(<AdminAddCourse />)} />
         <Route path="courses/review" element={wrap(<AdminReviewQueue />)} />
         <Route path="courses/:id/edit" element={wrap(<AdminCourseEditor />)} />
         <Route path="courses/categories" element={wrap(<AdminCourseCategories />)} />
-        <Route path="courses/:id" element={wrap(<AdminCourses />)} />
+        <Route path="courses/:id" element={wrap(<AdminCourseIdRedirect />)} />
 
         <Route path="enrollments" element={wrap(<AdminEnrollments />)} />
         <Route path="enrollments/new" element={wrap(<AdminEnrollStudent />)} />
@@ -79,6 +85,7 @@ function AdminRoutes() {
 
         <Route path="cms/posts" element={wrap(<AdminCmsPosts />)} />
         <Route path="cms/banners" element={wrap(<AdminCmsBanners />)} />
+        <Route path="cms/pages" element={wrap(<AdminCmsPages />)} />
 
         <Route path="account" element={wrap(<AdminAccount />)} />
         <Route path="settings" element={wrap(<AdminSettings />)} />

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchAdminTicketById, fetchAdminTickets, processAdminTicket, replyAdminTicket } from "./api";
+import { createAdminTicket, fetchAdminTicketById, fetchAdminTickets, processAdminTicket, replyAdminTicket } from "./api";
 
 export function useAdminTickets(params) {
   return useQuery({
@@ -34,6 +34,14 @@ export function useReplyAdminTicket() {
       queryClient.invalidateQueries({ queryKey: ["admin", "tickets"] });
       queryClient.invalidateQueries({ queryKey: ["admin", "tickets", variables?.id] });
     },
+  });
+}
+
+export function useCreateAdminTicket() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createAdminTicket,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "tickets"] }),
   });
 }
 

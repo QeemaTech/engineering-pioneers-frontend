@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import EmptyState from "../../components/dashboard/EmptyState";
@@ -11,6 +12,9 @@ import {
   usePatchHomeworkReviewStatus,
 } from "../../features/instructor/homework/hooks";
 
+import HomeworkAssignmentsTab from "./HomeworkAssignmentsTab";
+
+const PAGE_TABS = ["grading", "assignments"];
 const TABS = ["all", "notOpened", "opened", "closed"];
 
 function tabMatches(tab, sub) {
@@ -27,7 +31,9 @@ function tabMatches(tab, sub) {
 }
 
 function Homework() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.dir() === "rtl";
+  const [pageTab, setPageTab] = useState("grading");
   const { data, isLoading } = useInstructorHomeworkQueue();
   const submissions = data?.submissions ?? [];
   const counts = data?.counts ?? { notOpened: 0, opened: 0, closed: 0 };
@@ -97,6 +103,29 @@ function Homework() {
       />
       <Notice type={notice?.type} message={notice?.message} />
 
+      <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-1 dark:border-white/10">
+        {PAGE_TABS.map((key) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => setPageTab(key)}
+            className={`rounded-t-lg px-4 py-2 text-sm font-bold transition-colors ${
+              pageTab === key
+                ? "border-b-2 border-[#EE7C11] text-[#EE7C11]"
+                : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+            }`}
+          >
+            {key === "grading"
+              ? t("dashboard.instructor.homework.tabs.grading", { defaultValue: isRtl ? "تصحيح التسليمات" : "Grade submissions" })
+              : t("dashboard.instructor.homework.tabs.assignments", { defaultValue: isRtl ? "إدارة الواجبات" : "Manage assignments" })}
+          </button>
+        ))}
+      </div>
+
+      {pageTab === "assignments" ? <HomeworkAssignmentsTab /> : null}
+
+      {pageTab === "grading" ? (
+        <>
       <div className="grid gap-3 sm:grid-cols-3">
         <button
           type="button"
@@ -168,6 +197,16 @@ function Homework() {
             submissions.length
               ? t("dashboard.instructor.homework.queue.emptyFilter")
               : t("dashboard.instructor.homework.queue.emptyAll")
+          }
+          action={
+            !submissions.length ? (
+              <Link
+                to="/instructor/courses"
+                className="inline-flex rounded-xl bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white hover:bg-[#d9700e]"
+              >
+                {t("dashboard.instructor.homework.queue.goToCourses")}
+              </Link>
+            ) : null
           }
         />
       ) : (
@@ -245,8 +284,10 @@ function Homework() {
           })}
         </div>
       )}
+        </>
+      ) : null}
 
-      {active && (
+      {pageTab === "grading" && active && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 p-4">
           <form
             onSubmit={submitGrade}

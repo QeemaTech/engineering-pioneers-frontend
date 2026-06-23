@@ -22,3 +22,8 @@ export async function validateStudentCoupon(body) {
   const res = await client.post(endpoints.student.couponValidate, body);
   return res?.data?.data ?? res?.data;
 }
+
+export async function fetchMyPayments() {
+  const res = await client.get(endpoints.student.myPayments);
+  return res?.data?.data ?? [];
+}

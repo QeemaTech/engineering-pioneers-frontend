@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createStudentByAdmin,
+  deleteAdminUser,
   fetchAdminStudentPerformance,
   fetchAdminUserById,
   fetchAdminUsers,
@@ -122,6 +123,17 @@ export function useForceLogoutUser() {
     mutationFn: forceLogoutUser,
     onSuccess: (_, userId) => {
       void queryClient.invalidateQueries({ queryKey: ["admin", "users", userId, "sessions"] });
+    },
+  });
+}
+
+export function useDeleteAdminUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteAdminUser,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+      void queryClient.invalidateQueries({ queryKey: ["admin", "students"] });
     },
   });
 }

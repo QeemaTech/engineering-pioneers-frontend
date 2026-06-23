@@ -14,21 +14,30 @@ import { useAdminTickets, useProcessAdminTicket } from "../../features/admin/tic
 import { getErrorMessage } from "../../api/error";
 import PermissionGate from "../../components/ui/PermissionGate";
 
-const STATUS_OPTIONS = ["All", "Open", "In Progress", "Resolved", "Closed"];
-const PRIORITY_OPTIONS = ["All", "High", "Medium", "Low"];
+const STATUS_OPTIONS = ["All", "OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"];
+const PRIORITY_OPTIONS = ["All", "URGENT", "HIGH", "MEDIUM", "LOW"];
 
 const priorityClasses = {
-  High: "border border-red-500/20 bg-[#EE7C11]/15 text-red-400",
-  Medium: "border border-amber-500/20 bg-amber-500/15 text-amber-400",
-  Low: "border border-slate-500/20 bg-slate-500/15 text-slate-400",
+  URGENT: "border border-red-500/20 bg-[#EE7C11]/15 text-red-400",
+  HIGH: "border border-red-500/20 bg-[#EE7C11]/15 text-red-400",
+  MEDIUM: "border border-amber-500/20 bg-amber-500/15 text-amber-400",
+  LOW: "border border-slate-500/20 bg-slate-500/15 text-slate-400",
 };
 
 const statusClasses = {
-  Open: "bg-blue-500/15 text-blue-400",
-  "In Progress": "bg-purple-500/15 text-purple-400",
-  Resolved: "bg-green-500/15 text-green-400",
-  Closed: "bg-slate-500/15 text-slate-500",
+  OPEN: "bg-blue-500/15 text-blue-400",
+  IN_PROGRESS: "bg-purple-500/15 text-purple-400",
+  RESOLVED: "bg-green-500/15 text-green-400",
+  CLOSED: "bg-slate-500/15 text-slate-500",
 };
+
+function normalizeStatus(status) {
+  return String(status || "OPEN").toUpperCase().replace(/\s+/g, "_");
+}
+
+function normalizePriority(priority) {
+  return String(priority || "MEDIUM").toUpperCase();
+}
 
 function Tickets() {
   const { t } = useTranslation();
@@ -48,17 +57,23 @@ function Tickets() {
   const tickets = (data?.tickets ?? []).map((ticket) => ({
     ...ticket,
     subject: ticket.subject || ticket.title || "Ticket",
-    from: ticket.from || ticket.user?.email || "-",
+    from: ticket.from || ticket.user?.email || ticket.createdBy?.email || "-",
     date: ticket.date || ticket.createdAt,
     category: ticket.category || ticket.type || "-",
-    status: ticket.status || "Open",
-    priority: ticket.priority || "Medium",
+    status: normalizeStatus(ticket.status),
+    priority: normalizePriority(ticket.priority),
   }));
 
   const stats = useMemo(() => {
-    const open = tickets.filter((t) => t.status === "Open").length;
-    const inProgress = tickets.filter((t) => t.status === "In Progress").length;
-    const resolvedToday = tickets.filter((t) => t.status === "Resolved").length;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const open = tickets.filter((t) => t.status === "OPEN").length;
+    const inProgress = tickets.filter((t) => t.status === "IN_PROGRESS").length;
+    const resolvedToday = tickets.filter((t) => {
+      if (t.status !== "RESOLVED") return false;
+      const updated = new Date(t.updatedAt || t.date).getTime();
+      return updated >= today.getTime();
+    }).length;
     return { open, inProgress, resolvedToday, monthTotal: tickets.length };
   }, [tickets]);
 
@@ -250,12 +265,12 @@ function Tickets() {
                         <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">{ticket.from}</td>
                         <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">{ticket.category}</td>
                         <td className="px-4 py-3">
-                          <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-bold ${priorityClasses[ticket.priority]}`}>
+                          <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-bold ${priorityClasses[ticket.priority] || priorityClasses.MEDIUM}`}>
                             {t(`adminPages.tickets.priorities.${ticket.priority}`, { defaultValue: ticket.priority })}
                           </span>
                         </td>
                         <td className="px-4 py-3">
-                          <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-bold ${statusClasses[ticket.status]}`}>
+                          <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-bold ${statusClasses[ticket.status] || statusClasses.OPEN}`}>
                             {t(`adminPages.tickets.statuses.${ticket.status}`, { defaultValue: ticket.status })}
                           </span>
                         </td>

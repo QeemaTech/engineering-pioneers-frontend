@@ -12,6 +12,7 @@ import {
   useTrackLessonAccess,
 } from "../features/student/progress/hooks";
 import { useLessonResources } from "../features/student/resources/hooks";
+import LessonQna from "../components/student/LessonQna";
 
 const TYPE_ICON = {
   video: <Play className="h-3.5 w-3.5" />,
@@ -147,7 +148,7 @@ export default function CourseView() {
         <BookOpen className="mx-auto h-12 w-12 text-slate-300" />
         <h1 className="mt-4 text-xl font-bold text-slate-900">{t("courseView.needCohort.title")}</h1>
         <p className="mt-2 text-sm text-slate-600">{t("courseView.needCohort.body")}</p>
-        <Link to="/my-classes" className="mt-6 inline-block rounded-xl bg-pioneer-orange-normal px-6 py-3 text-sm font-bold text-white hover:bg-pioneer-orange-hover">
+        <Link to="/student/classes" className="mt-6 inline-block rounded-xl bg-pioneer-orange-normal px-6 py-3 text-sm font-bold text-white hover:bg-pioneer-orange-hover">
           {t("courseView.needCohort.cta")}
         </Link>
       </div>
@@ -172,7 +173,7 @@ export default function CourseView() {
           >
             {t("takeExam.retry", { defaultValue: "Retry" })}
           </button>
-          <Link to="/my-classes" className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:border-pioneer-orange-normal">
+          <Link to="/student/classes" className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:border-pioneer-orange-normal">
             {t("courseView.needCohort.cta")}
           </Link>
         </div>
@@ -186,7 +187,7 @@ export default function CourseView() {
         <BookOpen className="mx-auto h-12 w-12 text-slate-300" />
         <h1 className="mt-4 text-xl font-bold text-slate-900">{t("courseView.emptyCurriculumTitle", { defaultValue: "No lessons yet" })}</h1>
         <p className="mt-2 text-sm text-slate-600">{t("courseView.emptyCurriculumBody", { defaultValue: "This course has no published curriculum, or you may need to refresh." })}</p>
-        <Link to="/my-classes" className="mt-6 inline-block rounded-xl bg-pioneer-orange-normal px-6 py-3 text-sm font-bold text-white hover:bg-pioneer-orange-hover">
+        <Link to="/student/classes" className="mt-6 inline-block rounded-xl bg-pioneer-orange-normal px-6 py-3 text-sm font-bold text-white hover:bg-pioneer-orange-hover">
           {t("courseView.needCohort.cta")}
         </Link>
       </div>
@@ -197,7 +198,7 @@ export default function CourseView() {
     <div className="min-h-screen bg-slate-50">
       <div className="border-b border-slate-200 bg-white px-4 py-3 md:px-6">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
-          <Link to="/my-classes" className="inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-pioneer-orange-normal">
+          <Link to="/student/classes" className="inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-pioneer-orange-normal">
             <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
             {t("courseView.backToClasses")}
           </Link>
@@ -330,6 +331,8 @@ export default function CourseView() {
                   </ul>
                 )}
               </div>
+
+              {activeLesson?.id ? <LessonQna lessonId={activeLesson.id} /> : null}
             </motion.div>
           ) : (
             <p className="text-slate-500">{t("courseView.pickLesson")}</p>

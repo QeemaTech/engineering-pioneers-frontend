@@ -1,101 +1,135 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowRight } from "lucide-react";
+import { 
+  Users, 
+  Video, 
+  FileCheck, 
+  ClipboardList, 
+  ArrowRight 
+} from "lucide-react";
+import { motion } from "framer-motion";
 
-const YellowIcon = ({ children }) => (
+const OrangeIconWrapper = ({ children }) => (
   <div
-    className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-amber-50 to-pioneer-teal-light/90 text-pioneer-teal-dark shadow-sm ring-1 ring-amber-200/60 transition duration-300 group-hover:scale-105 group-hover:shadow-md group-hover:ring-amber-300/80"
+    className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-50/80 border border-orange-100 p-3 text-[#EE7C11] shadow-inner transition duration-300 group-hover:scale-110 group-hover:shadow-md"
     aria-hidden
   >
-    <span className="flex text-pioneer-teal-normal transition group-hover:text-[#b45309]">{children}</span>
+    {children}
   </div>
 );
 
-const VideoIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6 fill-none stroke-current stroke-[1.75]" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="23 7 16 12 23 17 23 7" />
-    <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
-  </svg>
-);
-const UsersIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6 fill-none stroke-current stroke-[1.75]" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-    <circle cx="9" cy="7" r="4" />
-    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-  </svg>
-);
-const DocIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6 fill-none stroke-current stroke-[1.75]" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-    <polyline points="14 2 14 8 20 8" />
-    <line x1="16" y1="13" x2="8" y2="13" />
-    <line x1="16" y1="17" x2="8" y2="17" />
-    <polyline points="10 9 9 9 8 9" />
-  </svg>
-);
-const ClipboardIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6 fill-none stroke-current stroke-[1.75]" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
-    <rect x="9" y="3" width="6" height="4" rx="1" ry="1" />
-    <path d="m9 12 2 2 4-4" />
-  </svg>
-);
-
 const ITEMS = [
-  { key: "liveClasses", Icon: VideoIcon, to: "/explore" },
-  { key: "groupAndOneToOne", Icon: UsersIcon, to: "/book-session" },
-  { key: "homeworkAndPractice", Icon: DocIcon, to: "/signup" },
-  { key: "recordedSessions", Icon: ClipboardIcon, to: "/recordings" },
+  { key: "liveClasses", Icon: Video, to: "/explore" },
+  { key: "groupAndOneToOne", Icon: Users, to: "/book-session" },
+  { key: "homeworkAndPractice", Icon: FileCheck, to: "/signup" },
+  { key: "recordedSessions", Icon: ClipboardList, to: "/student/live-sessions" },
 ];
 
 export default function Features() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dir = i18n.dir();
+  const isRtl = dir === "rtl";
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15
+      }
+    }
+  };
+
+  const headerVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 40 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut"
+      }
+    }
+  };
 
   return (
     <section className="relative overflow-hidden bg-white py-16 md:py-24">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(185,28,28,0.06),transparent)]" aria-hidden />
-      <div className="relative mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-10 lg:gap-14">
-          <div className="flex flex-col justify-center md:col-span-4 lg:col-span-4">
-            <h2 className="text-start text-3xl font-bold tracking-tight text-slate-900 md:text-4xl lg:text-[2.5rem] lg:leading-tight">
-              {t("features.titlePrefix")}{" "}
-              <span className="text-pioneer-orange-normal">{t("features.titleBrand")}</span>
-              <span className="text-slate-900">?</span>
-            </h2>
-            <p className="mt-5 max-w-md text-start text-base leading-relaxed text-slate-600 md:text-[17px]">
-              {t("features.subtitle")}
-            </p>
-            <span className="mt-8 hidden h-px w-16 rounded-full bg-gradient-to-r from-pioneer-orange-normal/50 to-transparent md:block" aria-hidden />
-          </div>
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(238,124,17,0.05),transparent)]" aria-hidden />
+      
+      <motion.div 
+        className="relative mx-auto max-w-7xl px-4 md:px-6 lg:px-8"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={containerVariants}
+      >
+        {/* Header Section above Bento Grid */}
+        <motion.div 
+          variants={headerVariants}
+          className="flex flex-col mb-12 text-start rtl:text-right"
+        >
+          <h2 className="text-3xl font-black tracking-tight text-slate-950 md:text-4xl lg:text-[2.75rem] lg:leading-tight font-sans">
+            {t("features.titlePrefix")}{" "}
+            <span className="text-[#EE7C11]">{t("features.titleBrand")}</span>
+            <span className="text-slate-950">{isRtl ? "؟" : "?"}</span>
+          </h2>
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-600 md:text-[17px]">
+            {t("features.subtitle")}
+          </p>
+          <span className="mt-6 h-[2px] w-20 rounded-full bg-gradient-to-r rtl:bg-gradient-to-l from-[#EE7C11] to-transparent" aria-hidden />
+        </motion.div>
 
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:col-span-8 lg:col-span-8 md:gap-6">
-            {ITEMS.map(({ key, Icon, to }) => (
-              <Link
-                key={key}
-                to={to}
-                className="group relative block rounded-2xl border border-slate-200/90 bg-white/80 p-6 text-start shadow-[0_1px_2px_rgba(15,23,42,0.04)] outline-none ring-slate-900/5 transition duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-white hover:shadow-[0_12px_40px_-12px_rgba(15,23,42,0.12)] focus-visible:ring-2 focus-visible:ring-pioneer-orange-normal focus-visible:ring-offset-2 sm:p-7"
+        {/* Bento Grid layout */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {ITEMS.map(({ key, Icon, to }, index) => {
+            const isWide = index === 0 || index === 3;
+            return (
+              <motion.div 
+                key={key} 
+                variants={cardVariants}
+                className={isWide ? "md:col-span-2" : "md:col-span-1"}
+                whileHover={{ y: -8, scale: 1.01 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
-                <article className="flex h-full flex-col">
-                  <YellowIcon>
-                    <Icon />
-                  </YellowIcon>
-                  <h3 className="text-lg font-bold tracking-tight text-slate-900 transition group-hover:text-pioneer-orange-normal">
-                    {t(`features.items.${key}.title`)}
-                  </h3>
-                  <p className="mt-2 flex-1 text-[15px] leading-relaxed text-slate-600">
-                    {t(`features.items.${key}.description`)}
-                  </p>
-                  <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-pioneer-orange-normal">
-                    {t("features.learnMore")}
-                    <ArrowRight className="h-4 w-4 transition duration-300 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" aria-hidden />
-                  </span>
-                </article>
-              </Link>
-            ))}
-          </div>
+                <Link
+                  to={to}
+                  className="group relative block h-full rounded-3xl border border-slate-200 bg-white/85 backdrop-blur-md p-6 sm:p-8 text-start rtl:text-right shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-[#EE7C11]/5 hover:border-[#EE7C11]/30 focus-visible:ring-2 focus-visible:ring-[#EE7C11] focus-visible:ring-offset-2 outline-none"
+                >
+                  <article className="flex h-full flex-col justify-between">
+                    <div>
+                      <OrangeIconWrapper>
+                        <Icon className="h-6 w-6 stroke-[2]" />
+                      </OrangeIconWrapper>
+                      <h3 className="text-xl font-bold tracking-tight text-slate-950 transition group-hover:text-[#EE7C11] font-sans">
+                        {t(`features.items.${key}.title`)}
+                      </h3>
+                      <p className="mt-3 text-[15px] leading-relaxed text-slate-600">
+                        {t(`features.items.${key}.description`)}
+                      </p>
+                    </div>
+                    <div className="mt-6 flex items-center gap-1.5 text-sm font-bold text-[#EE7C11]">
+                      <span>{t("features.learnMore")}</span>
+                      <ArrowRight className="h-4 w-4 transition duration-300 group-hover:translate-x-1.5 rtl:rotate-180 rtl:group-hover:-translate-x-1.5" aria-hidden />
+                    </div>
+                  </article>
+                </Link>
+              </motion.div>
+            );
+          })}
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

@@ -1,9 +1,14 @@
 import client from "../../../api/client";
 import endpoints from "../../../api/endpoints";
 
-export async function fetchHomeworkByCohort(cohortId: string) {
-  const res = await client.get(endpoints.homework.cohortList(cohortId));
+export async function fetchHomeworkByCourse(courseId: string) {
+  const res = await client.get(endpoints.homework.courseList(courseId));
   return res?.data?.data ?? [];
+}
+
+/** @deprecated Use fetchHomeworkByCourse */
+export async function fetchHomeworkByCohort(cohortId: string) {
+  return fetchHomeworkByCourse(cohortId);
 }
 
 export async function fetchMyHomework() {

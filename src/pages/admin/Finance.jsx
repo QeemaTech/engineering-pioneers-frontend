@@ -120,14 +120,14 @@ function Finance() {
 
   // Daily Cash Volume (Last 24 hours EGP processed)
   const dailyCashVolumeEgp = useMemo(() => {
-    const simNow = new Date("2026-06-21T19:33:32Z").getTime();
+    const now = Date.now();
     const oneDayMs = 24 * 60 * 60 * 1000;
     let dailySum = 0;
 
     payments.forEach((p) => {
       if (p.status === "PAID" && p.createdAt) {
         const dateMs = new Date(p.createdAt).getTime();
-        if (simNow - dateMs <= oneDayMs && simNow - dateMs >= 0) {
+        if (now - dateMs <= oneDayMs && now - dateMs >= 0) {
           const amount = Number(p.amount || 0);
           const isUsd = String(p.currency || "").toUpperCase() === "USD";
           dailySum += isUsd ? amount * 50 : amount;
@@ -196,17 +196,18 @@ function Finance() {
       };
     });
 
-    // Fallback daily data
+    // Fallback: last 7 days with realistic distribution when API data is sparse
     if (dataList.length < 5) {
-      dataList = [
-        { label: isRtl ? "15 يونيو" : "Jun 15", total: Math.round(metrics.paidSumEgp * 0.1) },
-        { label: isRtl ? "16 يونيو" : "Jun 16", total: Math.round(metrics.paidSumEgp * 0.15) },
-        { label: isRtl ? "17 يونيو" : "Jun 17", total: Math.round(metrics.paidSumEgp * 0.12) },
-        { label: isRtl ? "18 يونيو" : "Jun 18", total: Math.round(metrics.paidSumEgp * 0.22) },
-        { label: isRtl ? "19 يونيو" : "Jun 19", total: Math.round(metrics.paidSumEgp * 0.18) },
-        { label: isRtl ? "20 يونيو" : "Jun 20", total: Math.round(metrics.paidSumEgp * 0.28) },
-        { label: isRtl ? "21 يونيو" : "Jun 21", total: Math.round(metrics.paidSumEgp * 0.32) },
-      ];
+      const locale = isRtl ? "ar-EG" : "en-US";
+      dataList = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - (6 - i));
+        const weights = [0.1, 0.15, 0.12, 0.22, 0.18, 0.28, 0.32];
+        return {
+          label: d.toLocaleDateString(locale, { month: "short", day: "numeric" }),
+          total: Math.round(metrics.paidSumEgp * weights[i]),
+        };
+      });
     }
 
     return dataList;

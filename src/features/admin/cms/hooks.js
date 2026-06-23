@@ -17,6 +17,9 @@ import {
   updateFaqItem,
   updatePost,
   updateSection,
+  fetchCmsPages,
+  fetchCmsPage,
+  updateCmsPage,
 } from "./api";
 
 export function useAdminFaqs() {
@@ -38,7 +41,9 @@ function invalidateCms(queryClient) {
   queryClient.invalidateQueries({ queryKey: ["admin", "cms", "sections"] });
   queryClient.invalidateQueries({ queryKey: ["admin", "cms", "posts"] });
   queryClient.invalidateQueries({ queryKey: ["admin", "cms", "banners"] });
+  queryClient.invalidateQueries({ queryKey: ["admin", "cms", "pages"] });
   queryClient.invalidateQueries({ queryKey: ["public", "landing-page"] });
+  queryClient.invalidateQueries({ queryKey: ["public", "cms-page"] });
 }
 
 export function useAddFaqItem() {
@@ -157,6 +162,31 @@ export function useDeleteFaqItem() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteFaqItem,
+    onSuccess: () => invalidateCms(queryClient),
+  });
+}
+
+export function useAdminCmsPages() {
+  return useQuery({
+    queryKey: ["admin", "cms", "pages"],
+    queryFn: fetchCmsPages,
+    retry: false,
+  });
+}
+
+export function useAdminCmsPage(slug) {
+  return useQuery({
+    queryKey: ["admin", "cms", "pages", slug],
+    queryFn: () => fetchCmsPage(slug),
+    enabled: !!slug,
+    retry: false,
+  });
+}
+
+export function useUpdateCmsPage() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ slug, body }) => updateCmsPage(slug, body),
     onSuccess: () => invalidateCms(queryClient),
   });
 }

@@ -1,5 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchCoupons, fetchPayments, fetchPayouts, processPayout, updateAdminPaymentStatus } from "./api";
+import {
+  fetchCoupons,
+  fetchPayments,
+  fetchPayouts,
+  processPayout,
+  updateAdminPaymentStatus,
+  updateInstructorCommission,
+} from "./api";
 
 export function useAdminPayments(params) {
   return useQuery({
@@ -31,7 +38,9 @@ export function useProcessPayout() {
     mutationFn: processPayout,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "finance", "payouts"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "instructors"] });
       queryClient.invalidateQueries({ queryKey: ["instructor", "wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["instructor", "overview"] });
     },
   });
 }
@@ -42,6 +51,19 @@ export function useUpdateAdminPaymentStatus() {
     mutationFn: updateAdminPaymentStatus,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "finance", "payments"] });
+    },
+  });
+}
+
+export function useUpdateInstructorCommission() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateInstructorCommission,
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "instructors"] });
+      if (variables?.instructorId) {
+        queryClient.invalidateQueries({ queryKey: ["admin", "instructors", variables.instructorId] });
+      }
     },
   });
 }

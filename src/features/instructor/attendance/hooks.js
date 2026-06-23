@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { fetchAttendanceSessions, fetchSessionAttendance } from "./api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { fetchAttendanceSessions, fetchSessionAttendance, markSessionAttendance } from "./api";
 
 export function useAttendanceSessions(params, options = {}) {
   const { enabled = true } = options;
@@ -16,5 +16,19 @@ export function useSessionAttendance(sessionId, options = {}) {
     queryKey: ["instructor", "attendance", "session", sessionId],
     queryFn: () => fetchSessionAttendance(sessionId),
     enabled: Boolean(sessionId) && enabled,
+  });
+}
+
+export function useMarkSessionAttendance() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ sessionId, studentId, present }) =>
+      markSessionAttendance(sessionId, studentId, present),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["instructor", "attendance", "session", variables.sessionId],
+      });
+      queryClient.invalidateQueries({ queryKey: ["instructor", "attendance", "sessions"] });
+    },
   });
 }

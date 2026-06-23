@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import {
   BookOpen,
   Calendar,
@@ -511,30 +512,71 @@ export default function Overview() {
                 ))}
               </div>
             ) : upcomingSessionsList.length === 0 ? (
-              <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
-                <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700/40">
+              <div className="flex flex-col items-center justify-center gap-3 px-6 py-16 text-center">
+                <div className="mb-1 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700/40">
                   <Calendar className="h-6 w-6 text-slate-400" />
                 </div>
-                <p className="text-sm font-medium text-slate-400">{t("overview.noDataYet", { defaultValue: "No upcoming sessions" })}</p>
+                <p className="text-sm font-medium text-slate-400">
+                  {t("dashboard.instructor.overview.noUpcomingSessions", { defaultValue: "No upcoming live sessions" })}
+                </p>
+                <p className="max-w-xs text-xs text-slate-500">
+                  {t("dashboard.instructor.overview.noUpcomingSessionsHint", {
+                    defaultValue: "Schedule group sessions from My Courses, or set a lesson as Live in the curriculum.",
+                  })}
+                </p>
+                <Link
+                  to="/instructor/courses"
+                  className="mt-1 inline-flex items-center rounded-lg bg-[#EE7C11] px-4 py-2 text-xs font-bold text-white hover:bg-[#d9700e]"
+                >
+                  {t("dashboard.instructor.pages.courses.title", { defaultValue: "My Courses" })}
+                </Link>
               </div>
             ) : (
-              upcomingSessionsList.map((s) => (
+              upcomingSessionsList.map((s) => {
+                const isLiveLesson = s.source === "live_lesson";
+                const courseId = s.course?.id;
+                const manageHref = isLiveLesson && courseId
+                  ? `/instructor/courses/${courseId}/edit?tab=curriculum`
+                  : courseId
+                    ? "/instructor/courses"
+                    : null;
+                return (
                 <div key={s.id} className="px-5 py-4 transition-colors hover:bg-slate-50/80 dark:hover:bg-white/[0.02]">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-bold text-slate-900 dark:text-white">
-                        {s.title || s.course?.title || "—"}
-                      </p>
-                      {s.course?.title && s.title !== s.course.title && (
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="text-sm font-bold text-slate-900 dark:text-white">
+                          {s.title || s.course?.title || "—"}
+                        </p>
+                        <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide ${
+                          isLiveLesson
+                            ? "bg-sky-500/10 text-sky-600 dark:bg-sky-500/15 dark:text-sky-400"
+                            : s.type === "PRIVATE"
+                              ? "bg-amber-500/10 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
+                              : "bg-violet-500/10 text-violet-600 dark:bg-violet-500/15 dark:text-violet-400"
+                        }`}>
+                          {isLiveLesson
+                            ? t("dashboard.instructor.overview.liveLesson", { defaultValue: "Live lesson" })
+                            : s.type === "PRIVATE"
+                              ? t("dashboard.instructor.overview.privateSession", { defaultValue: "Private" })
+                              : t("dashboard.instructor.overview.groupSession", { defaultValue: "Group session" })}
+                        </span>
+                      </div>
+                      {s.course?.title ? (
                         <p className="mt-0.5 text-xs text-slate-500">{s.course.title}</p>
-                      )}
+                      ) : null}
+                      {s.studentName ? (
+                        <p className="mt-0.5 text-xs text-slate-500">
+                          {t("dashboard.instructor.overview.withStudent", { defaultValue: "With" })}: {s.studentName}
+                        </p>
+                      ) : null}
                     </div>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-violet-500/10 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-violet-600 dark:bg-violet-500/15 dark:text-violet-400">
+                    <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-violet-500/10 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-violet-600 dark:bg-violet-500/15 dark:text-violet-400">
                       <Clock className="h-3 w-3" />
                       {formatRelativeTime(s.startTime)}
                     </span>
                   </div>
-                  <div className="mt-2.5 flex items-center justify-between">
+                  <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2 text-xs text-slate-500" dir="ltr">
                       <span>{formatDate(s.startTime)}</span>
                       <span className="text-slate-300 dark:text-slate-600">•</span>
@@ -542,20 +584,31 @@ export default function Overview() {
                         {formatTime(s.startTime)} – {formatTime(s.endTime)}
                       </span>
                     </div>
-                    {s.meetingUrl && (
-                      <a
-                        href={s.meetingUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 rounded-lg bg-[#EE7C11] px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wide text-white shadow-sm transition-all hover:bg-[#d96e0e] hover:shadow-md"
-                      >
-                        <ExternalLink className="h-3 w-3" />
-                        {t("dashboard.instructor.overview.joinSession", { defaultValue: "Join" })}
-                      </a>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {manageHref ? (
+                        <Link
+                          to={manageHref}
+                          className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wide text-slate-600 transition hover:bg-slate-50 dark:border-white/10 dark:text-slate-300 dark:hover:bg-white/5"
+                        >
+                          {t("dashboard.instructor.overview.manageSession", { defaultValue: "Manage" })}
+                        </Link>
+                      ) : null}
+                      {s.meetingUrl ? (
+                        <a
+                          href={s.meetingUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 rounded-lg bg-[#EE7C11] px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wide text-white shadow-sm transition-all hover:bg-[#d96e0e] hover:shadow-md"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                          {t("dashboard.instructor.overview.joinSession", { defaultValue: "Join" })}
+                        </a>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
-              ))
+              );
+              })
             )}
           </div>
         </div>

@@ -13,12 +13,17 @@ export async function fetchAdminTicketById(id) {
 }
 
 export async function replyAdminTicket({ id, message }) {
-  const response = await client.post(`/student/tickets/${id}/message`, { message });
+  const response = await client.post(`/admin/tickets/${id}/message`, { message });
   return response?.data?.data || null;
 }
 
 export async function processAdminTicket({ id, body }) {
   const response = await client.patch(`/admin/tickets/${id}/process`, body);
+  return response?.data?.data || null;
+}
+
+export async function createAdminTicket(body) {
+  const response = await client.post("/admin/tickets", body);
   return response?.data?.data || null;
 }
 

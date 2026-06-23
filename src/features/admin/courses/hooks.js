@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { instructorOverviewQueryKey } from "../../instructor/overview/hooks";
 import {
   assignAdminCourseInstructor,
   approveCourse,
@@ -106,7 +107,11 @@ export function useCreateAdminLesson() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createAdminLesson,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "course"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "course"] });
+      queryClient.invalidateQueries({ queryKey: instructorOverviewQueryKey });
+      queryClient.invalidateQueries({ queryKey: ["instructor", "course"] });
+    },
   });
 }
 
@@ -114,7 +119,11 @@ export function useUpdateAdminLesson() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateAdminLesson,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "course"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "course"] });
+      queryClient.invalidateQueries({ queryKey: instructorOverviewQueryKey });
+      queryClient.invalidateQueries({ queryKey: ["instructor", "course"] });
+    },
   });
 }
 
@@ -122,7 +131,11 @@ export function useDeleteAdminLesson() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteAdminLesson,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "course"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "course"] });
+      queryClient.invalidateQueries({ queryKey: instructorOverviewQueryKey });
+      queryClient.invalidateQueries({ queryKey: ["instructor", "course"] });
+    },
   });
 }
 

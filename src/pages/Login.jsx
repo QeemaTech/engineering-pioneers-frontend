@@ -84,7 +84,7 @@ export default function Login() {
         return;
       }
 
-      navigate("/courses", { replace: true });
+      navigate("/student", { replace: true });
     } catch (err) {
       setServerError(getErrorMessage(err, t("auth.errors.loginFailed")));
     }

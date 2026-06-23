@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   BookOpen,
   ChevronDown,
@@ -58,10 +58,17 @@ function ScopePill({ active, icon: Icon, label, onClick }) {
   );
 }
 
-export default function CreateExamModal({ courses, onClose, onCreated }) {
+export default function CreateExamModal({
+  courses,
+  onClose,
+  onCreated,
+  defaultCourseId,
+  lockCourse = false,
+  initialScope = null,
+}) {
   const { t } = useTranslation();
 
-  const [courseId, setCourseId] = useState(courses[0]?.id || "");
+  const [courseId, setCourseId] = useState(defaultCourseId || courses[0]?.id || "");
   const [scopeType, setScopeType] = useState("course");
   const [unitId, setUnitId] = useState("");
   const [lessonId, setLessonId] = useState("");
@@ -78,6 +85,17 @@ export default function CreateExamModal({ courses, onClose, onCreated }) {
   const [preparationTipsText, setPreparationTipsText] = useState("");
   const [readyMessage, setReadyMessage] = useState("");
   const [formError, setFormError] = useState("");
+
+  useEffect(() => {
+    if (defaultCourseId) setCourseId(defaultCourseId);
+  }, [defaultCourseId]);
+
+  useEffect(() => {
+    if (!initialScope?.scopeType) return;
+    setScopeType(initialScope.scopeType);
+    setUnitId(initialScope.unitId || "");
+    setLessonId(initialScope.lessonId || "");
+  }, [initialScope]);
 
   const { data: structure, isLoading: structureLoading } = useInstructorCourseExamStructure(courseId);
   const createMutation = useCreateInstructorExam();
@@ -265,7 +283,7 @@ export default function CreateExamModal({ courses, onClose, onCreated }) {
                   <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
                     {t("dashboard.instructor.exams.create.courseLabel")} <span className="text-[#EE7C11]">*</span>
                   </span>
-                  <select value={courseId} onChange={(e) => onCourseChange(e.target.value)} className={INPUT} required>
+                  <select value={courseId} onChange={(e) => onCourseChange(e.target.value)} className={INPUT} required disabled={lockCourse}>
                     <option value="">{t("dashboard.instructor.exams.create.selectCourse")}</option>
                     {courses.map((c) => (
                       <option key={c.id} value={c.id}>

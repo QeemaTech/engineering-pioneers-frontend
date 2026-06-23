@@ -36,28 +36,8 @@ export async function updateAdminUser({ id, body }) {
 }
 
 export async function setAdminUserPassword({ id, newPassword }) {
-  const payload = { newPassword, password: newPassword };
-  const candidates = [
-    `${endpoints.admin.users}/${id}/change-password`,
-    `${endpoints.admin.users}/${id}/password`,
-    `${endpoints.admin.users}/${id}/reset-password`,
-  ];
-
-  let lastError = null;
-  for (const url of candidates) {
-    try {
-      const response = await client.patch(url, payload);
-      return response?.data?.data || response?.data || null;
-    } catch (err) {
-      const status = err?.response?.status;
-      if (status === 404 || status === 405) {
-        lastError = err;
-        continue;
-      }
-      throw err;
-    }
-  }
-  throw lastError || new Error("No supported password endpoint found.");
+  const response = await client.patch(`${endpoints.admin.users}/${id}/change-password`, { newPassword });
+  return response?.data?.data || null;
 }
 
 export async function createStudentByAdmin(body) {
@@ -101,5 +81,10 @@ export async function fetchUserDevices(userId) {
 
 export async function forceLogoutUser(userId) {
   const response = await client.delete(endpoints.admin.forceLogout(userId));
+  return response?.data?.data || null;
+}
+
+export async function deleteAdminUser(id) {
+  const response = await client.delete(`${endpoints.admin.users}/${id}`);
   return response?.data?.data || null;
 }

@@ -5,6 +5,12 @@ import {
   fetchCourseSessions,
   updateCourseSession,
 } from "./api";
+import { instructorOverviewQueryKey } from "../overview/hooks";
+
+function invalidateSessionCaches(queryClient, courseId) {
+  queryClient.invalidateQueries({ queryKey: ["instructor", "sessions", courseId] });
+  queryClient.invalidateQueries({ queryKey: instructorOverviewQueryKey });
+}
 
 export function useCourseSessions(courseId) {
   return useQuery({
@@ -18,7 +24,7 @@ export function useCreateCourseSession(courseId) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload) => createCourseSession(courseId, payload),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instructor", "sessions", courseId] }),
+    onSuccess: () => invalidateSessionCaches(queryClient, courseId),
   });
 }
 
@@ -26,7 +32,7 @@ export function useUpdateCourseSession(courseId) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ sessionId, ...payload }) => updateCourseSession(courseId, sessionId, payload),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instructor", "sessions", courseId] }),
+    onSuccess: () => invalidateSessionCaches(queryClient, courseId),
   });
 }
 
@@ -34,6 +40,6 @@ export function useDeleteCourseSession(courseId) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (sessionId) => deleteCourseSession(courseId, sessionId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instructor", "sessions", courseId] }),
+    onSuccess: () => invalidateSessionCaches(queryClient, courseId),
   });
 }

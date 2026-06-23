@@ -2,7 +2,8 @@ import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertTriangle, Loader2, Pencil, Plus, Search, Trash2, UserRoundCheck } from "lucide-react";
+import { AlertTriangle, Eye, Loader2, Pencil, Plus, Search, Trash2, UserRoundCheck } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import DataTable from "../../components/dashboard/DataTable";
@@ -96,7 +97,11 @@ function Instructors() {
 
   const columns = useMemo(
     () => [
-      { key: "fullName", title: t("dashboard.admin.users.name") },
+      { key: "fullName", title: t("dashboard.admin.users.name"), render: (value, row) => (
+        <Link to={`/admin/instructors/${row.id}`} className="font-semibold text-[#EE7C11] hover:underline">
+          {value || "—"}
+        </Link>
+      ) },
       { key: "email", title: t("dashboard.admin.users.email") },
       { key: "phone", title: t("dashboard.admin.instructors.phone") },
       { key: "experience", title: t("dashboard.admin.instructors.experience") },
@@ -117,6 +122,13 @@ function Instructors() {
         title: t("dashboard.common.actions"),
         render: (_, row) => (
           <div className="flex items-center gap-2">
+            <Link
+              to={`/admin/instructors/${row.id}`}
+              className="rounded-lg border border-white/5 bg-white/5 p-2 text-slate-400 transition-all hover:bg-[#EE7C11] hover:text-white"
+              title={t("adminPages.instructorDetail.editProfile", { defaultValue: "Edit profile" })}
+            >
+              <Eye className="h-4 w-4" />
+            </Link>
             <button 
               onClick={() =>
                 updateMutation.mutate(

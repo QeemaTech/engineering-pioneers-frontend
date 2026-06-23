@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import CTA from "../components/CTA";
-import Feedback from "../components/Feedback";
 import Features from "../components/Features";
 import Hero from "../components/Hero";
 import HowItWorks from "../components/HowItWorks";
-import LearningStyle from "../components/LearningStyle";
+import RecommendedCourses from "../components/RecommendedCourses";
+import Testimonials from "../components/Testimonials";
+import FaqSection from "../components/FaqSection";
 import client from "../api/client";
 
 function Home() {
@@ -18,6 +19,7 @@ function Home() {
   });
   const sections = data?.sections || [];
   const heroSection = sections.find((s) => s?.key === "HERO");
+  const faqSection = sections.find((s) => s?.key === "FAQ");
   const showHero =
     sections.length === 0 || !heroSection || heroSection.isVisible !== false;
   const isVisible = (key) =>
@@ -25,13 +27,12 @@ function Home() {
 
   return (
     <div className="overflow-hidden">
-      {showHero ? <Hero content={heroSection?.content} /> : null}
+      {showHero ? <Hero cmsContent={heroSection?.content} /> : null}
       <Features />
       <HowItWorks />
-      <LearningStyle />
-      {isVisible("TESTIMONIALS") ? (
-        <Feedback featuredReviews={data?.featuredReviews ?? []} reviewsLoading={landingLoading} />
-      ) : null}
+      {isVisible("FAQ") ? <FaqSection rawContent={faqSection?.content} /> : null}
+      <RecommendedCourses />
+      {isVisible("TESTIMONIALS") ? <Testimonials /> : null}
       <CTA />
     </div>
   );

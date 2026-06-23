@@ -1,13 +1,15 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FileQuestion, Plus, Search } from "lucide-react";
+import { FileQuestion, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
 import DataTable from "../../components/dashboard/DataTable";
 import EmptyState from "../../components/dashboard/EmptyState";
 import { getErrorMessage } from "../../api/error";
 import { useInstructorClasses } from "../../features/instructor/classes/hooks";
-import { useInstructorExams } from "../../features/instructor/exams/hooks";
+import { useDeleteInstructorExam, useInstructorExams } from "../../features/instructor/exams/hooks";
 import CreateExamModal from "./CreateExamModal";
+import EditExamModal from "./EditExamModal";
 
 function scopeLabel(exam, t) {
   if (exam.lesson?.title) {
@@ -42,9 +44,11 @@ function Exams() {
   const navigate = useNavigate();
   const [query, setQuery] = useState({ search: "" });
   const [createOpen, setCreateOpen] = useState(false);
+  const [editExam, setEditExam] = useState(null);
   const { data, isLoading, isError, error, refetch } = useInstructorExams({
     search: query.search || undefined,
   });
+  const deleteMutation = useDeleteInstructorExam();
   const { data: classesData } = useInstructorClasses({ page: 1, limit: 200 });
 
   const courses = useMemo(() => {
@@ -52,6 +56,27 @@ function Exams() {
   }, [classesData]);
 
   const exams = data?.exams || [];
+
+  const handleDeleteExam = async (row) => {
+    const submissions = row._count?.submissions ?? 0;
+    const warnMsg =
+      submissions > 0
+        ? t("dashboard.instructor.exams.delete.warnWithSubmissions", {
+            defaultValue: `This exam has ${submissions} student submission(s). Deleting it is permanent and cannot be undone. Continue?`,
+            count: submissions,
+          })
+        : t("dashboard.instructor.exams.delete.warn", {
+            defaultValue: "Delete this exam permanently? This cannot be undone.",
+          });
+    if (!window.confirm(warnMsg)) return;
+    try {
+      await deleteMutation.mutateAsync(row.id);
+      toast.success(t("dashboard.instructor.exams.delete.success", { defaultValue: "Exam deleted." }));
+      void refetch();
+    } catch (e) {
+      toast.error(getErrorMessage(e, t("dashboard.instructor.exams.delete.error", { defaultValue: "Could not delete exam." })));
+    }
+  };
 
   const stats = useMemo(() => {
     const totalQuestions = exams.reduce((n, e) => n + (e._count?.questions ?? 0), 0);
@@ -183,12 +208,31 @@ function Exams() {
             key: "id",
             title: t("dashboard.common.actions"),
             render: (_, row) => (
-              <Link
-                to={`/instructor/exams/${row.id}`}
-                className="inline-flex items-center gap-1 rounded-lg bg-[#EE7C11]/10 px-3 py-1.5 text-xs font-bold text-[#EE7C11] hover:bg-[#EE7C11]/20"
-              >
-                {t("dashboard.instructor.exams.details")}
-              </Link>
+              <div className="flex flex-wrap items-center gap-1.5">
+                <Link
+                  to={`/instructor/exams/${row.id}`}
+                  className="inline-flex items-center gap-1 rounded-lg bg-[#EE7C11]/10 px-3 py-1.5 text-xs font-bold text-[#EE7C11] hover:bg-[#EE7C11]/20"
+                >
+                  {t("dashboard.instructor.exams.details")}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setEditExam(row)}
+                  className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-slate-200 dark:hover:bg-white/5"
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                  {t("dashboard.common.edit", { defaultValue: "Edit" })}
+                </button>
+                <button
+                  type="button"
+                  disabled={deleteMutation.isPending}
+                  onClick={() => void handleDeleteExam(row)}
+                  className="inline-flex items-center gap-1 rounded-lg border border-rose-500/30 bg-rose-500/10 px-2.5 py-1.5 text-xs font-bold text-rose-700 hover:bg-rose-500/20 disabled:opacity-50 dark:text-rose-400"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  {t("dashboard.common.delete", { defaultValue: "Delete" })}
+                </button>
+              </div>
             ),
           },
         ]}
@@ -200,6 +244,10 @@ function Exams() {
           />
         }
       />
+
+      {editExam ? (
+        <EditExamModal exam={editExam} onClose={() => setEditExam(null)} onSaved={() => void refetch()} />
+      ) : null}
 
       {createOpen ? (
         <CreateExamModal

@@ -12,7 +12,7 @@ import {
   useInstructorExamSubmissions,
   useUpdateInstructorExamQuestion,
 } from "../../features/instructor/exams/hooks";
-import { AddQuestionForm, QuestionCard } from "./ExamQuestionEditor";
+import { ExamQuestionBank } from "../../components/exams/ExamQuestionBank";
 
 const CARD = "rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#1A1A22]";
 
@@ -55,6 +55,7 @@ function InstructorExamDetail() {
   const deleteQ = useDeleteInstructorExamQuestion(examId);
 
   const [notice, setNotice] = useState(null);
+  const [savingId, setSavingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
 
   const pointsUsed = useMemo(
@@ -62,11 +63,11 @@ function InstructorExamDetail() {
     [exam?.questions]
   );
 
-  const handleAddQuestion = async (payload) => {
+  const handleAddQuestion = async (body) => {
     setNotice(null);
     const nextOrder = (exam?.questions?.length || 0) + 1;
     try {
-      await addQ.mutateAsync({ ...payload, order: nextOrder });
+      await addQ.mutateAsync({ ...body, order: nextOrder });
       setNotice({ type: "success", message: t("dashboard.instructor.exams.detailPage.questionAdded") });
     } catch (err) {
       setNotice({ type: "error", message: getErrorMessage(err, t("dashboard.instructor.exams.detailPage.addError")) });
@@ -76,8 +77,16 @@ function InstructorExamDetail() {
 
   const handleUpdateQuestion = async (questionId, body) => {
     setNotice(null);
-    await updateQ.mutateAsync({ questionId, body });
-    setNotice({ type: "success", message: t("dashboard.instructor.exams.detailPage.questionSaved") });
+    setSavingId(questionId);
+    try {
+      await updateQ.mutateAsync({ questionId, body });
+      setNotice({ type: "success", message: t("dashboard.instructor.exams.detailPage.questionSaved") });
+    } catch (err) {
+      setNotice({ type: "error", message: getErrorMessage(err, t("dashboard.instructor.exams.detailPage.addError")) });
+      throw err;
+    } finally {
+      setSavingId(null);
+    }
   };
 
   const handleDeleteQuestion = async (questionId) => {
@@ -181,53 +190,16 @@ function InstructorExamDetail() {
         />
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-5">
-        {/* Add question */}
-        <div className={`${CARD} p-5 xl:col-span-2`}>
-          <h2 className="mb-1 text-base font-bold text-slate-900 dark:text-white">
-            {t("dashboard.instructor.exams.detailPage.addQuestionTitle")}
-          </h2>
-          <p className="mb-4 text-xs text-slate-500 dark:text-slate-400">
-            {t("dashboard.instructor.exams.detailPage.addQuestionHint")}
-          </p>
-          <AddQuestionForm onSubmit={handleAddQuestion} isPending={addQ.isPending} />
-        </div>
-
-        {/* Questions list */}
-        <div className="space-y-4 xl:col-span-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-base font-bold text-slate-900 dark:text-white">
-              {t("dashboard.instructor.exams.detailPage.questionsTitle")}
-            </h2>
-            <span className="text-xs font-semibold text-slate-400">
-              {exam.questions?.length ?? 0} {t("dashboard.instructor.exams.questionsCount")}
-            </span>
-          </div>
-
-          {!exam.questions?.length ? (
-            <div className={`${CARD} p-10 text-center`}>
-              <FileQuestion className="mx-auto h-10 w-10 text-slate-300" />
-              <p className="mt-3 text-sm font-semibold text-slate-600 dark:text-slate-300">
-                {t("dashboard.instructor.exams.detailPage.questionsEmpty")}
-              </p>
-              <p className="mt-1 text-xs text-slate-400">{t("dashboard.instructor.exams.detailPage.questionsEmptyHint")}</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {exam.questions.map((q, i) => (
-                <QuestionCard
-                  key={q.id}
-                  question={q}
-                  index={i}
-                  onUpdate={handleUpdateQuestion}
-                  onDelete={handleDeleteQuestion}
-                  isUpdating={updateQ.isPending}
-                  isDeleting={deletingId === q.id}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+      <div className={`${CARD} p-5`}>
+        <ExamQuestionBank
+          exam={exam}
+          onAddQuestion={handleAddQuestion}
+          onSaveQuestion={handleUpdateQuestion}
+          onDeleteQuestion={handleDeleteQuestion}
+          isAdding={addQ.isPending}
+          savingId={savingId}
+          deletingId={deletingId}
+        />
       </div>
 
       {/* Submissions */}

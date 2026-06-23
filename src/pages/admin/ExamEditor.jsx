@@ -4,14 +4,14 @@ import {
   ArrowLeft, CheckCircle2, Clock, Edit3, Loader2, Plus, Save, Trash2, X,
   ClipboardList, Award, Hash, GripVertical,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import {
   useAdminExamById, useUpdateAdminExam,
   useAddAdminExamQuestion, useUpdateAdminExamQuestion, useDeleteAdminExamQuestion,
 } from "../../features/admin/exams/hooks";
 import { getErrorMessage } from "../../api/error";
-
-const QUESTION_TYPES = ["MULTIPLE_CHOICE", "TRUE_FALSE", "SHORT_ANSWER", "ESSAY"];
+import { ExamQuestionBank } from "../../components/exams/ExamQuestionBank";
 
 const listToText = (value) => {
   if (!Array.isArray(value)) return "";
@@ -56,119 +56,21 @@ const textToStructure = (value) =>
       };
     });
 
-/* ─── Question Card ─── */
-function QuestionCard({ question, examId, index }) {
-  const updateMutation = useUpdateAdminExamQuestion();
-  const deleteMutation = useDeleteAdminExamQuestion();
-
-  const [text, setText] = useState(question.questionText || "");
-  const [type, setType] = useState(question.type || "MULTIPLE_CHOICE");
-  const [points, setPoints] = useState(question.points || 1);
-  const [correctAnswer, setCorrectAnswer] = useState(question.correctAnswer || "");
-  const [options, setOptions] = useState(question.options || ["", "", "", ""]);
-  const [dirty, setDirty] = useState(false);
-
-  const markDirty = (setter) => (val) => { setter(val); setDirty(true); };
-
-  const save = async () => {
-    try {
-      const body = { questionText: text, type, points: Number(points), correctAnswer };
-      if (type === "MULTIPLE_CHOICE") body.options = options.filter((o) => o.trim());
-      await updateMutation.mutateAsync({ examId, questionId: question.id, body });
-      setDirty(false);
-      toast.success(`Q${index + 1} saved`);
-    } catch (err) { toast.error(getErrorMessage(err, "Failed to save")); }
-  };
-
-  const remove = async () => {
-    if (!confirm(`Delete Question ${index + 1}?`)) return;
-    try {
-      await deleteMutation.mutateAsync({ examId, questionId: question.id });
-      toast.success("Question deleted");
-    } catch (err) { toast.error(getErrorMessage(err, "Failed to delete")); }
-  };
-
-  const handleTypeChange = (newType) => {
-    setType(newType);
-    setDirty(true);
-    if (newType === "MULTIPLE_CHOICE" && (!options || options.length < 2)) setOptions(["", "", "", ""]);
-  };
-
-  return (
-    <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-white/8 dark:bg-[#1A1A22]">
-      {/* Header */}
-      <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3 dark:border-white/5">
-        <div className="flex items-center gap-2">
-          <GripVertical className="h-4 w-4 text-slate-300" />
-          <span className="text-sm font-bold text-slate-900 dark:text-white">Question {index + 1}</span>
-          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500 dark:bg-white/10">{type}</span>
-          <span className="text-[10px] text-slate-400">{points} pts</span>
-        </div>
-        <div className="flex items-center gap-2">
-          {dirty && (
-            <button onClick={save} disabled={updateMutation.isPending} className="inline-flex items-center gap-1 rounded-lg bg-[#EE7C11] px-3 py-1 text-xs font-bold text-white hover:bg-[#d9700e] disabled:opacity-50">
-              {updateMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />} Save
-            </button>
-          )}
-          <button onClick={remove} disabled={deleteMutation.isPending} className="rounded p-1 text-slate-400 hover:text-red-500">
-            <Trash2 className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
-
-      {/* Body */}
-      <div className="space-y-4 p-5">
-        <textarea value={text} onChange={(e) => markDirty(setText)(e.target.value)} rows={2} placeholder="Enter the question text..." className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-all focus:border-[#EE7C11]/50 focus:ring-2 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
-
-        <div className="grid gap-4 sm:grid-cols-3">
-          <label className="block space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Type</span>
-            <select value={type} onChange={(e) => handleTypeChange(e.target.value)} className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white">
-              {QUESTION_TYPES.map((t) => <option key={t}>{t}</option>)}
-            </select>
-          </label>
-          <label className="block space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Points</span>
-            <input type="number" min={1} value={points} onChange={(e) => markDirty(setPoints)(e.target.value)} className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
-          </label>
-          <label className="block space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Correct Answer</span>
-            <input value={correctAnswer} onChange={(e) => markDirty(setCorrectAnswer)(e.target.value)} placeholder={type === "TRUE_FALSE" ? "true / false" : "Exact answer"} className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
-          </label>
-        </div>
-
-        {type === "MULTIPLE_CHOICE" && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Options</span>
-              <button type="button" onClick={() => { setOptions([...options, ""]); setDirty(true); }} className="text-[10px] font-bold text-[#EE7C11] hover:underline">+ Add Option</button>
-            </div>
-            <div className="grid gap-2 sm:grid-cols-2">
-              {options.map((opt, i) => (
-                <div key={i} className="relative flex items-center">
-                  <input value={opt} onChange={(e) => { const n = [...options]; n[i] = e.target.value; markDirty(setOptions)(n); }} placeholder={`Option ${i + 1}`} className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 pe-8 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
-                  {options.length > 2 && (
-                    <button onClick={() => { markDirty(setOptions)(options.filter((_, j) => j !== i)); }} className="absolute end-2 text-slate-400 hover:text-red-500"><X className="h-3 w-3" /></button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 /* ═══════════════════════════════════════
    MAIN: ExamEditor
    ═══════════════════════════════════════ */
 export default function ExamEditor() {
+  const { t } = useTranslation();
+  const label = (key, fallback, opts) => t(`adminPages.examEditor.${key}`, { defaultValue: fallback, ...opts });
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: exam, isLoading, isError } = useAdminExamById(id);
   const updateExamMutation = useUpdateAdminExam();
   const addQuestionMutation = useAddAdminExamQuestion();
+  const updateQuestionMutation = useUpdateAdminExamQuestion();
+  const deleteQuestionMutation = useDeleteAdminExamQuestion();
+  const [savingId, setSavingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   /* ── Settings State ── */
   const [editingSettings, setEditingSettings] = useState(false);
@@ -213,25 +115,62 @@ export default function ExamEditor() {
         },
       });
       setEditingSettings(false);
-      toast.success("Settings saved");
-    } catch (err) { toast.error(getErrorMessage(err, "Failed to save")); }
+      toast.success(label("settingsSaved", "Settings saved"));
+    } catch (err) { toast.error(getErrorMessage(err, label("saveFailed", "Failed to save"))); }
   };
 
-  /* ── Add Question ── */
-  const handleAddQuestion = useCallback(async () => {
-    const order = (exam?.questions?.length || 0) + 1;
-    try {
-      await addQuestionMutation.mutateAsync({
-        examId: id,
-        body: { questionText: `Question ${order}`, type: "MULTIPLE_CHOICE", points: 10, order, options: ["", "", "", ""], correctAnswer: "" },
-      });
-      toast.success("Question added");
-    } catch (err) { toast.error(getErrorMessage(err, "Failed to add question")); }
-  }, [addQuestionMutation, id, exam]);
+  const handleAddQuestion = useCallback(
+    async (body) => {
+      try {
+        await addQuestionMutation.mutateAsync({ examId: id, body });
+        toast.success(label("questionAdded", "Question added"));
+      } catch (err) {
+        toast.error(getErrorMessage(err, label("questionAddFailed", "Failed to add question")));
+      }
+    },
+    [addQuestionMutation, id]
+  );
+
+  const handleSaveQuestion = useCallback(
+    async (questionId, body) => {
+      setSavingId(questionId);
+      try {
+        await updateQuestionMutation.mutateAsync({ examId: id, questionId, body });
+        toast.success(label("questionSaved", "Question saved"));
+      } catch (err) {
+        toast.error(getErrorMessage(err, label("questionSaveFailed", "Failed to save")));
+        throw err;
+      } finally {
+        setSavingId(null);
+      }
+    },
+    [updateQuestionMutation, id]
+  );
+
+  const handleDeleteQuestion = useCallback(
+    async (questionId) => {
+      if (!window.confirm(label("deleteConfirm", "Delete this question?"))) return;
+      setDeletingId(questionId);
+      try {
+        await deleteQuestionMutation.mutateAsync({ examId: id, questionId });
+        toast.success(label("questionDeleted", "Question deleted"));
+      } catch (err) {
+        toast.error(getErrorMessage(err, label("questionDeleteFailed", "Failed to delete")));
+      } finally {
+        setDeletingId(null);
+      }
+    },
+    [deleteQuestionMutation, id]
+  );
 
   /* ── States ── */
   if (isLoading) return <div className="flex min-h-[60vh] items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-[#EE7C11]" /></div>;
-  if (isError || !exam) return <div className="mx-auto max-w-lg space-y-4 py-20 text-center"><p className="text-lg font-bold text-slate-900 dark:text-white">Exam not found</p><Link to="/admin/exams" className="text-sm text-[#EE7C11] hover:underline">← Back to exams</Link></div>;
+  if (isError || !exam) return (
+    <div className="mx-auto max-w-lg space-y-4 py-20 text-center">
+      <p className="text-lg font-bold text-slate-900 dark:text-white">{label("notFound", "Exam not found")}</p>
+      <Link to="/admin/exams" className="text-sm text-[#EE7C11] hover:underline">{label("backToExams", "← Back to exams")}</Link>
+    </div>
+  );
 
   const questions = exam.questions || [];
   const totalQuestionPoints = questions.reduce((s, q) => s + (q.points || 0), 0);
@@ -255,10 +194,10 @@ export default function ExamEditor() {
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[
-          { label: "Questions", value: questions.length, icon: Hash, color: "text-blue-500" },
-          { label: "Total Points", value: totalQuestionPoints + " / " + exam.totalPoints, icon: Award, color: totalQuestionPoints === exam.totalPoints ? "text-emerald-500" : "text-red-500" },
-          { label: "Duration", value: exam.durationMinutes + " min", icon: Clock, color: "text-purple-500" },
-          { label: "Pass Score", value: exam.passingScore, icon: CheckCircle2, color: "text-amber-500" },
+          { label: label("stats.questions", "Questions"), value: questions.length, icon: Hash, color: "text-blue-500" },
+          { label: label("stats.totalPoints", "Total Points"), value: totalQuestionPoints + " / " + exam.totalPoints, icon: Award, color: totalQuestionPoints === exam.totalPoints ? "text-emerald-500" : "text-red-500" },
+          { label: label("stats.duration", "Duration"), value: exam.durationMinutes + " min", icon: Clock, color: "text-purple-500" },
+          { label: label("stats.passScore", "Pass Score"), value: exam.passingScore, icon: CheckCircle2, color: "text-amber-500" },
         ].map((s) => (
           <div key={s.label} className="rounded-xl border border-slate-200 bg-white p-4 dark:border-white/8 dark:bg-[#1A1A22]">
             <div className="mb-1 flex items-center gap-1.5">
@@ -273,14 +212,14 @@ export default function ExamEditor() {
       {/* Settings Panel */}
       <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-[#1A1A22]">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">Exam Settings</h2>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">{label("settingsTitle", "Exam Settings")}</h2>
           {!editingSettings ? (
-            <button onClick={initSettings} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-slate-300 dark:hover:bg-white/5"><Edit3 className="h-3 w-3" /> Edit</button>
+            <button onClick={initSettings} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-slate-300 dark:hover:bg-white/5"><Edit3 className="h-3 w-3" /> {label("edit", "Edit")}</button>
           ) : (
             <div className="flex gap-2">
-              <button onClick={() => setEditingSettings(false)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-500 dark:border-white/10">Cancel</button>
+              <button onClick={() => setEditingSettings(false)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-500 dark:border-white/10">{label("cancel", "Cancel")}</button>
               <button onClick={saveSettings} disabled={updateExamMutation.isPending} className="inline-flex items-center gap-1 rounded-lg bg-[#EE7C11] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#d9700e] disabled:opacity-50">
-                {updateExamMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />} Save
+                {updateExamMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />} {label("save", "Save")}
               </button>
             </div>
           )}
@@ -321,25 +260,16 @@ export default function ExamEditor() {
         )}
       </div>
 
-      {/* Question Bank */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">Question Bank ({questions.length})</h2>
-          <button onClick={handleAddQuestion} disabled={addQuestionMutation.isPending} className="inline-flex items-center gap-1.5 rounded-lg bg-[#EE7C11] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#d9700e] disabled:opacity-50">
-            {addQuestionMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Plus className="h-3 w-3" />} Add Question
-          </button>
-        </div>
-
-        {questions.length === 0 ? (
-          <div className="rounded-xl border-2 border-dashed border-slate-200 p-10 text-center dark:border-white/10">
-            <ClipboardList className="mx-auto mb-3 h-10 w-10 text-slate-300 dark:text-slate-600" />
-            <p className="text-sm font-bold text-slate-500">No questions yet</p>
-            <p className="mt-1 text-xs text-slate-400">Click "Add Question" to start building your question bank.</p>
-          </div>
-        ) : (
-          questions.map((q, i) => <QuestionCard key={q.id} question={q} examId={id} index={i} />)
-        )}
-      </div>
+      <ExamQuestionBank
+        exam={exam}
+        onAddQuestion={handleAddQuestion}
+        onSaveQuestion={handleSaveQuestion}
+        onDeleteQuestion={handleDeleteQuestion}
+        isAdding={addQuestionMutation.isPending}
+        savingId={savingId}
+        deletingId={deletingId}
+        showGrip
+      />
     </section>
   );
 }

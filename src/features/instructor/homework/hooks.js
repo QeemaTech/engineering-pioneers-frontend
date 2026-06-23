@@ -43,6 +43,7 @@ export function useCreateInstructorHomework() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["instructor", "homework"] });
       queryClient.invalidateQueries({ queryKey: ["instructor", "courses"] });
+      queryClient.invalidateQueries({ queryKey: ["instructor", "course"] });
     },
   });
 }
@@ -54,6 +55,7 @@ export function useDeleteInstructorHomework() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["instructor", "homework"] });
       queryClient.invalidateQueries({ queryKey: ["instructor", "courses"] });
+      queryClient.invalidateQueries({ queryKey: ["instructor", "course"] });
     },
   });
 }

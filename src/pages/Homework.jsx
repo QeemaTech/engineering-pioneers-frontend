@@ -53,20 +53,21 @@ const STATUS_LABEL = {
 export default function Homework() {
   const { t } = useTranslation();
   const [q, setQ] = useState("");
-  const [cohortFilter, setCohortFilter] = useState("");
+  const [courseFilter, setCourseFilter] = useState("");
   const { data: items = [], isLoading, isError, refetch } = useMyHomework();
 
-  const cohortOptions = useMemo(() => {
+  const courseOptions = useMemo(() => {
     const map = new Map();
     for (const h of items) {
-      if (!map.has(h.cohortId)) map.set(h.cohortId, { id: h.cohortId, name: h.cohortName, course: h.courseTitle });
+      const id = h.courseId;
+      if (id && !map.has(id)) map.set(id, { id, title: h.courseTitle || id });
     }
-    return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+    return Array.from(map.values()).sort((a, b) => (a.title || "").localeCompare(b.title || ""));
   }, [items]);
 
   const filtered = useMemo(() => {
     let list = items;
-    if (cohortFilter) list = list.filter((h) => h.cohortId === cohortFilter);
+    if (courseFilter) list = list.filter((h) => h.courseId === courseFilter);
     const s = q.trim().toLowerCase();
     if (!s) return list;
     return list.filter(
@@ -76,12 +77,11 @@ export default function Homework() {
         (h.cohortName || "").toLowerCase().includes(s) ||
         String(h.type || "").toLowerCase().includes(s)
     );
-  }, [items, q, cohortFilter]);
+  }, [items, q, courseFilter]);
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 md:py-16">
-      <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
-        <div className="text-center md:text-start">
+    <div className="space-y-8">
+      <div className="text-center md:text-start">
           <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
             {t("homework.titlePrefix")}{" "}
             <span className="relative inline-block">
@@ -114,14 +114,14 @@ export default function Homework() {
             </button>
             <div className="relative min-w-[180px] sm:min-w-[200px]">
               <select
-                value={cohortFilter}
-                onChange={(e) => setCohortFilter(e.target.value)}
+                value={courseFilter}
+                onChange={(e) => setCourseFilter(e.target.value)}
                 className="h-12 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-white py-2 pe-10 ps-4 text-sm text-slate-900 outline-none focus:border-pioneer-orange-normal focus:ring-2 focus:ring-pioneer-orange-light"
               >
                 <option value="">{t("homework.filter.allClasses", { defaultValue: "All classes" })}</option>
-                {cohortOptions.map((c) => (
+                {courseOptions.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.name} — {c.course}
+                    {c.title}
                   </option>
                 ))}
               </select>
@@ -164,11 +164,7 @@ export default function Homework() {
                 const st = deriveHomeworkUiStatus(hw);
                 const badgeClass = STATUS_BADGE[st.key] || STATUS_BADGE.pending;
                 const typeKey = homeworkTypeKey(hw.type);
-                const ctx = t("homework.contextLine", {
-                  courseTitle: hw.courseTitle,
-                  cohortName: hw.cohortName,
-                  defaultValue: "{{courseTitle}} · {{cohortName}}",
-                });
+                const ctx = hw.courseTitle || t("homework.filter.allClasses", { defaultValue: "Course" });
                 const canSubmit = st.key === "pending" || st.key === "late";
                 const ctaKey = canSubmit ? "homework.actions.submit" : "homework.actions.viewDetails";
 
@@ -218,7 +214,7 @@ export default function Homework() {
                       ) : null}
 
                       <Link
-                        to={`/homework/assignment/${hw.id}`}
+                        to={`/student/homework/assignment/${hw.id}`}
                         className="mt-5 block w-full rounded-xl bg-pioneer-orange-light py-3 text-center text-sm font-bold text-pioneer-orange-normal transition hover:bg-pioneer-orange-light/80"
                       >
                         {t(ctaKey)}
@@ -229,7 +225,6 @@ export default function Homework() {
               })
             : null}
         </div>
-      </div>
     </div>
   );
 }

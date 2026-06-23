@@ -28,6 +28,7 @@ import {
   useUpdateHero,
 } from "../../features/admin/cms/hooks";
 import { getErrorMessage } from "../../api/error";
+import { splitLocalized, joinLocalized } from "../../utils/cmsLocale";
 
 const field =
   "h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#EE7C11] focus:ring-2 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white";
@@ -48,6 +49,7 @@ function PreviewLinks() {
     { to: "/", label: t("dashboard.admin.pages.cms.previewHome", { defaultValue: "Homepage" }), icon: Home },
     { to: "/about", label: t("dashboard.admin.pages.cms.previewAbout", { defaultValue: "About page" }), icon: Sparkles },
     { to: "/faq", label: t("dashboard.admin.pages.cms.previewFaq", { defaultValue: "FAQ page" }), icon: HelpCircle },
+    { to: "/admin/cms/pages", label: t("sidebarNav.items.sitePages", { defaultValue: "Site pages" }), icon: FileText, admin: true },
     { to: "/admin/cms/posts", label: t("sidebarNav.items.blogPosts"), icon: FileText, admin: true },
     { to: "/admin/cms/banners", label: t("sidebarNav.items.banners"), icon: Image, admin: true },
   ];
@@ -76,10 +78,24 @@ function Cms() {
   const [tab, setTab] = useState("hero");
   const [notice, setNotice] = useState(null);
 
-  const [hero, setHero] = useState({ headline: "", subheadline: "", isVisible: true });
-  const [about, setAbout] = useState({ mission: "", vision: "", description: "" });
+  const [hero, setHero] = useState({
+    headlineEn: "",
+    headlineAr: "",
+    subheadlineEn: "",
+    subheadlineAr: "",
+    isVisible: true,
+  });
+  const [about, setAbout] = useState({
+    missionEn: "",
+    missionAr: "",
+    visionEn: "",
+    visionAr: "",
+    descriptionEn: "",
+    descriptionAr: "",
+  });
   const [faqDrafts, setFaqDrafts] = useState([]);
-  const [newFaq, setNewFaq] = useState({ question: "", answer: "" });
+  const [newFaq, setNewFaq] = useState({ questionEn: "", questionAr: "", answerEn: "", answerAr: "" });
+  const [contentLang, setContentLang] = useState("en");
 
   const { data: faqs = [], isLoading: faqsLoading } = useAdminFaqs();
   const { data: sections = [] } = useAdminSections();
@@ -96,9 +112,13 @@ function Cms() {
   useEffect(() => {
     const c = heroSection?.content;
     if (c && typeof c === "object" && !Array.isArray(c)) {
+      const hl = splitLocalized(c.headline);
+      const sub = splitLocalized(c.subheadline);
       setHero({
-        headline: typeof c.headline === "string" ? c.headline : "",
-        subheadline: typeof c.subheadline === "string" ? c.subheadline : "",
+        headlineEn: hl.en,
+        headlineAr: hl.ar,
+        subheadlineEn: sub.en,
+        subheadlineAr: sub.ar,
         isVisible: heroSection.isVisible !== false,
       });
     }
@@ -107,21 +127,33 @@ function Cms() {
   useEffect(() => {
     const c = aboutSection?.content;
     if (c && typeof c === "object" && !Array.isArray(c)) {
+      const mission = splitLocalized(c.mission);
+      const vision = splitLocalized(c.vision);
+      const description = splitLocalized(c.description);
       setAbout({
-        mission: typeof c.mission === "string" ? c.mission : "",
-        vision: typeof c.vision === "string" ? c.vision : "",
-        description: typeof c.description === "string" ? c.description : "",
+        missionEn: mission.en,
+        missionAr: mission.ar,
+        visionEn: vision.en,
+        visionAr: vision.ar,
+        descriptionEn: description.en,
+        descriptionAr: description.ar,
       });
     }
   }, [aboutSection?.id, aboutSection?.updatedAt]);
 
   useEffect(() => {
     setFaqDrafts(
-      (faqs || []).map((item) => ({
-        id: item.id,
-        question: item.question || "",
-        answer: item.answer || "",
-      }))
+      (faqs || []).map((item) => {
+        const q = splitLocalized(item.question);
+        const a = splitLocalized(item.answer);
+        return {
+          id: item.id,
+          questionEn: q.en,
+          questionAr: q.ar,
+          answerEn: a.en,
+          answerAr: a.ar,
+        };
+      })
     );
   }, [faqs]);
 
@@ -135,7 +167,27 @@ function Cms() {
     }
   };
 
-  const faqCount = useMemo(() => faqDrafts.filter((f) => f.question.trim()).length, [faqDrafts]);
+  const faqCount = useMemo(
+    () => faqDrafts.filter((f) => f.questionEn.trim() || f.questionAr.trim()).length,
+    [faqDrafts]
+  );
+
+  const LangToggle = () => (
+    <div className="mb-4 flex gap-2">
+      {["en", "ar"].map((lang) => (
+        <button
+          key={lang}
+          type="button"
+          onClick={() => setContentLang(lang)}
+          className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+            contentLang === lang ? "bg-[#EE7C11] text-white" : "bg-slate-100 text-slate-600 dark:bg-white/10"
+          }`}
+        >
+          {lang === "en" ? "English" : "العربية"}
+        </button>
+      ))}
+    </div>
+  );
 
   return (
     <PermissionGate
@@ -201,33 +253,56 @@ function Cms() {
                 </button>
               </div>
 
+              <LangToggle />
+
               <div className="space-y-4">
                 <div>
                   <label className={labelCls}>{t("dashboard.admin.pages.cms.heroHeadline", { defaultValue: "Headline" })}</label>
                   <input
-                    value={hero.headline}
-                    onChange={(e) => setHero((p) => ({ ...p, headline: e.target.value }))}
+                    value={contentLang === "ar" ? hero.headlineAr : hero.headlineEn}
+                    onChange={(e) =>
+                      setHero((p) =>
+                        contentLang === "ar"
+                          ? { ...p, headlineAr: e.target.value }
+                          : { ...p, headlineEn: e.target.value }
+                      )
+                    }
                     className={field}
-                    placeholder="Build Real Engineering Skills"
+                    dir={contentLang === "ar" ? "rtl" : "ltr"}
                   />
                 </div>
                 <div>
                   <label className={labelCls}>{t("dashboard.admin.pages.cms.heroSubheadline", { defaultValue: "Subheadline" })}</label>
                   <textarea
-                    value={hero.subheadline}
-                    onChange={(e) => setHero((p) => ({ ...p, subheadline: e.target.value }))}
+                    value={contentLang === "ar" ? hero.subheadlineAr : hero.subheadlineEn}
+                    onChange={(e) =>
+                      setHero((p) =>
+                        contentLang === "ar"
+                          ? { ...p, subheadlineAr: e.target.value }
+                          : { ...p, subheadlineEn: e.target.value }
+                      )
+                    }
                     className={area}
-                    placeholder="Hybrid & recorded courses · Expert instructors · Certificates"
+                    dir={contentLang === "ar" ? "rtl" : "ltr"}
                   />
                 </div>
               </div>
 
               <button
                 type="button"
-                disabled={!hero.headline.trim() || !hero.subheadline.trim() || updateHeroMutation.isPending}
+                disabled={
+                  !(hero.headlineEn.trim() || hero.headlineAr.trim()) ||
+                  !(hero.subheadlineEn.trim() || hero.subheadlineAr.trim()) ||
+                  updateHeroMutation.isPending
+                }
                 onClick={() =>
                   run(
-                    () => updateHeroMutation.mutateAsync(hero),
+                    () =>
+                      updateHeroMutation.mutateAsync({
+                        headline: joinLocalized(hero.headlineEn, hero.headlineAr),
+                        subheadline: joinLocalized(hero.subheadlineEn, hero.subheadlineAr),
+                        isVisible: hero.isVisible,
+                      }),
                     t("dashboard.admin.pages.cms.heroSaved", { defaultValue: "Homepage hero saved." })
                   )
                 }
@@ -243,10 +318,10 @@ function Cms() {
                 {t("dashboard.admin.pages.cms.previewLabel", { defaultValue: "Preview" })}
               </p>
               <h2 className="text-2xl font-black leading-tight text-slate-900 dark:text-white md:text-3xl">
-                {hero.headline || "—"}
+                {(contentLang === "ar" ? hero.headlineAr : hero.headlineEn) || "—"}
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-                {hero.subheadline || "—"}
+                {(contentLang === "ar" ? hero.subheadlineAr : hero.subheadlineEn) || "—"}
               </p>
               <p className="mt-6 text-xs text-slate-400">
                 {t("dashboard.admin.pages.cms.heroPreviewNote", {
@@ -266,36 +341,68 @@ function Cms() {
                   defaultValue: "Shown on the public /about page — mission, vision, and story.",
                 })}
               </p>
+              <LangToggle />
               <div className="space-y-4">
                 <div>
                   <label className={labelCls}>{t("dashboard.admin.pages.cms.phMission")}</label>
                   <input
-                    value={about.mission}
-                    onChange={(e) => setAbout((p) => ({ ...p, mission: e.target.value }))}
+                    value={contentLang === "ar" ? about.missionAr : about.missionEn}
+                    onChange={(e) =>
+                      setAbout((p) =>
+                        contentLang === "ar"
+                          ? { ...p, missionAr: e.target.value }
+                          : { ...p, missionEn: e.target.value }
+                      )
+                    }
                     className={field}
+                    dir={contentLang === "ar" ? "rtl" : "ltr"}
                   />
                 </div>
                 <div>
                   <label className={labelCls}>{t("dashboard.admin.pages.cms.phVision")}</label>
                   <input
-                    value={about.vision}
-                    onChange={(e) => setAbout((p) => ({ ...p, vision: e.target.value }))}
+                    value={contentLang === "ar" ? about.visionAr : about.visionEn}
+                    onChange={(e) =>
+                      setAbout((p) =>
+                        contentLang === "ar"
+                          ? { ...p, visionAr: e.target.value }
+                          : { ...p, visionEn: e.target.value }
+                      )
+                    }
                     className={field}
+                    dir={contentLang === "ar" ? "rtl" : "ltr"}
                   />
                 </div>
                 <div>
                   <label className={labelCls}>{t("dashboard.admin.pages.cms.phDescription")}</label>
                   <textarea
-                    value={about.description}
-                    onChange={(e) => setAbout((p) => ({ ...p, description: e.target.value }))}
+                    value={contentLang === "ar" ? about.descriptionAr : about.descriptionEn}
+                    onChange={(e) =>
+                      setAbout((p) =>
+                        contentLang === "ar"
+                          ? { ...p, descriptionAr: e.target.value }
+                          : { ...p, descriptionEn: e.target.value }
+                      )
+                    }
                     className={`${area} min-h-36`}
+                    dir={contentLang === "ar" ? "rtl" : "ltr"}
                   />
                 </div>
               </div>
               <button
                 type="button"
                 disabled={updateAboutMutation.isPending}
-                onClick={() => run(() => updateAboutMutation.mutateAsync(about), t("dashboard.admin.pages.cms.aboutSaved"))}
+                onClick={() =>
+                  run(
+                    () =>
+                      updateAboutMutation.mutateAsync({
+                        mission: joinLocalized(about.missionEn, about.missionAr),
+                        vision: joinLocalized(about.visionEn, about.visionAr),
+                        description: joinLocalized(about.descriptionEn, about.descriptionAr),
+                      }),
+                    t("dashboard.admin.pages.cms.aboutSaved")
+                  )
+                }
                 className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#EE7C11] px-6 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#d9700e] disabled:opacity-50"
               >
                 {updateAboutMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
@@ -310,13 +417,19 @@ function Cms() {
               <div className="space-y-4">
                 <div className="rounded-xl border border-pioneer-orange-light bg-pioneer-orange-light/30 p-4 dark:border-pioneer-orange-normal/20">
                   <p className="text-xs font-bold uppercase text-pioneer-orange-normal">{t("publicAbout.mission", { defaultValue: "Mission" })}</p>
-                  <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">{about.mission || "—"}</p>
+                  <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">
+                    {(contentLang === "ar" ? about.missionAr : about.missionEn) || "—"}
+                  </p>
                 </div>
-                <div className="rounded-xl border border-pioneer-teal-light bg-pioneer-teal-light/20 p-4">
-                  <p className="text-xs font-bold uppercase text-pioneer-teal-normal">{t("publicAbout.vision", { defaultValue: "Vision" })}</p>
-                  <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">{about.vision || "—"}</p>
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10">
+                  <p className="text-xs font-bold uppercase text-slate-500">{t("publicAbout.vision", { defaultValue: "Vision" })}</p>
+                  <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">
+                    {(contentLang === "ar" ? about.visionAr : about.visionEn) || "—"}
+                  </p>
                 </div>
-                <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">{about.description || "—"}</p>
+                <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                  {(contentLang === "ar" ? about.descriptionAr : about.descriptionEn) || "—"}
+                </p>
               </div>
             </div>
           </div>
@@ -337,6 +450,8 @@ function Cms() {
                 {faqCount} {t("dashboard.admin.pages.cms.faqCount", { defaultValue: "entries" })}
               </span>
             </div>
+
+            <LangToggle />
 
             {faqsLoading ? (
               <p className="text-sm text-slate-500">{t("dashboard.common.loading")}</p>
@@ -370,25 +485,39 @@ function Cms() {
                       <div>
                         <label className={labelCls}>{t("dashboard.admin.pages.cms.newQuestion")}</label>
                         <input
-                          value={item.question}
+                          value={contentLang === "ar" ? item.questionAr : item.questionEn}
                           onChange={(e) =>
                             setFaqDrafts((list) =>
-                              list.map((f) => (f.id === item.id ? { ...f, question: e.target.value } : f))
+                              list.map((f) =>
+                                f.id === item.id
+                                  ? contentLang === "ar"
+                                    ? { ...f, questionAr: e.target.value }
+                                    : { ...f, questionEn: e.target.value }
+                                  : f
+                              )
                             )
                           }
                           className={field}
+                          dir={contentLang === "ar" ? "rtl" : "ltr"}
                         />
                       </div>
                       <div>
                         <label className={labelCls}>{t("dashboard.admin.pages.cms.newAnswer")}</label>
                         <textarea
-                          value={item.answer}
+                          value={contentLang === "ar" ? item.answerAr : item.answerEn}
                           onChange={(e) =>
                             setFaqDrafts((list) =>
-                              list.map((f) => (f.id === item.id ? { ...f, answer: e.target.value } : f))
+                              list.map((f) =>
+                                f.id === item.id
+                                  ? contentLang === "ar"
+                                    ? { ...f, answerAr: e.target.value }
+                                    : { ...f, answerEn: e.target.value }
+                                  : f
+                              )
                             )
                           }
                           className={area}
+                          dir={contentLang === "ar" ? "rtl" : "ltr"}
                         />
                       </div>
                       <button
@@ -399,7 +528,10 @@ function Cms() {
                             () =>
                               updateFaqMutation.mutateAsync({
                                 id: item.id,
-                                body: { question: item.question, answer: item.answer },
+                                body: {
+                                  question: joinLocalized(item.questionEn, item.questionAr),
+                                  answer: joinLocalized(item.answerEn, item.answerAr),
+                                },
                               }),
                             t("dashboard.admin.pages.cms.faqUpdated")
                           )
@@ -421,26 +553,49 @@ function Cms() {
               </h4>
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 <input
-                  value={newFaq.question}
-                  onChange={(e) => setNewFaq((p) => ({ ...p, question: e.target.value }))}
+                  value={newFaq.questionEn}
+                  onChange={(e) => setNewFaq((p) => ({ ...p, questionEn: e.target.value }))}
                   className={field}
-                  placeholder={t("dashboard.admin.pages.cms.newQuestion")}
+                  placeholder={`EN — ${t("dashboard.admin.pages.cms.newQuestion")}`}
+                  dir="ltr"
                 />
                 <input
-                  value={newFaq.answer}
-                  onChange={(e) => setNewFaq((p) => ({ ...p, answer: e.target.value }))}
+                  value={newFaq.questionAr}
+                  onChange={(e) => setNewFaq((p) => ({ ...p, questionAr: e.target.value }))}
                   className={field}
-                  placeholder={t("dashboard.admin.pages.cms.newAnswer")}
+                  placeholder={`AR — ${t("dashboard.admin.pages.cms.newQuestion")}`}
+                  dir="rtl"
+                />
+                <textarea
+                  value={newFaq.answerEn}
+                  onChange={(e) => setNewFaq((p) => ({ ...p, answerEn: e.target.value }))}
+                  className={area}
+                  placeholder={`EN — ${t("dashboard.admin.pages.cms.newAnswer")}`}
+                  dir="ltr"
+                />
+                <textarea
+                  value={newFaq.answerAr}
+                  onChange={(e) => setNewFaq((p) => ({ ...p, answerAr: e.target.value }))}
+                  className={area}
+                  placeholder={`AR — ${t("dashboard.admin.pages.cms.newAnswer")}`}
+                  dir="rtl"
                 />
               </div>
               <button
                 type="button"
-                disabled={!newFaq.question.trim() || !newFaq.answer.trim() || addFaqMutation.isPending}
+                disabled={
+                  !(newFaq.questionEn.trim() || newFaq.questionAr.trim()) ||
+                  !(newFaq.answerEn.trim() || newFaq.answerAr.trim()) ||
+                  addFaqMutation.isPending
+                }
                 onClick={() =>
                   run(
                     async () => {
-                      await addFaqMutation.mutateAsync(newFaq);
-                      setNewFaq({ question: "", answer: "" });
+                      await addFaqMutation.mutateAsync({
+                        question: joinLocalized(newFaq.questionEn, newFaq.questionAr),
+                        answer: joinLocalized(newFaq.answerEn, newFaq.answerAr),
+                      });
+                      setNewFaq({ questionEn: "", questionAr: "", answerEn: "", answerAr: "" });
                     },
                     t("dashboard.admin.pages.cms.faqAdded")
                   )

@@ -173,7 +173,7 @@ export default function Checkout() {
                 ) : null}
                 <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
                   <Link
-                    to="/my-classes"
+                    to="/student/classes"
                     className="inline-flex items-center justify-center rounded-xl bg-pioneer-orange-normal px-5 py-3 text-sm font-bold text-white transition hover:bg-pioneer-orange-hover"
                   >
                     {t("checkout.goToClasses")}

@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Users, Clock, CheckCircle, XCircle, Loader2, Calendar } from "lucide-react";
+import { Users, Clock, CheckCircle, XCircle, Loader2, Calendar, UserCheck, UserX } from "lucide-react";
+import toast from "react-hot-toast";
 import EmptyState from "../../components/dashboard/EmptyState";
-import { useAttendanceSessions, useSessionAttendance } from "../../features/instructor/attendance/hooks";
+import { useAttendanceSessions, useMarkSessionAttendance, useSessionAttendance } from "../../features/instructor/attendance/hooks";
 import { useInstructorClassesForStudents } from "../../features/instructor/students/hooks";
+import { getErrorMessage } from "../../api/error";
 
 const DARK_INPUT =
   "h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none focus:border-[#EE7C11] dark:border-white/15 dark:bg-[#12121a] dark:text-slate-100 dark:[color-scheme:dark]";
@@ -46,10 +48,29 @@ function Attendance() {
   const { data: detail, isLoading: detailLoading } = useSessionAttendance(activeSessionId, {
     enabled: Boolean(activeSessionId),
   });
+  const markMutation = useMarkSessionAttendance();
 
   const summary = detail?.summary;
   const roster = detail?.roster || [];
   const session = detail?.session;
+
+  const handleMark = async (studentId, present) => {
+    if (!activeSessionId) return;
+    try {
+      await markMutation.mutateAsync({ sessionId: activeSessionId, studentId, present });
+      toast.success(
+        dir === "rtl"
+          ? present
+            ? "تم تسجيل الحضور"
+            : "تم تسجيل الغياب"
+          : present
+            ? "Marked present"
+            : "Marked absent"
+      );
+    } catch (e) {
+      toast.error(getErrorMessage(e, dir === "rtl" ? "تعذر تحديث الحضور" : "Could not update attendance"));
+    }
+  };
 
   return (
     <div className="space-y-6 pb-10">
@@ -239,8 +260,8 @@ function Attendance() {
                 {roster.length === 0 ? (
                   <div className="p-10 text-center text-sm text-slate-500 dark:text-slate-400">
                     {dir === "rtl"
-                      ? "لا يوجد سجل حضور لهذه الجلسة بعد."
-                      : "No attendance records for this session yet."}
+                      ? "لا يوجد طلاب مسجّلون في هذا الكورس بعد."
+                      : "No students are enrolled in this course yet."}
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
@@ -262,10 +283,18 @@ function Attendance() {
                           <th className="p-4 text-start font-semibold">
                             {dir === "rtl" ? "الحالة" : "Status"}
                           </th>
+                          <th className="p-4 text-start font-semibold">
+                            {dir === "rtl" ? "تسجيل" : "Mark"}
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 dark:divide-white/5">
-                        {roster.map((row) => (
+                        {roster.map((row) => {
+                          const isPresent = row.status === "PRESENT" || row.status === "LEFT";
+                          const busy =
+                            markMutation.isPending &&
+                            markMutation.variables?.studentId === row.studentId;
+                          return (
                           <tr key={row.studentId} className="hover:bg-slate-50/50 dark:hover:bg-white/5">
                             <td className="p-4">
                               <p className="font-semibold text-slate-900 dark:text-white">
@@ -285,16 +314,41 @@ function Attendance() {
                             <td className="p-4">
                               <span
                                 className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                                  row.status === "PRESENT"
+                                  row.status === "PRESENT" || row.status === "LEFT"
                                     ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400"
-                                    : "bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-300"
+                                    : row.status === "ABSENT"
+                                      ? "bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400"
+                                      : "bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-300"
                                 }`}
                               >
                                 {row.status}
                               </span>
                             </td>
+                            <td className="p-4">
+                              <div className="flex items-center gap-1.5">
+                                <button
+                                  type="button"
+                                  disabled={busy || isPresent}
+                                  onClick={() => void handleMark(row.studentId, true)}
+                                  className="inline-flex items-center gap-1 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold text-emerald-700 disabled:opacity-40 dark:text-emerald-400"
+                                >
+                                  <UserCheck className="h-3.5 w-3.5" />
+                                  {dir === "rtl" ? "حاضر" : "Present"}
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={busy || !isPresent}
+                                  onClick={() => void handleMark(row.studentId, false)}
+                                  className="inline-flex items-center gap-1 rounded-lg border border-rose-500/30 bg-rose-500/10 px-2.5 py-1 text-[11px] font-bold text-rose-700 disabled:opacity-40 dark:text-rose-400"
+                                >
+                                  <UserX className="h-3.5 w-3.5" />
+                                  {dir === "rtl" ? "غائب" : "Absent"}
+                                </button>
+                              </div>
+                            </td>
                           </tr>
-                        ))}
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>

@@ -97,12 +97,12 @@ function UserDropdown({ user, onClose }) {
   const logout    = useAuthStore((s) => s.logout);
 
   const menuItems = [
-    { icon: BookOpen,       labelKey: "header.dropdown.myClasses",  to: "/my-classes" },
-    { icon: Video,          labelKey: "header.dropdown.recordings", to: "/recordings" },
-    { icon: FileText,       labelKey: "header.dropdown.homework",   to: "/homework" },
-    { icon: ClipboardCheck, labelKey: "header.dropdown.exams",      to: "/exams" },
-    { icon: TrendingUp,     labelKey: "header.dropdown.progress",   to: "/progress" },
-    { icon: Settings2,      labelKey: "header.dropdown.settings",   to: "/settings" },
+    { icon: BookOpen,       labelKey: "header.dropdown.myClasses",  to: "/student/classes" },
+    { icon: Video,          labelKey: "header.dropdown.recordings", to: "/student/live-sessions" },
+    { icon: FileText,       labelKey: "header.dropdown.homework",   to: "/student/homework" },
+    { icon: ClipboardCheck, labelKey: "header.dropdown.exams",      to: "/student/exams" },
+    { icon: TrendingUp,     labelKey: "header.dropdown.progress",   to: "/student/progress" },
+    { icon: Settings2,      labelKey: "header.dropdown.settings",   to: "/student/settings" },
   ];
 
   const handleNav = (to) => {
@@ -312,8 +312,10 @@ export default function Header() {
   const navItems = [
     { to: "/", label: t("header.nav.home") },
     { to: "/explore", label: t("header.nav.explore") },
-    { to: "/my-classes", label: t("header.nav.myClasses") },
-    ...(isAuthenticated && isStudent ? [{ to: "/book-session", label: t("header.nav.bookPrivate") }] : []),
+    ...(isAuthenticated && isStudent
+      ? [{ to: "/student", label: t("header.nav.myDashboard", { defaultValue: "My dashboard" }) }]
+      : []),
+    ...(isAuthenticated && isStudent ? [{ to: "/student/book-session", label: t("header.nav.bookPrivate") }] : []),
   ];
 
   return (
@@ -499,12 +501,12 @@ function MobileUserSection({ onClose }) {
   const logout   = useAuthStore((s) => s.logout);
 
   const menuItems = [
-    { icon: BookOpen,       labelKey: "header.dropdown.myClasses",  to: "/my-classes" },
-    { icon: Video,          labelKey: "header.dropdown.recordings", to: "/recordings" },
-    { icon: FileText,       labelKey: "header.dropdown.homework",   to: "/homework" },
-    { icon: ClipboardCheck, labelKey: "header.dropdown.exams",      to: "/exams" },
-    { icon: TrendingUp,     labelKey: "header.dropdown.progress",   to: "/progress" },
-    { icon: Settings2,      labelKey: "header.dropdown.settings",   to: "/settings" },
+    { icon: BookOpen,       labelKey: "header.dropdown.myClasses",  to: "/student/classes" },
+    { icon: Video,          labelKey: "header.dropdown.recordings", to: "/student/live-sessions" },
+    { icon: FileText,       labelKey: "header.dropdown.homework",   to: "/student/homework" },
+    { icon: ClipboardCheck, labelKey: "header.dropdown.exams",      to: "/student/exams" },
+    { icon: TrendingUp,     labelKey: "header.dropdown.progress",   to: "/student/progress" },
+    { icon: Settings2,      labelKey: "header.dropdown.settings",   to: "/student/settings" },
   ];
 
   return (

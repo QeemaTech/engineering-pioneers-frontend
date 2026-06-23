@@ -5,6 +5,8 @@ import {
   CalendarClock,
   ClipboardCheck,
   ClipboardList,
+  Headphones,
+  Heart,
   Ticket,
   Award,
   DollarSign,
@@ -17,6 +19,7 @@ import {
   UserCog,
   Users,
   UserCheck,
+  Video,
 } from "lucide-react";
 
 export type NavItem = {
@@ -254,6 +257,12 @@ export function getAdminNavigation(openTicketsCount = 0): NavSection[] {
               permission: "cms:manage",
             },
             {
+              labelKey: "sidebarNav.items.sitePages",
+              path: "/admin/cms/pages",
+              icon: FileText,
+              permission: "cms:manage",
+            },
+            {
               labelKey: "sidebarNav.items.blogPosts",
               path: "/admin/cms/posts",
               icon: FileText,
@@ -310,6 +319,39 @@ export function getAdminNavigation(openTicketsCount = 0): NavSection[] {
             },
           ],
         },
+      ],
+    },
+  ];
+}
+
+export function getStudentNavigation(): NavSection[] {
+  return [
+    {
+      labelKey: "sidebarNav.sections.studentOverview",
+      items: [
+        { labelKey: "sidebarNav.items.overview", path: "/student", icon: LayoutDashboard, exact: true },
+        { labelKey: "sidebarNav.items.myCourses", path: "/student/classes", icon: BookOpen },
+      ],
+    },
+    {
+      labelKey: "sidebarNav.sections.studentLearning",
+      items: [
+        { labelKey: "sidebarNav.items.liveSessions", path: "/student/live-sessions", icon: Video },
+        { labelKey: "sidebarNav.items.recordings", path: "/student/recordings", icon: Headphones },
+        { labelKey: "sidebarNav.items.studentHomework", path: "/student/homework", icon: ClipboardCheck },
+        { labelKey: "sidebarNav.items.exams", path: "/student/exams", icon: ClipboardList },
+        { labelKey: "sidebarNav.items.progress", path: "/student/progress", icon: BarChart2 },
+      ],
+    },
+    {
+      labelKey: "sidebarNav.sections.studentServices",
+      items: [
+        { labelKey: "sidebarNav.items.bookSession", path: "/student/book-session", icon: CalendarClock },
+        { labelKey: "sidebarNav.items.payments", path: "/student/payments", icon: DollarSign },
+        { labelKey: "sidebarNav.items.certificates", path: "/student/certificates", icon: Award },
+        { labelKey: "sidebarNav.items.tickets", path: "/student/tickets", icon: MessageSquare },
+        { labelKey: "sidebarNav.items.wishlist", path: "/student/wishlist", icon: Heart },
+        { labelKey: "sidebarNav.items.settings", path: "/student/settings", icon: Settings2 },
       ],
     },
   ];

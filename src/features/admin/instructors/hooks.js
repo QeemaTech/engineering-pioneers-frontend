@@ -28,7 +28,12 @@ export function useUpdateInstructor() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateInstructor,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "instructors"] }),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "instructors"] });
+      if (variables?.id) {
+        queryClient.invalidateQueries({ queryKey: ["admin", "instructors", variables.id] });
+      }
+    },
   });
 }
 

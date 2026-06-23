@@ -29,6 +29,7 @@ export function useRequestPayout() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["instructor", "wallet"] });
       queryClient.invalidateQueries({ queryKey: ["admin", "finance", "payouts"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "instructors"] });
     },
   });
 }

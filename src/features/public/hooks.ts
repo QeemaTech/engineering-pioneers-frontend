@@ -5,9 +5,20 @@ import {
   fetchPublicLandingPage,
   fetchPublicPostBySlug,
   fetchPublicPosts,
+  fetchPublicCmsPage,
+  fetchRecommendedCourses,
   type PublicCoursesQuery,
   type PublicPostsQuery,
 } from "./api";
+
+export function useRecommendedCourses(filter = "bestseller", limit = 8) {
+  return useQuery({
+    queryKey: ["public", "courses", "recommended", filter, limit],
+    queryFn: () => fetchRecommendedCourses({ filter, limit }),
+    retry: false,
+    staleTime: 60_000,
+  });
+}
 
 export function usePublicCourses(params: PublicCoursesQuery) {
   return useQuery({
@@ -48,5 +59,15 @@ export function usePublicPost(slug: string | undefined) {
     queryFn: () => fetchPublicPostBySlug(slug as string),
     enabled: !!slug,
     retry: false,
+  });
+}
+
+export function usePublicCmsPage(slug: string | undefined) {
+  return useQuery({
+    queryKey: ["public", "cms-page", slug],
+    queryFn: () => fetchPublicCmsPage(slug as string),
+    enabled: !!slug,
+    retry: false,
+    staleTime: 60_000,
   });
 }

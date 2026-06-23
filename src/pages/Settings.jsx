@@ -78,7 +78,6 @@ function PasswordField({ label, error, placeholder, ...rest }) {
 const NAV = [
   { key: "profile",       icon: User,         label: "settings.nav.profile"  },
   { key: "security",      icon: ShieldCheck,  label: "settings.nav.security" },
-  { key: "notifications", icon: Bell,         label: "settings.nav.notifications"   },
 ];
 
 /* ── Profile section ── */
@@ -274,7 +273,7 @@ function NotificationsSection() {
   );
 }
 
-const SECTIONS = { profile: ProfileSection, security: SecuritySection, notifications: NotificationsSection };
+const SECTIONS = { profile: ProfileSection, security: SecuritySection };
 
 export default function Settings() {
   const { t }       = useTranslation();
@@ -282,8 +281,7 @@ export default function Settings() {
   const ActiveSection = SECTIONS[tab];
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 md:py-16">
-      <div className="mx-auto max-w-5xl px-4 md:px-6 lg:px-8">
+    <div className="space-y-8">
 
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
@@ -319,7 +317,6 @@ export default function Settings() {
             <ActiveSection />
           </div>
         </div>
-      </div>
     </div>
   );
 }

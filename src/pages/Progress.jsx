@@ -3,6 +3,7 @@ import { BookOpen, CheckCircle2, Star, TrendingUp, Video } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getErrorMessage } from "../api/error";
 import { useMyCourses } from "../features/student/courses/hooks";
+import { useMyHomework } from "../features/student/homework/hooks";
 import { fetchCourseProgressStats } from "../features/student/progress/api";
 
 function CourseProgress({ course }) {
@@ -40,6 +41,7 @@ function CourseProgress({ course }) {
 export default function Progress() {
   const { t } = useTranslation();
   const { data: myCourses = [], isLoading, isError, error, refetch } = useMyCourses();
+  const { data: homeworkItems = [] } = useMyHomework();
 
   const { data: progressStats = [] } = useQuery({
     queryKey: ["student", "progress", "courses", myCourses.map((c) => c.id).join(",")],
@@ -101,10 +103,13 @@ export default function Progress() {
 
   const avgScore = courses.length ? Math.round(courses.reduce((acc, c) => acc + c.progress, 0) / courses.length) : 0;
   const completedCourses = courses.filter((c) => c.isCourseCompleted).length;
+  const lessonsCompleted = courses.reduce((acc, c) => acc + c.lessons, 0);
+  const homeworkDone = homeworkItems.filter((h) => h.submission?.status === "GRADED").length;
+
   const statCards = [
     { key: "coursesEnrolled", value: myCourses.length, icon: BookOpen, color: "text-pioneer-orange-normal", bg: "bg-pioneer-orange-light" },
-    { key: "classesAttended", value: courses.reduce((acc, c) => acc + c.lessons, 0), icon: Video, color: "text-blue-600", bg: "bg-blue-50" },
-    { key: "homeworkDone", value: completedCourses, icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50" },
+    { key: "lessonsCompleted", value: lessonsCompleted, icon: Video, color: "text-blue-600", bg: "bg-blue-50" },
+    { key: "homeworkDone", value: homeworkDone, icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50" },
     { key: "avgScore", value: `${avgScore}%`, icon: Star, color: "text-pioneer-teal-dark", bg: "bg-pioneer-teal-light" },
   ];
 
@@ -120,8 +125,7 @@ export default function Progress() {
   }));
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 md:py-16">
-      <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
+    <div className="space-y-8">
         {isError ? (
           <div className="mx-auto mb-8 max-w-lg rounded-xl border border-red-100 bg-[#EE7C11]/10 px-4 py-3 text-center text-sm text-red-800">
             <p>{getErrorMessage(error, "Could not load your progress.")}</p>
@@ -193,7 +197,6 @@ export default function Progress() {
             </div>
           </>
         ) : null}
-      </div>
     </div>
   );
 }

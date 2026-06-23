@@ -13,3 +13,11 @@ export async function fetchSessionAttendance(sessionId) {
   const response = await client.get(`${endpoints.instructor.attendance}/sessions/${sessionId}`);
   return response?.data?.data || null;
 }
+
+export async function markSessionAttendance(sessionId, studentId, present) {
+  const response = await client.patch(
+    `${endpoints.instructor.attendance}/sessions/${sessionId}/students/${studentId}`,
+    { present }
+  );
+  return response?.data?.data || null;
+}

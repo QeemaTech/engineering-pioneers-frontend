@@ -1,4 +1,4 @@
-import { DollarSign, Eye, Search } from "lucide-react";
+import { DollarSign, Eye, Pencil, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -103,7 +103,23 @@ function InstructorsList() {
             ),
           },
           { key: "status", title: t("adminPages.instructorsList.status"), render: (_, r) => <StatusBadge label={r.isActive ? "Active" : "Inactive"} tone={r.isActive ? "success" : "warning"} /> },
-          { key: "actions", title: t("adminPages.common.actions"), render: (_, r) => <div className="flex gap-2"><Link to={`/admin/instructors/${r.id}`} className="rounded-md p-2 hover:bg-slate-100 dark:hover:bg-white/15"><Eye className="h-4 w-4" /></Link><Link to="/admin/instructors/payouts" className="rounded-md p-2 hover:bg-slate-100 dark:hover:bg-white/15"><DollarSign className="h-4 w-4" /></Link></div> },
+          { key: "actions", title: t("adminPages.common.actions"), render: (_, r) => (
+            <div className="flex gap-2">
+              <Link
+                to={`/admin/instructors/${r.id}`}
+                className="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-bold text-[#EE7C11] hover:bg-[#EE7C11]/10"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                {t("adminPages.instructorDetail.editProfile", { defaultValue: "Edit profile" })}
+              </Link>
+              <Link to={`/admin/instructors/${r.id}`} className="rounded-md p-2 hover:bg-slate-100 dark:hover:bg-white/15" title={t("adminPages.instructorDetail.tabOverview", { defaultValue: "Overview" })}>
+                <Eye className="h-4 w-4" />
+              </Link>
+              <Link to="/admin/instructors/payouts" className="rounded-md p-2 hover:bg-slate-100 dark:hover:bg-white/15">
+                <DollarSign className="h-4 w-4" />
+              </Link>
+            </div>
+          ) },
         ]}
         rows={instructors}
       /> : null}

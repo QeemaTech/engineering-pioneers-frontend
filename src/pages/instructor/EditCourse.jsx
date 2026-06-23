@@ -1,11 +1,11 @@
-import { useState, useMemo, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+﻿import { useState, useMemo, useEffect } from "react";
+import { useParams, useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { 
   ArrowLeft, ArrowRight, BookOpen, ChevronRight, ChevronDown, Plus, 
   Trash2, FileText, Settings, Award, Layers, Loader2, Save, X, Eye, 
-  HelpCircle, CheckSquare, PlusCircle, Play, AlertCircle, FileCode, CheckCircle2 
+  HelpCircle, CheckSquare, PlusCircle, Play, AlertCircle, FileCode, ExternalLink
 } from "lucide-react";
 import { useInstructorCourse, useUpdateInstructorCourse, useSubmitInstructorCourseForReview } from "../../features/instructor/courses/hooks";
 import { useAdminCategories } from "../../features/admin/categories/hooks";
@@ -17,9 +17,9 @@ import {
   useCreateAdminSection, useUpdateAdminSection, useDeleteAdminSection 
 } from "../../features/admin/sections/hooks";
 import { 
-  useCreateInstructorExam, useUpdateInstructorExam, useDeleteInstructorExam,
-  useAddInstructorExamQuestion, useUpdateInstructorExamQuestion, useDeleteInstructorExamQuestion 
+  useDeleteInstructorExam,
 } from "../../features/instructor/exams/hooks";
+import CreateExamModal from "./CreateExamModal";
 import ContentStatusBadge from "../../components/ui/ContentStatusBadge";
 import StudentPreviewModal from "./StudentPreviewModal";
 import { 
@@ -73,13 +73,30 @@ function EditCourse() {
   const updateLessonMutation = useUpdateAdminLesson();
   const deleteLessonMutation = useDeleteAdminLesson();
 
-  const createExamMutation = useCreateInstructorExam();
-  const updateExamMutation = useUpdateInstructorExam();
   const deleteExamMutation = useDeleteInstructorExam();
 
-  const [activeTab, setActiveTab] = useState("details"); // details, curriculum, homework, exams
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(() => {
+    const tab = searchParams.get("tab");
+    return ["details", "curriculum", "homework", "exams"].includes(tab) ? tab : "details";
+  });
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [editingExamId, setEditingExamId] = useState(null);
+  const [createExamScope, setCreateExamScope] = useState(null);
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab && ["details", "curriculum", "homework", "exams"].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  const setTab = (tab) => {
+    setActiveTab(tab);
+    setSearchParams({ tab }, { replace: true });
+  };
+
+  const openCreateExam = (scope = {}) => setCreateExamScope(scope);
+  const goToExam = (examId) => navigate(`/instructor/exams/${examId}`);
 
   // Sync queries local helper to refresh page state
   const syncCourseCache = () => {
@@ -188,13 +205,13 @@ function EditCourse() {
       <div className="flex border-b border-slate-200 dark:border-white/10">
         {[
           { id: "details", labelAr: "تفاصيل الكورس", labelEn: "Course Details" },
-          { id: "curriculum", labelAr: "هيكل المنهج", labelEn: "Curriculum Tree" },
-          { id: "homework", labelAr: "الواجبات الهندسية", labelEn: "Assignments Desk" },
-          { id: "exams", labelAr: "بنك الاختبارات", labelEn: "Exam Factory" }
+          { id: "curriculum", labelAr: "هيكل المنهج", labelEn: "Curriculum" },
+          { id: "homework", labelAr: "الواجبات", labelEn: "Homework" },
+          { id: "exams", labelAr: "التقييمات", labelEn: "Assessments" }
         ].map(tab => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => setTab(tab.id)}
             className={`py-3.5 px-5 text-xs font-bold relative transition-all border-b-2 font-cairo ${
               activeTab === tab.id
                 ? "border-[#EE7C11] text-[#EE7C11]"
@@ -229,12 +246,9 @@ function EditCourse() {
             createLesson={createLessonMutation}
             updateLesson={updateLessonMutation}
             deleteLesson={deleteLessonMutation}
-            createExam={createExamMutation}
             deleteExam={deleteExamMutation}
-            onEditExam={(examId) => {
-              setActiveTab("exams");
-              setEditingExamId(examId);
-            }}
+            onEditExam={goToExam}
+            onOpenCreateExam={openCreateExam}
             sync={syncCourseCache}
             dir={dir}
           />
@@ -249,16 +263,28 @@ function EditCourse() {
         {activeTab === "exams" && (
           <ExamsTab 
             course={course}
-            createExam={createExamMutation}
-            updateExam={updateExamMutation}
             deleteExam={deleteExamMutation}
-            editingExamId={editingExamId}
-            setEditingExamId={setEditingExamId}
             sync={syncCourseCache}
             dir={dir}
+            onOpenCreateExam={openCreateExam}
           />
         )}
       </div>
+
+      {createExamScope !== null ? (
+        <CreateExamModal
+          courses={[course]}
+          defaultCourseId={course.id}
+          lockCourse
+          initialScope={createExamScope.scopeType ? createExamScope : undefined}
+          onClose={() => setCreateExamScope(null)}
+          onCreated={(exam) => {
+            setCreateExamScope(null);
+            syncCourseCache();
+            if (exam?.id) navigate(`/instructor/exams/${exam.id}`);
+          }}
+        />
+      ) : null}
 
       {/* Student View Player Preview Modal */}
       {isPreviewOpen && (
@@ -277,7 +303,7 @@ function EditCourse() {
   );
 }
 
-// ─── Tab 1: Course Details ───
+// ������ Tab 1: Course Details ������
 function DetailsTab({ course, categories, updateMutation, sync, dir }) {
   const [form, setForm] = useState({
     title: course.title || "",
@@ -349,7 +375,7 @@ function DetailsTab({ course, categories, updateMutation, sync, dir }) {
               onChange={(e) => set("categoryId", e.target.value)}
               className={inputClass}
             >
-              <option value="">{dir === "rtl" ? "بلا تصنيف" : "No Category"}</option>
+              <option value="">{dir === "rtl" ? "بدون تصنيف" : "No Category"}</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
@@ -431,58 +457,16 @@ function DetailsTab({ course, categories, updateMutation, sync, dir }) {
   );
 }
 
-// ─── Tab 2: Curriculum Tree ───
+// ������ Tab 2: Curriculum Tree ������
 function CurriculumTab({ 
   course, 
   createUnit, updateUnit, deleteUnit,
   createSection, updateSection, deleteSection,
   createLesson, updateLesson, deleteLesson,
-  createExam, deleteExam, onEditExam,
+  deleteExam, onEditExam, onOpenCreateExam,
   sync, dir 
 }) {
   const [expandedUnits, setExpandedUnits] = useState({});
-
-  const handleAddUnitExam = async (unitId) => {
-    try {
-      const newExam = {
-        title: dir === "rtl" ? "اختبار قصير للوحدة" : "New Unit Assessment",
-        description: "Standard unit quiz evaluation.",
-        durationMinutes: 30,
-        totalPoints: 100,
-        passingScore: 60,
-        attempts: 2,
-        courseId: course.id,
-        unitId: unitId,
-        status: "AVAILABLE"
-      };
-      await createExam.mutateAsync(newExam);
-      toast.success(dir === "rtl" ? "تم إنشاء اختبار جديد للوحدة!" : "New unit quiz initialized!");
-      sync();
-    } catch (err) {
-      toast.error(dir === "rtl" ? "فشل إنشاء الاختبار." : "Failed to build unit exam.");
-    }
-  };
-
-  const handleAddLessonExam = async (lessonId) => {
-    try {
-      const newExam = {
-        title: dir === "rtl" ? "كويز سريع للدرس" : "New Lesson Quiz",
-        description: "Quick concept evaluation.",
-        durationMinutes: 15,
-        totalPoints: 100,
-        passingScore: 60,
-        attempts: 2,
-        courseId: course.id,
-        lessonId: lessonId,
-        status: "AVAILABLE"
-      };
-      await createExam.mutateAsync(newExam);
-      toast.success(dir === "rtl" ? "تم إنشاء كويز جديد للدرس!" : "New lesson quiz initialized!");
-      sync();
-    } catch (err) {
-      toast.error(dir === "rtl" ? "فشل إنشاء الكويز." : "Failed to build lesson quiz.");
-    }
-  };
 
   const handleDeleteExam = async (examId) => {
     if (!window.confirm(dir === "rtl" ? "هل أنت متأكد من حذف هذا الاختبار؟" : "Are you sure you want to delete this exam?")) return;
@@ -592,10 +576,10 @@ function CurriculumTab({
   const handleUpdateLessonSpecs = async (lesId, specs) => {
     try {
       await updateLesson.mutateAsync({ id: lesId, body: specs });
-      toast.success(dir === "rtl" ? "تم تحديث تفاصيل الدرس!" : "Lesson details updated!");
+      toast.success(dir === "rtl" ? "Lesson details updated!" : "Lesson details updated!");
       sync();
     } catch (err) {
-      toast.error(dir === "rtl" ? "فشل تحديث تفاصيل الدرس." : "Failed to update lesson details.");
+      toast.error(dir === "rtl" ? "Failed to update lesson details." : "Failed to update lesson details.");
     }
   };
 
@@ -614,14 +598,14 @@ function CurriculumTab({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 font-cairo">
-          {dir === "rtl" ? "هيكل وتفاصيل المنهج الدراسي" : "Curriculum Construction Tree"}
+          {dir === "rtl" ? "Curriculum Construction Tree" : "Curriculum Construction Tree"}
         </h3>
         <button
           onClick={handleAddUnit}
           className="flex items-center gap-1.5 rounded-lg bg-[#EE7C11]/10 hover:bg-[#EE7C11]/20 text-[#EE7C11] px-3.5 py-2 text-xs font-bold transition-all"
         >
           <Plus className="h-4 w-4" />
-          <span>{dir === "rtl" ? "إضافة وحدة جديدة" : "Add Unit Module"}</span>
+          <span>{dir === "rtl" ? "Add Unit Module" : "Add Unit Module"}</span>
         </button>
       </div>
 
@@ -629,7 +613,7 @@ function CurriculumTab({
         <div className="rounded-2xl border-2 border-dashed border-slate-200 dark:border-white/10 p-12 text-center bg-white dark:bg-[#1E293B]">
           <Layers className="mx-auto h-12 w-12 text-slate-300 mb-4" />
           <p className="text-xs text-slate-400 font-semibold">
-            {dir === "rtl" ? "لا توجد وحدات دراسية حالياً. اضغط على زر الإضافة بالأعلى للبدء." : "No curriculum units created yet. Click Add Unit Module to begin building."}
+            {dir === "rtl" ? "No curriculum units created yet. Click Add Unit Module to begin building." : "No curriculum units created yet. Click Add Unit Module to begin building."}
           </p>
         </div>
       ) : (
@@ -654,14 +638,14 @@ function CurriculumTab({
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleAddSection(unit.id, unit.sections?.length || 0)}
-                      title={dir === "rtl" ? "إضافة قسم" : "Add Section"}
+                      title={dir === "rtl" ? "Add Section" : "Add Section"}
                       className="p-1.5 text-[#EE7C11] hover:bg-[#EE7C11]/10 rounded-lg shrink-0"
                     >
                       <Plus className="h-4 w-4" />
                     </button>
                     <button
-                      onClick={() => handleAddUnitExam(unit.id)}
-                      title={dir === "rtl" ? "إضافة اختبار للوحدة" : "Add Unit Exam"}
+                      onClick={() => onOpenCreateExam({ scopeType: "unit", unitId: unit.id })}
+                      title={dir === "rtl" ? "Add Unit Exam" : "Add Unit Exam"}
                       className="p-1.5 text-amber-500 hover:bg-amber-500/10 rounded-lg shrink-0"
                     >
                       <Award className="h-4 w-4" />
@@ -680,7 +664,7 @@ function CurriculumTab({
                   <div className="p-4 space-y-4">
                     {!unit.sections || unit.sections.length === 0 ? (
                       <p className="text-[11px] text-slate-400 ps-6 italic">
-                        {dir === "rtl" ? "لا توجد أقسام في هذه الوحدة بعد." : "No sections inside this module yet."}
+                        {dir === "rtl" ? "No sections inside this module yet." : "No sections inside this module yet."}
                       </p>
                     ) : (
                       unit.sections.map((sec) => (
@@ -714,7 +698,7 @@ function CurriculumTab({
                           <div className="space-y-2 ps-2">
                             {!sec.lessons || sec.lessons.length === 0 ? (
                               <p className="text-[10px] text-slate-400 italic">
-                                {dir === "rtl" ? "لا توجد دروس في هذا القسم بعد." : "No lessons in this section yet."}
+                                {dir === "rtl" ? "No lessons in this section yet." : "No lessons in this section yet."}
                               </p>
                             ) : (
                               sec.lessons.map((les) => (
@@ -722,7 +706,7 @@ function CurriculumTab({
                                   key={les.id} 
                                   lesson={les} 
                                   lessonExams={course.exams?.filter(ex => ex.lessonId === les.id) || []}
-                                  onAddQuiz={() => handleAddLessonExam(les.id)}
+                                  onAddQuiz={() => onOpenCreateExam({ scopeType: "lesson", lessonId: les.id })}
                                   onEditExam={onEditExam}
                                   onDeleteExam={handleDeleteExam}
                                   onBlurTitle={(title) => handleUpdateLessonTitle(les.id, title)}
@@ -741,7 +725,7 @@ function CurriculumTab({
                     {course.exams?.filter(ex => ex.unitId === unit.id && !ex.lessonId).length > 0 && (
                       <div className="mt-3 pt-3 border-t border-slate-100 dark:border-white/5 space-y-2">
                         <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider ps-4">
-                          {dir === "rtl" ? "اختبارات وتقييمات الوحدة" : "Unit Exams & Assessments"}
+                          {dir === "rtl" ? "Unit Exams & Assessments" : "Unit Exams & Assessments"}
                         </p>
                         <div className="space-y-2 ps-4">
                           {course.exams.filter(ex => ex.unitId === unit.id && !ex.lessonId).map(ex => (
@@ -782,7 +766,7 @@ function CurriculumTab({
   );
 }
 
-// ─── Lesson Row helper ───
+// ������ Lesson Row helper ������
 function LessonRow({ lesson, lessonExams, onAddQuiz, onEditExam, onDeleteExam, onBlurTitle, onUpdateSpecs, onDelete, dir }) {
   const [showEditPanel, setShowEditPanel] = useState(false);
   
@@ -831,8 +815,8 @@ function LessonRow({ lesson, lessonExams, onAddQuiz, onEditExam, onDeleteExam, o
   // Determine badge look
   const isSetup = localIsLive ? !!lesson.meetingUrl : !!lesson.videoUrl;
   const badgeText = localIsLive 
-    ? (isSetup ? (dir === "rtl" ? "جلسة لايف مجهزة" : "Live Ready") : (dir === "rtl" ? "+ جلسة لايف" : "+ Live Session"))
-    : (isSetup ? (dir === "rtl" ? "فيديو مسجل" : "Pre-recorded") : (dir === "rtl" ? "+ فيديو" : "+ Video"));
+    ? (isSetup ? (dir === "rtl" ? "Live Ready" : "Live Ready") : (dir === "rtl" ? "+ Live Session" : "+ Live Session"))
+    : (isSetup ? (dir === "rtl" ? "Pre-recorded" : "Pre-recorded") : (dir === "rtl" ? "+ Video" : "+ Video"));
 
   return (
     <div className="flex flex-col gap-2 bg-slate-50 dark:bg-slate-800/40 px-3.5 py-2.5 rounded-xl border border-slate-100 dark:border-white/5 transition-all">
@@ -918,7 +902,7 @@ function LessonRow({ lesson, lessonExams, onAddQuiz, onEditExam, onDeleteExam, o
           {/* Type Selector Toggle */}
           <div className="flex items-center justify-between gap-4">
             <span className="text-[10px] font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wider">
-              {dir === "rtl" ? "نوع الدرس" : "Lesson Type"}
+              {dir === "rtl" ? "Lesson Type" : "Lesson Type"}
             </span>
             <div className="flex bg-slate-100 dark:bg-slate-950 rounded-lg p-0.5 border border-slate-200/50 dark:border-slate-800">
               <button
@@ -930,7 +914,7 @@ function LessonRow({ lesson, lessonExams, onAddQuiz, onEditExam, onDeleteExam, o
                     : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                 }`}
               >
-                {dir === "rtl" ? "مسجل" : "Recorded"}
+                {dir === "rtl" ? "Recorded" : "Recorded"}
               </button>
               <button
                 type="button"
@@ -941,7 +925,7 @@ function LessonRow({ lesson, lessonExams, onAddQuiz, onEditExam, onDeleteExam, o
                     : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                 }`}
               >
-                {dir === "rtl" ? "بث مباشر" : "Live Session"}
+                {dir === "rtl" ? "Live Session" : "Live Session"}
               </button>
             </div>
           </div>
@@ -951,7 +935,7 @@ function LessonRow({ lesson, lessonExams, onAddQuiz, onEditExam, onDeleteExam, o
             <div className="grid gap-2">
               <div>
                 <label className={DARK_FORM_LABEL}>
-                  {dir === "rtl" ? "رابط الفيديو" : "Video URL"}
+                  {dir === "rtl" ? "Video URL" : "Video URL"}
                 </label>
                 <input
                   type="url"
@@ -963,7 +947,7 @@ function LessonRow({ lesson, lessonExams, onAddQuiz, onEditExam, onDeleteExam, o
               </div>
               <div>
                 <label className="block text-[9px] font-bold text-slate-450 uppercase tracking-wider mb-1">
-                  {dir === "rtl" ? "مدة الفيديو (بالدقائق)" : "Video Duration (Minutes)"}
+                  {dir === "rtl" ? "Video Duration (Minutes)" : "Video Duration (Minutes)"}
                 </label>
                 <input
                   type="number"
@@ -979,7 +963,7 @@ function LessonRow({ lesson, lessonExams, onAddQuiz, onEditExam, onDeleteExam, o
             <div className="grid gap-2">
               <div>
                 <label className={DARK_FORM_LABEL}>
-                  {dir === "rtl" ? "رابط الاجتماع (Zoom / Meet)" : "Meeting Link (Zoom / Meet)"}
+                  {dir === "rtl" ? "Meeting Link (Zoom / Meet)" : "Meeting Link (Zoom / Meet)"}
                 </label>
                 <input
                   type="url"
@@ -992,7 +976,7 @@ function LessonRow({ lesson, lessonExams, onAddQuiz, onEditExam, onDeleteExam, o
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className={DARK_FORM_LABEL}>
-                    {dir === "rtl" ? "موعد البث" : "Start Time"}
+                    {dir === "rtl" ? "Start Time" : "Start Time"}
                   </label>
                   <input
                     type="datetime-local"
@@ -1003,7 +987,7 @@ function LessonRow({ lesson, lessonExams, onAddQuiz, onEditExam, onDeleteExam, o
                 </div>
                 <div>
                   <label className={DARK_FORM_LABEL}>
-                    {dir === "rtl" ? "المدة (بالدقائق)" : "Duration (Mins)"}
+                    {dir === "rtl" ? "Duration (Mins)" : "Duration (Mins)"}
                   </label>
                   <input
                     type="number"
@@ -1023,14 +1007,14 @@ function LessonRow({ lesson, lessonExams, onAddQuiz, onEditExam, onDeleteExam, o
               onClick={() => setShowEditPanel(false)}
               className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 text-[10px] font-bold text-slate-550 dark:text-slate-350"
             >
-              {dir === "rtl" ? "إلغاء" : "Cancel"}
+              {dir === "rtl" ? "Cancel" : "Cancel"}
             </button>
             <button
               type="button"
               onClick={handleSave}
               className="px-3 py-1.5 rounded-lg bg-[#EE7C11] hover:bg-[#d9700e] text-white text-[10px] font-bold"
             >
-              {dir === "rtl" ? "حفظ التفاصيل" : "Save Details"}
+              {dir === "rtl" ? "Save Details" : "Save Details"}
             </button>
           </div>
         </div>
@@ -1039,7 +1023,7 @@ function LessonRow({ lesson, lessonExams, onAddQuiz, onEditExam, onDeleteExam, o
   );
 }
 
-// ─── Tab 3: Assignments Desk ───
+// ������ Tab 3: Assignments Desk ������
 function HomeworkTab({ course, sync, dir }) {
   const [selectedLessonId, setSelectedLessonId] = useState("");
   const [title, setTitle] = useState("");
@@ -1095,10 +1079,10 @@ function HomeworkTab({ course, sync, dir }) {
   };
 
   const handleDeleteHomework = async (hwId) => {
-    if (!window.confirm(dir === "rtl" ? "هل أنت متأكد من حذف هذا الواجب؟" : "Are you sure you want to delete this homework assignment?")) return;
+    if (!window.confirm(dir === "rtl" ? "Are you sure you want to delete this homework assignment?" : "Are you sure you want to delete this homework assignment?")) return;
     try {
       await deleteHomeworkMutation.mutateAsync(hwId);
-      toast.success(dir === "rtl" ? "تم حذف الواجب!" : "Homework assignment deleted!");
+      toast.success(dir === "rtl" ? "Homework assignment deleted!" : "Homework assignment deleted!");
       sync();
     } catch (err) {
       toast.error(dir === "rtl" ? "فشل الحذف." : "Delete failed.");
@@ -1107,19 +1091,28 @@ function HomeworkTab({ course, sync, dir }) {
 
   return (
     <div className="space-y-6">
+      <div className="rounded-xl border border-blue-200 bg-blue-50/80 px-4 py-3 text-xs text-blue-900 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-200">
+        {dir === "rtl"
+          ? "إنشاء الواجبات من هنا. لتصحيح تسليمات الطلاب، افتح «تصحيح الواجبات» من القائمة الجانبية."
+          : "Create homework here. To grade student submissions, use Homework Grading in the sidebar."}
+      </div>
       <div>
         <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1 font-cairo">
-          {dir === "rtl" ? "إدارة الواجبات الهندسية" : "Engineering Assignments Desk"}
+          {dir === "rtl" ? "الواجبات" : "Homework"}
         </h3>
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          {dir === "rtl" ? "أرفق ملفات المخططات (CAD) والتعليمات الفنية مباشرة بالدروس." : "Configure homework sheets and CAD blueprints directly linked to curriculum nodes."}
+          {dir === "rtl"
+            ? "اربط واجبات بالدروس — نص أو ملف مرفق."
+            : "Link assignments to lessons — text or file attachment."}
         </p>
       </div>
 
       {lessons.length === 0 ? (
         <div className={`${DARK_PANEL_CARD} p-6 text-center`}>
           <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-            {dir === "rtl" ? "يرجى إنشاء بعض الدروس أولاً لتتمكن من ربط واجبات بها." : "Create lessons in the curriculum tree before attaching assignments."}
+            {dir === "rtl"
+              ? "أنشئ دروساً في تاب المنهج أولاً لربط الواجبات بها."
+              : "Create lessons in the Curriculum tab before attaching assignments."}
           </p>
         </div>
       ) : (
@@ -1127,12 +1120,12 @@ function HomeworkTab({ course, sync, dir }) {
           {/* Create Form */}
           <form onSubmit={handleAddHomework} className={`space-y-4 ${DARK_FORM_CARD}`}>
             <h4 className="text-xs font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wider font-cairo">
-              {dir === "rtl" ? "إرفاق واجب جديد" : "New Homework Specification"}
+              {dir === "rtl" ? "New Homework Specification" : "New Homework Specification"}
             </h4>
 
             <div>
               <label className={DARK_FORM_LABEL}>
-                {dir === "rtl" ? "اختر الدرس" : "Select Lesson"}
+                {dir === "rtl" ? "Select Lesson" : "Select Lesson"}
               </label>
               <select
                 value={selectedLessonId}
@@ -1140,7 +1133,7 @@ function HomeworkTab({ course, sync, dir }) {
                 className={DARK_FORM_INPUT_SM}
                 required
               >
-                <option value="">{dir === "rtl" ? "-- اختر الدرس --" : "-- Select Lesson --"}</option>
+                <option value="">{dir === "rtl" ? "-- Select Lesson --" : "-- Select Lesson --"}</option>
                 {lessons.map(l => (
                   <option key={l.id} value={l.id}>{l.title}</option>
                 ))}
@@ -1149,7 +1142,7 @@ function HomeworkTab({ course, sync, dir }) {
 
             <div>
               <label className={DARK_FORM_LABEL}>
-                {dir === "rtl" ? "عنوان الواجب" : "Assignment Title"}
+                {dir === "rtl" ? "Assignment Title" : "Assignment Title"}
               </label>
               <input
                 type="text"
@@ -1163,7 +1156,7 @@ function HomeworkTab({ course, sync, dir }) {
 
             <div>
               <label className={DARK_FORM_LABEL}>
-                {dir === "rtl" ? "اسم ملف المخطط المرفق (DWG/PDF)" : "Attachment Name (e.g. CAD dwg)"}
+                {dir === "rtl" ? "Attachment Name (e.g. CAD dwg)" : "Attachment Name (e.g. CAD dwg)"}
               </label>
               <input
                 type="text"
@@ -1176,7 +1169,7 @@ function HomeworkTab({ course, sync, dir }) {
 
             <div>
               <label className={DARK_FORM_LABEL}>
-                {dir === "rtl" ? "التعليمات والمتطلبات" : "Instructions & Specs"}
+                {dir === "rtl" ? "Instructions & Specs" : "Instructions & Specs"}
               </label>
               <textarea
                 rows={3}
@@ -1190,7 +1183,7 @@ function HomeworkTab({ course, sync, dir }) {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className={DARK_FORM_LABEL}>
-                  {dir === "rtl" ? "النقاط القصوى" : "Max Points"}
+                  {dir === "rtl" ? "Max Points" : "Max Points"}
                 </label>
                 <input
                   type="number"
@@ -1202,7 +1195,7 @@ function HomeworkTab({ course, sync, dir }) {
 
               <div>
                 <label className={DARK_FORM_LABEL}>
-                  {dir === "rtl" ? "تاريخ الاستحقاق" : "Due Date"}
+                  {dir === "rtl" ? "Due Date" : "Due Date"}
                 </label>
                 <input
                   type="date"
@@ -1218,19 +1211,19 @@ function HomeworkTab({ course, sync, dir }) {
               disabled={isPending}
               className="w-full rounded-xl bg-[#EE7C11] hover:bg-[#d9700e] text-white py-2.5 text-xs font-bold shadow-md shadow-[#EE7C11]/15"
             >
-              {isPending ? (dir === "rtl" ? "جاري الإضافة..." : "Adding...") : (dir === "rtl" ? "إضافة الواجب" : "Save Homework specs")}
+              {isPending ? (dir === "rtl" ? "Adding..." : "Adding...") : (dir === "rtl" ? "Save Homework specs" : "Save Homework specs")}
             </button>
           </form>
 
           {/* List panel */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wider font-cairo">
-              {dir === "rtl" ? "قائمة الواجبات الحالية" : "Active Homework Backlog"}
+              {dir === "rtl" ? "Active Homework Backlog" : "Active Homework Backlog"}
             </h4>
 
             {!course.homeworks || course.homeworks.length === 0 ? (
               <p className="text-xs text-slate-500 dark:text-slate-400 italic">
-                {dir === "rtl" ? "لم يتم تعريف واجبات بعد." : "No assignments bound to this course outline."}
+                {dir === "rtl" ? "No assignments bound to this course outline." : "No assignments bound to this course outline."}
               </p>
             ) : (
               course.homeworks.map(hw => {
@@ -1280,603 +1273,90 @@ function HomeworkTab({ course, sync, dir }) {
   );
 }
 
-// ─── Tab 4: Exam Factory Matrix ───
-function ExamsTab({ course, createExam, updateExam, deleteExam, editingExamId, setEditingExamId, sync, dir }) {
-  const editingExam = course.exams?.find(ex => ex.id === editingExamId) || null;
 
-  const handleCreateExam = async () => {
-    try {
-      const newExam = {
-        title: dir === "rtl" ? "اختبار جديد" : "New Midterm Assessment",
-        description: "Standard quiz evaluation.",
-        durationMinutes: 60,
-        totalPoints: 100,
-        passingScore: 60,
-        attempts: 2,
-        courseId: course.id,
-        status: "AVAILABLE"
-      };
-      await createExam.mutateAsync(newExam);
-      toast.success(dir === "rtl" ? "تم إنشاء نموذج اختبار فارغ!" : "New exam blueprint initialized!");
-      sync();
-    } catch (err) {
-      toast.error(dir === "rtl" ? "فشل إنشاء الاختبار." : "Failed to build exam.");
-    }
-  };
-
+// --- Tab 4: Assessments ---
+function ExamsTab({ course, deleteExam, sync, dir, onOpenCreateExam }) {
   const handleDeleteExam = async (examId) => {
     if (!window.confirm(dir === "rtl" ? "هل أنت متأكد من حذف هذا الاختبار؟" : "Are you sure you want to delete this exam?")) return;
     try {
       await deleteExam.mutateAsync(examId);
       toast.success(dir === "rtl" ? "تم حذف الاختبار!" : "Exam deleted!");
-      if (editingExamId === examId) setEditingExamId(null);
       sync();
     } catch (err) {
       toast.error(dir === "rtl" ? "فشل الحذف." : "Delete failed.");
     }
   };
 
-  const handleSaveExamSpecs = async (examId, specs) => {
-    try {
-      await updateExam.mutateAsync({
-        examId,
-        body: specs
-      });
-      sync();
-    } catch (err) {
-      console.error(err);
-      throw err;
-    }
-  };
-
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
           <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1 font-cairo">
-            {dir === "rtl" ? "مصنع الاختبارات والتقييم" : "Exam Factory Matrix"}
+            {dir === "rtl" ? "التقييمات والاختبارات" : "Course Assessments"}
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            {dir === "rtl" ? "قم بصياغة اختبارات ونماذج تقييم متعددة المحاولات." : "Author multi-attempt quiz banks and bind structural parameters."}
+            {dir === "rtl"
+              ? "أنشئ اختبارات وعدّل الأسئلة من صفحة الاختبار الموحدة (أسئلة + تسليمات)."
+              : "Create exams and manage questions on the unified exam page (questions + submissions)."}
           </p>
         </div>
-
-        {!editingExam && (
-          <button
-            onClick={handleCreateExam}
-            className="flex items-center gap-1.5 rounded-lg bg-[#EE7C11] hover:bg-[#d9700e] text-white px-3.5 py-2 text-xs font-bold shadow-md shadow-[#EE7C11]/15 transition-all"
-          >
-            <Plus className="h-4 w-4" />
-            <span>{dir === "rtl" ? "إنشاء اختبار" : "Build Exam"}</span>
-          </button>
-        )}
-      </div>
-
-      {!editingExam ? (
-        <div className="space-y-3">
-          {!course.exams || course.exams.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-200 dark:border-white/10 p-8 text-center bg-white dark:bg-[#1E293B]">
-              <p className="text-xs text-slate-400 font-semibold">
-                {dir === "rtl" ? "لا توجد اختبارات مضافة بعد لهذه الدورة." : "No assessments linked to this course syllabus."}
-              </p>
-            </div>
-          ) : (
-            course.exams.map(ex => (
-              <div 
-                key={ex.id} 
-                className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs dark:border-white/10 dark:bg-[#1E293B]/20"
-              >
-                <div>
-                  <h4 className="font-bold text-slate-800 dark:text-slate-100 text-sm">
-                    {ex.title}
-                  </h4>
-                  <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-slate-400 font-medium">
-                    <span>{ex.durationMinutes} mins</span>
-                    <span>•</span>
-                    <span>{ex.questions?.length || 0} questions</span>
-                    <span>•</span>
-                    <span>Passing: {ex.passingScore} / {ex.totalPoints}</span>
-                    <span>•</span>
-                    <span>Attempts: {ex.attempts || 2}</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 self-end sm:self-auto">
-                  <button
-                    onClick={() => setEditingExamId(ex.id)}
-                    className="rounded-lg bg-[#EE7C11]/10 hover:bg-[#EE7C11]/20 text-[#EE7C11] px-3.5 py-1.5 text-xs font-bold"
-                  >
-                    {dir === "rtl" ? "تعديل بنك الأسئلة" : "Edit Question Bank"}
-                  </button>
-                  <button
-                    onClick={() => handleDeleteExam(ex.id)}
-                    className="p-1.5 text-slate-400 hover:text-rose-500 rounded"
-                  >
-                    <Trash2 className="h-4.5 w-4.5" />
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      ) : (
-        /* Question Matrix Authoring Editor */
-        <QuestionMatrixEditor 
-          exam={editingExam} 
-          onBack={() => setEditingExamId(null)} 
-          onSaveSpecs={handleSaveExamSpecs} 
-          sync={sync} 
-          dir={dir} 
-        />
-      )}
-    </div>
-  );
-}
-
-// ─── Question matrix editor console ───
-function QuestionMatrixEditor({ exam, onBack, onSaveSpecs, sync, dir }) {
-  const addQuestionMutation = useAddInstructorExamQuestion(exam.id);
-  const updateQuestionMutation = useUpdateInstructorExamQuestion(exam.id);
-  const deleteQuestionMutation = useDeleteInstructorExamQuestion(exam.id);
-
-  // Local state to prevent losing input focus during keystroke sync refetching
-  const [localTitle, setLocalTitle] = useState(exam.title || "");
-  const [localDuration, setLocalDuration] = useState(exam.durationMinutes || 60);
-  const [localTotalPoints, setLocalTotalPoints] = useState(exam.totalPoints || 100);
-  const [localPassing, setLocalPassing] = useState(exam.passingScore || 60);
-  const [localAttempts, setLocalAttempts] = useState(exam.attempts || 2);
-  const [isSavingSpecs, setIsSavingSpecs] = useState(false);
-
-  // Sync with exam prop if changed from backend
-  useEffect(() => {
-    setLocalTitle(exam.title || "");
-    setLocalDuration(exam.durationMinutes || 60);
-    setLocalTotalPoints(exam.totalPoints || 100);
-    setLocalPassing(exam.passingScore || 60);
-    setLocalAttempts(exam.attempts || 2);
-  }, [exam]);
-
-  const handleSaveSpecs = async () => {
-    setIsSavingSpecs(true);
-    try {
-      await onSaveSpecs(exam.id, {
-        title: localTitle,
-        durationMinutes: Number(localDuration) || 0,
-        totalPoints: Number(localTotalPoints) || 0,
-        passingScore: Number(localPassing) || 0,
-        attempts: Number(localAttempts) || 2,
-        description: exam.description,
-      });
-      toast.success(dir === "rtl" ? "تم حفظ معايير الاختبار بنجاح!" : "Exam blueprint updated successfully!");
-    } catch (err) {
-      toast.error(dir === "rtl" ? "فشل حفظ معايير الاختبار." : "Failed to update exam blueprint.");
-    } finally {
-      setIsSavingSpecs(false);
-    }
-  };
-
-  const handleAddQuestion = async () => {
-    try {
-      await addQuestionMutation.mutateAsync({
-        questionText: "Write question parameter here...",
-        type: "MULTIPLE_CHOICE",
-        points: 10,
-        order: (exam.questions?.length || 0) + 1,
-        options: ["Option A", "Option B", "Option C", "Option D"],
-        correctAnswer: "Option A"
-      });
-      toast.success(dir === "rtl" ? "تمت إضافة السؤال!" : "Question added!");
-      sync();
-    } catch (err) {
-      toast.error(dir === "rtl" ? "فشل إضافة السؤال." : "Failed to add question.");
-    }
-  };
-
-  const handleUpdateQuestion = async (qId, fields) => {
-    try {
-      await updateQuestionMutation.mutateAsync({
-        questionId: qId,
-        body: fields
-      });
-      sync();
-    } catch (err) {
-      console.error(err);
-      throw err;
-    }
-  };
-
-  const handleDeleteQuestion = async (qId) => {
-    if (!window.confirm(dir === "rtl" ? "هل أنت متأكد من حذف هذا السؤال؟" : "Are you sure you want to delete this question?")) return;
-    try {
-      await deleteQuestionMutation.mutateAsync({ questionId: qId });
-      toast.success(dir === "rtl" ? "تم حذف السؤال!" : "Question deleted!");
-      sync();
-    } catch (err) {
-      toast.error(dir === "rtl" ? "فشل حذف السؤال." : "Delete failed.");
-    }
-  };
-
-  return (
-    <div className="space-y-6 border border-slate-200 dark:border-white/10 rounded-2xl p-5 bg-slate-50/30 dark:bg-[#1A1A22] relative animate-in fade-in duration-200">
-      <button
-        onClick={onBack}
-        className="absolute top-4 end-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold font-cairo"
-      >
-        {dir === "rtl" ? "← العودة للاختبارات" : "← Back to list"}
-      </button>
-
-      <div className="space-y-4">
-        <h4 className="text-xs font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wider font-cairo">
-          {dir === "rtl" ? "تعديل معايير التقييم" : "Edit Assessment Blueprint"}
-        </h4>
-
-        <div className="grid gap-4 sm:grid-cols-2 max-w-xl">
-          <div>
-            <label className={DARK_FORM_LABEL}>
-              {dir === "rtl" ? "عنوان الاختبار" : "Exam Title"}
-            </label>
-            <input
-              type="text"
-              value={localTitle}
-              onChange={(e) => setLocalTitle(e.target.value)}
-              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs dark:border-white/15 dark:bg-[#12121a] dark:text-slate-100 dark:placeholder:text-slate-500 dark:[color-scheme:dark]"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <div>
-              <label className={DARK_FORM_LABEL}>
-                {dir === "rtl" ? "المدة (دقائق)" : "Duration"}
-              </label>
-              <input
-                type="number"
-                value={localDuration}
-                onChange={(e) => setLocalDuration(e.target.value)}
-                className="h-10 w-full rounded-xl border border-slate-200 bg-white px-2 text-xs dark:border-white/15 dark:bg-[#12121a] dark:text-slate-100 dark:placeholder:text-slate-500 dark:[color-scheme:dark]"
-              />
-            </div>
-            <div>
-              <label className={DARK_FORM_LABEL}>
-                {dir === "rtl" ? "الدرجة الكلية" : "Total Points"}
-              </label>
-              <input
-                type="number"
-                value={localTotalPoints}
-                onChange={(e) => setLocalTotalPoints(e.target.value)}
-                className="h-10 w-full rounded-xl border border-slate-200 bg-white px-2 text-xs dark:border-white/15 dark:bg-[#12121a] dark:text-slate-100 dark:placeholder:text-slate-500 dark:[color-scheme:dark]"
-              />
-            </div>
-            <div>
-              <label className={DARK_FORM_LABEL}>
-                {dir === "rtl" ? "نسبة النجاح" : "Passing"}
-              </label>
-              <input
-                type="number"
-                value={localPassing}
-                onChange={(e) => setLocalPassing(e.target.value)}
-                className="h-10 w-full rounded-xl border border-slate-200 bg-white px-2 text-xs dark:border-white/15 dark:bg-[#12121a] dark:text-slate-100 dark:placeholder:text-slate-500 dark:[color-scheme:dark]"
-              />
-            </div>
-            <div>
-              <label className={DARK_FORM_LABEL}>
-                {dir === "rtl" ? "المحاولات" : "Attempts"}
-              </label>
-              <input
-                type="number"
-                value={localAttempts}
-                onChange={(e) => setLocalAttempts(e.target.value)}
-                className="h-10 w-full rounded-xl border border-slate-200 bg-white px-2 text-xs dark:border-white/15 dark:bg-[#12121a] dark:text-slate-100 dark:placeholder:text-slate-500 dark:[color-scheme:dark]"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Save Blueprint Specs Button */}
-        <div className="flex justify-end max-w-xl">
-          <button
-            type="button"
-            disabled={isSavingSpecs}
-            onClick={handleSaveSpecs}
-            className="flex items-center justify-center gap-1.5 rounded-xl bg-[#EE7C11] hover:bg-[#d9700e] text-white px-4 py-2 text-xs font-bold transition-all shadow-md shadow-[#EE7C11]/15 disabled:opacity-50"
-          >
-            {isSavingSpecs ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Save className="h-4 w-4" />
-            )}
-            <span>{dir === "rtl" ? "حفظ معايير التقييم" : "Save Blueprint Specs"}</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Questions list */}
-      <div className="border-t border-slate-100 dark:border-white/5 pt-4 space-y-4">
-        <div className="flex items-center justify-between">
-          <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider font-cairo">
-            {dir === "rtl" ? "أسئلة الاختبار" : "Question Bank"}
-          </h4>
-          <button
-            onClick={handleAddQuestion}
-            className="flex items-center gap-1.5 rounded-lg bg-[#EE7C11]/10 hover:bg-[#EE7C11]/20 text-[#EE7C11] px-3 py-1.5 text-[11px] font-bold transition-all"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            <span>{dir === "rtl" ? "إضافة سؤال" : "Add Question"}</span>
-          </button>
-        </div>
-
-        {!exam.questions || exam.questions.length === 0 ? (
-          <p className="text-xs text-slate-400 italic">
-            {dir === "rtl" ? "لم يتم إضافة أسئلة بعد." : "No questions in this test bank."}
-          </p>
-        ) : (
-          <div className="space-y-4 max-w-xl">
-            {exam.questions.map((q, idx) => (
-              <QuestionRow 
-                key={q.id} 
-                question={q} 
-                index={idx}
-                onUpdate={(fields) => handleUpdateQuestion(q.id, fields)}
-                onDelete={() => handleDeleteQuestion(q.id)}
-                dir={dir}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ─── Question Row editor ───
-function QuestionRow({ question, index, onUpdate, onDelete, dir }) {
-  // Ensure options exists
-  const getInitialOptions = (q) => {
-    return q.options && Array.isArray(q.options)
-      ? q.options
-      : q.type === "TRUE_FALSE" ? ["True", "False"] : ["Option A", "Option B", "Option C", "Option D"];
-  };
-
-  const [localQuestionText, setLocalQuestionText] = useState(question.questionText || "");
-  const [localType, setLocalType] = useState(question.type || "MULTIPLE_CHOICE");
-  const [localPoints, setLocalPoints] = useState(question.points || 0);
-  const [localCorrectAnswer, setLocalCorrectAnswer] = useState(question.correctAnswer || "");
-  const [localOptions, setLocalOptions] = useState(() => getInitialOptions(question));
-  const [isSaving, setIsSaving] = useState(false);
-
-  // Sync state if options change from backend sync refetches
-  useEffect(() => {
-    setLocalQuestionText(question.questionText || "");
-    setLocalType(question.type || "MULTIPLE_CHOICE");
-    setLocalPoints(question.points || 0);
-    setLocalCorrectAnswer(question.correctAnswer || "");
-    setLocalOptions(getInitialOptions(question));
-  }, [question]);
-
-  const handleTypeChange = (newType) => {
-    setLocalType(newType);
-    let newOptions = localOptions;
-    let newCorrect = localCorrectAnswer;
-
-    if (newType === "TRUE_FALSE") {
-      newOptions = ["True", "False"];
-      newCorrect = "True";
-    } else if (newType === "MULTIPLE_CHOICE") {
-      newOptions = ["Option A", "Option B", "Option C", "Option D"];
-      newCorrect = "Option A";
-    }
-
-    setLocalOptions(newOptions);
-    setLocalCorrectAnswer(newCorrect);
-  };
-
-  const handleOptionLocalChange = (optIdx, newText) => {
-    const oldText = localOptions[optIdx];
-    const isCorrect = localCorrectAnswer === oldText;
-
-    setLocalOptions(prev => {
-      const next = [...prev];
-      next[optIdx] = newText;
-      return next;
-    });
-
-    if (isCorrect) {
-      setLocalCorrectAnswer(newText);
-    }
-  };
-
-  const handleSetCorrectAnswer = (correctText) => {
-    setLocalCorrectAnswer(correctText);
-  };
-
-  const handleAddOptionField = () => {
-    if (localOptions.length >= 6) {
-      toast.error(dir === "rtl" ? "الحد الأقصى هو 6 خيارات" : "Maximum is 6 options");
-      return;
-    }
-    const nextLabel = String.fromCharCode(65 + localOptions.length); // E, F, etc.
-    const updatedOptions = [...localOptions, `Option ${nextLabel}`];
-    setLocalOptions(updatedOptions);
-  };
-
-  const handleRemoveOptionField = (optIdx) => {
-    if (localOptions.length <= 2) {
-      toast.error(dir === "rtl" ? "الحد الأدنى هو خيارين" : "Minimum is 2 options");
-      return;
-    }
-    const removedText = localOptions[optIdx];
-    const updatedOptions = localOptions.filter((_, i) => i !== optIdx);
-    setLocalOptions(updatedOptions);
-    
-    // If we removed the correct answer, set correct answer to the first remaining option
-    if (localCorrectAnswer === removedText) {
-      setLocalCorrectAnswer(updatedOptions[0]);
-    }
-  };
-
-  const handleSave = async () => {
-    setIsSaving(true);
-    try {
-      await onUpdate({
-        questionText: localQuestionText,
-        type: localType,
-        points: Number(localPoints) || 0,
-        options: localOptions,
-        correctAnswer: localCorrectAnswer
-      });
-      toast.success(dir === "rtl" ? "تم حفظ السؤال بنجاح!" : "Question saved successfully!");
-    } catch (err) {
-      toast.error(dir === "rtl" ? "فشل حفظ السؤال." : "Failed to save question.");
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  return (
-    <div className={`${DARK_PANEL_CARD} relative shadow-sm space-y-4`}>
-      <button
-        onClick={onDelete}
-        className="absolute top-4 end-4 text-slate-400 hover:text-rose-500 transition-colors"
-      >
-        <Trash2 className="h-4 w-4" />
-      </button>
-
-      {/* Question Header & Input */}
-      <div className="flex gap-2.5 items-start">
-        <span className="bg-[#EE7C11] text-white text-[10px] font-bold px-2 py-0.5 rounded mt-1 shrink-0 font-sans">
-          {index + 1}
-        </span>
-        <div className="w-full">
-          <label className={DARK_FORM_LABEL}>
-            {dir === "rtl" ? "صيغة السؤال" : "Question Text"}
-          </label>
-          <textarea
-            rows={2}
-            value={localQuestionText}
-            onChange={(e) => setLocalQuestionText(e.target.value)}
-            className={`${DARK_FORM_TEXTAREA} font-bold resize-none`}
-            placeholder={dir === "rtl" ? "اكتب السؤال هنا..." : "Enter the question prompt..."}
-          />
-        </div>
-      </div>
-
-      {/* Question Properties */}
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className={DARK_FORM_LABEL}>
-            {dir === "rtl" ? "نوع السؤال" : "Question Type"}
-          </label>
-          <select
-            value={localType}
-            onChange={(e) => handleTypeChange(e.target.value)}
-            className={`${DARK_FORM_INPUT_SM} h-9 text-[10px] font-bold`}
-          >
-            <option value="MULTIPLE_CHOICE">Multiple Choice</option>
-            <option value="TRUE_FALSE">True/False</option>
-          </select>
-        </div>
-
-        <div>
-          <label className={DARK_FORM_LABEL}>
-            {dir === "rtl" ? "النقاط" : "Points"}
-          </label>
-          <input
-            type="number"
-            value={localPoints}
-            onChange={(e) => setLocalPoints(e.target.value)}
-            className={`${DARK_FORM_INPUT_SM} h-9 text-[10px] font-bold`}
-            placeholder="Points"
-          />
-        </div>
-      </div>
-
-      {/* Question Choices Options Section */}
-      <div className="border-t border-slate-100 dark:border-white/5 pt-3 space-y-2.5">
-        <div className="flex items-center justify-between">
-          <span className="text-[10px] font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wider">
-            {dir === "rtl" ? "الخيارات والإجابة الصحيحة" : "Options & Correct Answer"}
-            <span className="text-[9px] font-medium text-slate-500 dark:text-slate-400 block normal-case mt-0.5">
-              {dir === "rtl" ? "(اضغط على الدائرة بجانب الخيار لتحديده كإجابة صحيحة)" : "(Click the circle next to an option to set it as correct)"}
-            </span>
-          </span>
-          {localType === "MULTIPLE_CHOICE" && (
-            <button
-              type="button"
-              onClick={handleAddOptionField}
-              className="text-[9px] font-bold text-[#EE7C11] hover:underline"
-            >
-              {dir === "rtl" ? "+ إضافة خيار" : "+ Add Option"}
-            </button>
-          )}
-        </div>
-
-        <div className="space-y-2">
-          {localOptions.map((opt, optIdx) => {
-            const isCorrect = localCorrectAnswer === opt;
-            return (
-              <div 
-                key={optIdx} 
-                className={`flex items-center gap-3 p-2 rounded-xl border transition-all ${
-                  isCorrect 
-                    ? "border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-500/10" 
-                    : "border-slate-200 bg-slate-50/50 dark:border-white/15 dark:bg-[#12121a]"
-                }`}
-              >
-                {/* Radio button indication */}
-                <button
-                  type="button"
-                  onClick={() => handleSetCorrectAnswer(opt)}
-                  className={`h-5.5 w-5.5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
-                    isCorrect 
-                      ? "border-emerald-500 bg-emerald-500 text-white" 
-                      : "border-slate-300 dark:border-white/30 hover:border-slate-400 dark:hover:border-white/50 bg-slate-50 dark:bg-slate-950"
-                  }`}
-                >
-                  {isCorrect && (
-                    <div className="h-2 w-2 rounded-full bg-white" />
-                  )}
-                </button>
-
-                {/* Input value */}
-                <input
-                  type="text"
-                  value={opt}
-                  disabled={localType === "TRUE_FALSE"}
-                  onChange={(e) => handleOptionLocalChange(optIdx, e.target.value)}
-                  className="flex-1 bg-transparent text-xs font-semibold text-slate-800 dark:text-slate-100 outline-none border-none p-0 focus:ring-0 placeholder:text-slate-400 dark:placeholder:text-slate-500"
-                />
-
-                {/* Remove button (only for MCQs with > 2 options) */}
-                {localType === "MULTIPLE_CHOICE" && localOptions.length > 2 && (
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveOptionField(optIdx)}
-                    className="text-slate-400 hover:text-rose-500 transition-colors shrink-0"
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </button>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Save Button */}
-      <div className="flex justify-end pt-3 border-t border-slate-100 dark:border-white/5">
         <button
           type="button"
-          disabled={isSaving}
-          onClick={handleSave}
-          className="flex items-center justify-center gap-1.5 rounded-xl bg-[#EE7C11] hover:bg-[#d9700e] text-white px-4 py-2 text-xs font-bold transition-all shadow-md shadow-[#EE7C11]/15 disabled:opacity-50"
+          onClick={() => onOpenCreateExam({})}
+          className="flex items-center gap-1.5 rounded-lg bg-[#EE7C11] hover:bg-[#d9700e] text-white px-3.5 py-2 text-xs font-bold shadow-md shadow-[#EE7C11]/15 transition-all shrink-0"
         >
-          {isSaving ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Save className="h-4 w-4" />
-          )}
-          <span>{dir === "rtl" ? "حفظ السؤال" : "Save Question"}</span>
+          <Plus className="h-4 w-4" />
+          <span>{dir === "rtl" ? "إنشاء اختبار" : "Create exam"}</span>
         </button>
       </div>
+
+      {!course.exams?.length ? (
+        <div className="rounded-2xl border border-dashed border-slate-200 dark:border-white/10 p-8 text-center bg-white dark:bg-[#1A1A22]">
+          <Award className="mx-auto h-10 w-10 text-slate-300 mb-3" />
+          <p className="text-xs text-slate-500 font-semibold">
+            {dir === "rtl" ? "لا توجد تقييمات مرتبطة بهذا الكورس بعد." : "No assessments linked to this course yet."}
+          </p>
+          <p className="mt-1 text-[10px] text-slate-400">
+            {dir === "rtl" ? "اضغط «إنشاء اختبار» لبدء بنك الأسئلة." : "Click Create exam to start building your question bank."}
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {course.exams.map((ex) => (
+            <div
+              key={ex.id}
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs dark:border-white/10 dark:bg-[#1A1A22]"
+            >
+              <div>
+                <h4 className="font-bold text-slate-800 dark:text-slate-100 text-sm">{ex.title}</h4>
+                <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-slate-400 font-medium">
+                  <span>{ex.durationMinutes} {dir === "rtl" ? "د" : "min"}</span>
+                  <span>"</span>
+                  <span>{ex.questions?.length || 0} {dir === "rtl" ? "أسئلة" : "questions"}</span>
+                  <span>"</span>
+                  <span>{dir === "rtl" ? "النجاح" : "Pass"}: {ex.passingScore}/{ex.totalPoints}</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 self-end sm:self-auto">
+                <Link
+                  to={`/instructor/exams/${ex.id}`}
+                  className="inline-flex items-center gap-1 rounded-lg bg-[#EE7C11]/10 hover:bg-[#EE7C11]/20 text-[#EE7C11] px-3.5 py-1.5 text-xs font-bold"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  {dir === "rtl" ? "فتح الاختبار" : "Open exam"}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteExam(ex.id)}
+                  className="p-1.5 text-slate-400 hover:text-rose-500 rounded"
+                >
+                  <Trash2 className="h-4.5 w-4.5" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

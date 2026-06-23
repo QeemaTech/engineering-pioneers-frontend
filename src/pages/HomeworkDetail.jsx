@@ -36,7 +36,8 @@ const MAX_FILE_BYTES = 10 * 1024 * 1024;
 
 export default function HomeworkDetail() {
   const { t } = useTranslation();
-  const { cohortId, homeworkId } = useParams();
+  const { courseId, cohortId, homeworkId } = useParams();
+  const resolvedCourseId = courseId || cohortId;
   const { data: hw, isLoading, isError, refetch } = useHomeworkAssignment(homeworkId);
   const submit = useSubmitHomework();
 
@@ -51,8 +52,8 @@ export default function HomeworkDetail() {
   const { instructions, requirements: reqFromDesc } = useMemo(() => splitInstructions(hw?.description || ""), [hw?.description]);
   const attachmentItems = useMemo(() => attachmentsList(hw?.attachments), [hw?.attachments]);
 
-  const backTo = cohortId ? `/homework/${cohortId}` : "/homework";
-  const coursePlayerLink = hw ? `/course/${hw.courseId}?cohortId=${encodeURIComponent(hw.cohortId)}` : "/homework";
+  const backTo = resolvedCourseId ? `/student/homework/course/${resolvedCourseId}` : "/student/homework";
+  const coursePlayerLink = hw ? `/student/courses/${hw.courseId}/learn` : "/student/homework";
 
   const onSubmit = async () => {
     if (!hw) return;
@@ -64,7 +65,7 @@ export default function HomeworkDetail() {
           setErr(t("homeworkDetail.validation.text", { defaultValue: "Please enter your answer." }));
           return;
         }
-        await submit.mutateAsync({ homeworkId: hw.id, cohortId: hw.cohortId, body: { content, fileUrl: null } });
+        await submit.mutateAsync({ homeworkId: hw.id, courseId: hw.courseId, body: { content, fileUrl: null } });
         return;
       }
       if (type === "LINK") {
@@ -73,7 +74,7 @@ export default function HomeworkDetail() {
           setErr(t("homeworkDetail.validation.link", { defaultValue: "Please enter a valid URL." }));
           return;
         }
-        await submit.mutateAsync({ homeworkId: hw.id, cohortId: hw.cohortId, body: { content, fileUrl: null } });
+        await submit.mutateAsync({ homeworkId: hw.id, courseId: hw.courseId, body: { content, fileUrl: null } });
         return;
       }
       if (type === "FILE") {
@@ -81,7 +82,7 @@ export default function HomeworkDetail() {
         if (selectedFile) {
           const fd = new FormData();
           fd.append("file", selectedFile);
-          await submit.mutateAsync({ homeworkId: hw.id, cohortId: hw.cohortId, body: fd });
+          await submit.mutateAsync({ homeworkId: hw.id, courseId: hw.courseId, body: fd });
           return;
         }
         if (!pasted) {
@@ -90,7 +91,7 @@ export default function HomeworkDetail() {
         }
         await submit.mutateAsync({
           homeworkId: hw.id,
-          cohortId: hw.cohortId,
+          courseId: hw.courseId,
           body: { content: null, fileUrl: pasted },
         });
       }

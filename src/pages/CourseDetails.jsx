@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import {
   BookOpen,
   Headphones,
@@ -18,6 +19,7 @@ import useAuthStore from "../store/authStore";
 import { APP_ROLES, normalizeRole } from "../config/permissions";
 import { usePublicCourse } from "../features/public/hooks";
 import { useMyCourses } from "../features/student/courses/hooks";
+import { fetchCourseReviews, computeAverageRating } from "../features/student/reviews/api";
 
 function Stars({ rating, max = 5, size = "h-4 w-4" }) {
   return (
@@ -28,7 +30,7 @@ function Stars({ rating, max = 5, size = "h-4 w-4" }) {
           <span key={i} className="relative inline-block">
             <Star className={`${size} text-slate-200`} />
             <span className="absolute inset-0 overflow-hidden" style={{ width: `${fill * 100}%` }}>
-              <Star className={`${size} fill-pioneer-teal-normal text-pioneer-teal-normal`} />
+              <Star className={`${size} fill-amber-400 text-amber-400`} />
             </span>
           </span>
         );
@@ -42,6 +44,11 @@ function initials(name) {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
   return name.slice(0, 2).toUpperCase();
+}
+
+function formatPrice(price, isRtl) {
+  const value = Math.round(Number(price) || 0);
+  return isRtl ? `${value} جنيه` : `${value} EGP`;
 }
 
 function formatDateTime(iso) {
@@ -60,7 +67,8 @@ const INCLUSIONS = [
 ];
 
 export default function CourseDetails() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.dir() === "rtl";
   const { id } = useParams();
 
   const hydrated = useAuthStore((s) => s.hydrated);
@@ -70,6 +78,18 @@ export default function CourseDetails() {
   const isStudent = role === APP_ROLES.STUDENT;
 
   const { data: course, isLoading, isError, refetch } = usePublicCourse(id);
+
+  const { data: reviewsData } = useQuery({
+    queryKey: ["public", "course-reviews", id],
+    queryFn: () => fetchCourseReviews(id, 1, 50),
+    enabled: Boolean(id),
+    retry: false,
+  });
+
+  const reviewStats = useMemo(() => {
+    const reviews = reviewsData?.reviews ?? [];
+    return computeAverageRating(reviews);
+  }, [reviewsData]);
 
   const { data: myCourses = [], isLoading: enrollmentsLoading } = useMyCourses({
     enabled: Boolean(hydrated && isAuth && isStudent),
@@ -95,14 +115,14 @@ export default function CourseDetails() {
     return `/login?redirect=${redirect}`;
   }, [coursePath]);
 
-  const checkoutHref = course?.id ? `/checkout?courseId=${encodeURIComponent(course.id)}` : "/checkout";
-  const continueLearningHref = course?.id ? `/course/${course.id}` : "/my-classes";
+  const checkoutHref = course?.id ? `/student/checkout?courseId=${encodeURIComponent(course.id)}` : "/student/checkout";
+  const continueLearningHref = course?.id ? `/student/courses/${course.id}/learn` : "/student/classes";
 
   const displayPrice = course?.isLifetimePurchasable ? Number(course.price) : null;
   const liveSessions = course?.type === "HYBRID" ? course.liveSessions ?? [] : [];
   const instructorForCard = course?.instructor;
-  const displayRating = 4.8;
-  const reviewCount = 0;
+  const displayRating = reviewStats.count > 0 ? Math.round(reviewStats.average * 10) / 10 : 0;
+  const reviewCount = reviewStats.count;
   const purchaseCount = course?._count?.purchases ?? 0;
 
   if (isLoading) {
@@ -130,10 +150,10 @@ export default function CourseDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 py-10 md:py-14">
+    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50/80 to-white py-10 md:py-14">
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
         <nav className="mb-6 flex items-center gap-1.5 text-sm text-slate-500">
-          <Link to="/explore" className="transition-colors hover:text-pioneer-orange-normal">
+          <Link to="/explore" className="transition hover:text-[#EE7C11]">
             {t("courseDetails.breadcrumb.explore")}
           </Link>
           <ChevronRight className="h-3.5 w-3.5 rtl:rotate-180" />
@@ -153,8 +173,14 @@ export default function CourseDetails() {
 
               <div className="mt-4 flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <Stars rating={displayRating} />
-                  <span className="text-sm font-bold text-pioneer-teal-dark">{displayRating}</span>
+                  {reviewCount > 0 ? (
+                    <>
+                      <Stars rating={displayRating} />
+                      <span className="text-sm font-bold text-amber-600">{displayRating}</span>
+                    </>
+                  ) : (
+                    <span className="text-sm text-slate-500">{t("courseDetails.noReviewsYet", { defaultValue: "No reviews yet" })}</span>
+                  )}
                   <span className="text-sm text-slate-500">
                     ({reviewCount} {t("courseDetails.reviews")})
                   </span>
@@ -260,7 +286,7 @@ export default function CourseDetails() {
                       ? "—"
                       : displayPrice === 0
                         ? t("explore.free", { defaultValue: "Free" })
-                        : `$${displayPrice.toFixed(0)}`}
+                        : formatPrice(displayPrice, isRtl)}
                   </span>
                 </div>
 
@@ -298,7 +324,7 @@ export default function CourseDetails() {
                 ) : isStudent && isEnrolled ? (
                   <Link
                     to={continueLearningHref}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-pioneer-teal-normal py-3 text-sm font-bold text-white transition hover:bg-pioneer-teal-hover"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#EE7C11] py-3 text-sm font-bold text-white transition hover:bg-[#d9700e]"
                   >
                     <BookOpen className="h-4 w-4" />
                     {t("courseDetails.card.continueLearning")}
@@ -310,7 +336,7 @@ export default function CourseDetails() {
                   >
                     <BookOpen className="h-4 w-4" />
                     {t("courseDetails.card.enrollWithPrice", {
-                      price: displayPrice != null ? `$${displayPrice.toFixed(0)}` : "—",
+                      price: displayPrice != null ? formatPrice(displayPrice, isRtl) : "—",
                     })}
                   </Link>
                 ) : null}

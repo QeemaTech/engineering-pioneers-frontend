@@ -36,7 +36,10 @@
       "instructor": "Instructor",
       "academicMatrix": "Academic Matrix",
       "liveOps": "Live Operations",
-      "financialsSecurity": "Financials & Security"
+      "financialsSecurity": "Financials & Security",
+      "studentOverview": "Dashboard",
+      "studentLearning": "Learning",
+      "studentServices": "Account & support"
     },
     "items": {
       "analytics": "Analytics",
@@ -60,6 +63,7 @@
       "cms": "CMS",
       "pages": "Pages",
       "siteContent": "Homepage & FAQ",
+      "sitePages": "Site pages",
       "blogPosts": "Blog Posts",
       "mediaLibrary": "Media Library",
       "banners": "Banners",
@@ -83,7 +87,121 @@
       "cohorts": "Cohorts",
       "packages": "Packages",
       "reviewQueue": "Review Queue",
-      "auditLogs": "Audit Logs"
+      "auditLogs": "Audit Logs",
+      "liveSessions": "Live Sessions",
+      "recordings": "Recordings",
+      "bookSession": "Book Session",
+      "payments": "Payments",
+      "wishlist": "Wishlist",
+      "progress": "Progress",
+      "studentHomework": "Homework"
+    }
+  },
+  "student": {
+    "overview": {
+      "title": "Overview",
+      "subtitle": "Your learning dashboard at a glance.",
+      "stats": {
+        "courses": "Enrolled courses",
+        "homework": "Pending homework",
+        "exams": "Upcoming exams",
+        "live": "Next live session"
+      },
+      "continueLearning": "Continue learning",
+      "viewAll": "View all",
+      "noCourses": "Enroll in a course to start learning.",
+      "exploreCta": "Explore courses",
+      "notifications": "Recent alerts",
+      "noNotifications": "No new notifications.",
+      "nextLive": "Next live session"
+    },
+    "liveSessions": {
+      "title": "Live Sessions",
+      "subtitle": "Join scheduled live classes for your enrolled courses."
+    },
+    "recordings": {
+      "title": "Recordings",
+      "subtitle": "Watch recorded live sessions and lesson videos from your courses.",
+      "typeLive": "Live recording",
+      "typeLesson": "Lesson video",
+      "filterAll": "All types",
+      "loadError": "Could not load recordings.",
+      "empty": "No recordings available yet.",
+      "back": "Back to library",
+      "notesTitle": "Playback notes",
+      "notesHint": "Jot down key points while you watch.",
+      "notePlaceholder": "Add a note…",
+      "addNote": "Add note",
+      "noNotes": "No notes yet.",
+      "noteError": "Could not save note.",
+      "deleteNote": "Delete note",
+      "upNext": "Up next"
+    },
+    "payments": {
+      "title": "Payments",
+      "subtitle": "Track your course purchase requests and receipts.",
+      "loadError": "Could not load payments.",
+      "empty": "No payment requests yet.",
+      "colCourse": "Course / item",
+      "colAmount": "Amount",
+      "colStatus": "Status",
+      "colDate": "Date",
+      "colReceipt": "Receipt",
+      "viewReceipt": "View",
+      "unknownItem": "Payment"
+    },
+    "certificates": {
+      "title": "Certificates",
+      "subtitle": "Download certificates for completed courses.",
+      "loadError": "Could not load certificates.",
+      "empty": "Complete a course to earn your first certificate.",
+      "readyToClaim": "Ready to claim",
+      "claim": "Claim PDF",
+      "claimError": "Could not claim certificate.",
+      "issued": "Issued"
+    },
+    "tickets": {
+      "title": "Support",
+      "subtitle": "Open a ticket and our team will get back to you.",
+      "new": "New ticket",
+      "subjectPlaceholder": "Subject",
+      "descriptionPlaceholder": "Describe your issue…",
+      "submit": "Submit ticket",
+      "createError": "Could not create ticket.",
+      "loadError": "Could not load tickets.",
+      "empty": "No support tickets yet.",
+      "back": "Back to tickets",
+      "notFound": "Ticket not found.",
+      "statusLabel": "Status",
+      "noMessages": "No messages yet.",
+      "replyPlaceholder": "Write a reply…",
+      "sendReply": "Send reply",
+      "replyError": "Could not send reply.",
+      "priority": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "urgent": "Urgent"
+      }
+    },
+    "wishlist": {
+      "title": "Wishlist",
+      "subtitle": "Courses you saved for later.",
+      "loadError": "Could not load wishlist.",
+      "empty": "Your wishlist is empty.",
+      "viewCourse": "View course",
+      "remove": "Remove"
+    },
+    "qna": {
+      "title": "Lesson Q&A",
+      "askPlaceholder": "Ask a question about this lesson…",
+      "ask": "Ask",
+      "askError": "Could not post question.",
+      "answerError": "Could not post answer.",
+      "empty": "No questions yet. Be the first to ask!",
+      "answerPlaceholder": "Write an answer…",
+      "reply": "Reply",
+      "anonymous": "Student"
     }
   },
   "adminPages": {
@@ -363,13 +481,41 @@
         "createNew": "Create new",
         "linkExisting": "Link existing",
         "searchPlaceholder": "Search standalone exams...",
-        "noAvailableExams": "No available exams found."
+        "noAvailableExams": "No available exams found.",
+        "settingsStepHint": "Step 1: exam settings — then add questions",
+        "createAndEditQuestions": "Create & edit questions",
+        "totalPoints": "Total points",
+        "openFullEditor": "Open full exam editor",
+        "viewSubmissions": "View submissions"
       },
       "sessions": {
         "title": "Live sessions",
         "subtitle": "Schedule group live sessions for this hybrid course.",
         "courseOwner": "Course Owner",
         "instructor": "Instructor"
+      }
+    },
+    "examEditor": {
+      "notFound": "Exam not found",
+      "backToExams": "← Back to exams",
+      "settingsSaved": "Settings saved",
+      "saveFailed": "Failed to save",
+      "questionAdded": "Question added",
+      "questionAddFailed": "Failed to add question",
+      "questionSaved": "Question saved",
+      "questionSaveFailed": "Failed to save",
+      "deleteConfirm": "Delete this question?",
+      "questionDeleted": "Question deleted",
+      "questionDeleteFailed": "Failed to delete",
+      "settingsTitle": "Exam Settings",
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "save": "Save",
+      "stats": {
+        "questions": "Questions",
+        "totalPoints": "Total Points",
+        "duration": "Duration",
+        "passScore": "Pass Score"
       }
     },
     "userDirectory": {
@@ -598,8 +744,36 @@
         "payoutRequests": "Payout Requests",
         "requestDate": "Request Date",
         "amountRequested": "Amount Requested",
-        "status": "Status"
+        "status": "Status",
+        "managePayouts": "Manage all payouts",
+        "payoutMethod": "Payout method",
+        "commissionTitle": "Revenue Share",
+        "commissionSubtitle": "Percentage of each sale credited to this instructor. The platform keeps the remainder.",
+        "commissionInstructor": "Instructor share",
+        "commissionPlatform": "Platform share",
+        "commissionRate": "Instructor rate (%)",
+        "commissionExample": "On a {{amount}} {{currency}} sale, instructor earns {{instructorAmount}} {{currency}} and platform keeps {{platformAmount}} {{currency}}.",
+        "commissionSave": "Save commission rate",
+        "commissionSaved": "Commission rate updated",
+        "commissionSaveFailed": "Failed to update commission rate",
+        "commissionInvalid": "Enter a rate between 0 and 100"
       },
+      "commissionRate": "Commission rate",
+      "editProfile": "Edit profile",
+      "saveProfile": "Save changes",
+      "cancelEdit": "Cancel",
+      "profileSaved": "Instructor profile updated",
+      "profileSaveFailed": "Failed to update instructor profile",
+      "statusUpdated": "Instructor status updated",
+      "statusUpdateFailed": "Failed to update instructor status",
+      "changePassword": "Change password",
+      "newPassword": "New password",
+      "passwordHint": "Changing the password signs the instructor out of existing sessions.",
+      "passwordUpdated": "Password updated successfully",
+      "passwordUpdateFailed": "Failed to update password",
+      "passwordTooShort": "Password must be at least 8 characters",
+      "bio": "Bio",
+      "phoneInvalid": "Phone must be 7–15 digits, optionally starting with +",
       "courses": {
         "title": "Instructor's Courses",
         "empty": "No courses listed for this instructor.",
@@ -904,16 +1078,17 @@
       "tooltipResolve": "Resolve Ticket",
       "statuses": {
         "All": "All Statuses",
-        "Open": "Open",
-        "In Progress": "In Progress",
-        "Resolved": "Resolved",
-        "Closed": "Closed"
+        "OPEN": "Open",
+        "IN_PROGRESS": "In Progress",
+        "RESOLVED": "Resolved",
+        "CLOSED": "Closed"
       },
       "priorities": {
         "All": "All Priorities",
-        "High": "High",
-        "Medium": "Medium",
-        "Low": "Low"
+        "URGENT": "Urgent",
+        "HIGH": "High",
+        "MEDIUM": "Medium",
+        "LOW": "Low"
       },
       "table": {
         "id": "#",
@@ -1033,6 +1208,7 @@
       "subscription": "Subscription",
       "explore": "Explore",
       "myClasses": "My Cohorts",
+      "myDashboard": "My dashboard",
       "bookPrivate": "Book session"
     },
     "actions": {
@@ -1062,72 +1238,70 @@
     }
   },
   "hero": {
-    "title": "Master Chinese Language with Live Classes",
-    "titleStart": "Master",
-    "titleHighlight": "Chinese Language",
-    "titleEnd": "with Live Classes",
-    "subtitle": "Join our comprehensive online Chinese learning platform designed for Arabic speakers. Learn in live cohorts, book private sessions, complete structured homework, and track your progress with expert teachers.",
+    "upperTag": "🚀 Your Platform to Qualify for the Local & International Engineering Market",
+    "headline": {
+      "start": "Build Real",
+      "highlight": "Engineering Skills"
+    },
+    "subheadline": "Hybrid & recorded courses · Expert instructors · Certificates",
     "features": {
-      "experts": "Learn with experts",
-      "liveCohorts": "Structured live cohorts",
-      "membership": "Flexible membership options"
+      "experts": "Learn with Experts",
+      "liveCohorts": "Structured Live Cohorts",
+      "membership": "Flexible Membership"
     },
     "actions": {
       "startLearning": "Start Learning",
-      "exploreClasses": "Explore Classes"
+      "watchNow": "Watch How It Works"
     },
-    "floating": {
-      "congratsTitle": "Congratulations",
-      "congratsSubtitle": "Your admission completed",
-      "dailyStudentsTitle": "Our daily new students",
-      "studentsHint": "Join us"
+    "socialProof": {
+      "engineersCount": "Join over 1,490+ professional engineers worldwide",
+      "rating": "4.9 global rating (250+ reviews)"
     }
   },
   "features": {
     "titlePrefix": "Why Choose",
-    "titleBrand": "Ni Hao",
-    "subtitle": "We provide a comprehensive learning experience tailored for Arabic speakers to build strong Chinese language skills.",
-    "learnMore": "Learn more →",
+    "titleBrand": "Engineering Pioneers",
+    "subtitle": "We provide a comprehensive educational environment that guarantees you acquire the actual skills required in the engineering labor market.",
+    "learnMore": "Learn More",
     "items": {
       "liveClasses": {
-        "title": "Live cohort sessions",
-        "description": "Join scheduled live cohort classes with real-time teaching, Q&A, and classmates progressing together."
+        "title": "Interactive Live Classes",
+        "description": "Engage directly with industry leaders in real-time online classes, review real-world blueprints, and receive instant feedback on your design ideas."
       },
       "groupAndOneToOne": {
-        "title": "Live cohorts & private sessions",
-        "description": "Enroll in structured cohorts for consistent pace, or add private sessions when you need focused 1:1 time."
+        "title": "1-on-1 & Group Sessions",
+        "description": "Access private mentoring or study with high-caliber peers. Solve complex computational problems together in dedicated workspace channels."
       },
       "homeworkAndPractice": {
-        "title": "Homework & practice",
-        "description": "Reinforce each lesson with structured assignments, instructor feedback, and measurable milestones."
+        "title": "Practical Projects & Code Challenges",
+        "description": "Test your learning by building functional code repositories and drawing stress vector charts, graded weekly by active senior engineers."
       },
       "recordedSessions": {
-        "title": "Recorded sessions",
-        "description": "Revisit cohort recordings anytime to review lessons and stay on track between live classes."
+        "title": "Premium Lifetime Archive",
+        "description": "Never miss a calculation. Access a structured, crystal-clear library of every recorded session, code repository, and engineering document."
       }
     }
   },
   "howItWorks": {
-    "title": "How It Works?",
     "titleStart": "How It",
-    "titleAccent": "Works?",
-    "subtitle": "Start your Chinese learning journey in 4 simple steps",
+    "titleAccent": "Works",
+    "subtitle": "Your roadmap from learning to landing elite engineering roles",
     "steps": {
       "step1": {
         "title": "Create Your Account",
-        "description": "Sign up in seconds and tell us about your learning goals"
+        "description": "Create your profile and set your engineering field to personalize your curriculum."
       },
       "step2": {
-        "title": "Choose Your Path",
-        "description": "Pick a live cohort course or add private sessions—whichever fits your goals and schedule."
+        "title": "Choose Your Cohort",
+        "description": "Join an interactive cohort matching your skill level, guided by senior engineering mentors."
       },
       "step3": {
-        "title": "Start Learning",
-        "description": "Join live classes, complete homework, and track your progress"
+        "title": "Ship Projects & Assignments",
+        "description": "Build and deliver real projects, stress-test structures, and solve industry-inspired engineering tasks."
       },
       "step4": {
-        "title": "Master Chinese",
-        "description": "Practice consistently and achieve fluency with our structured curriculum"
+        "title": "Graduate Job-Ready",
+        "description": "Graduate with a verified portfolio and direct referrals to local and international partners."
       }
     }
   },
@@ -1183,11 +1357,30 @@
   },
   "publicFaq": {
     "title": "Frequently asked questions",
-    "subtitle": "Answers from your site CMS (FAQ section).",
+    "subtitle": "Quick answers about courses, certificates, and how Engineering Pioneers works.",
+    "viewAll": "View all questions",
     "loadError": "We could not load help content right now. Please try again later.",
     "empty": "No FAQ entries are published yet.",
     "ctaExplore": "Browse courses",
-    "footerPlans": "View subscription plans"
+    "footerPlans": "View subscription plans",
+    "items": {
+      "q1": {
+        "question": "What is the learning format at Engineering Pioneers?",
+        "answer": "We offer structured live cohorts led by senior industry engineers, combined with access to recorded archives and hands-on coding/structural tasks graded weekly."
+      },
+      "q2": {
+        "question": "Who are the courses designed for?",
+        "answer": "For ambitious Arabic-speaking engineering graduates, seniors, and professionals looking to acquire verified, market-ready technical skills."
+      },
+      "q3": {
+        "question": "Do I receive a certificate upon graduation?",
+        "answer": "Yes! Upon finishing the final exam and submitting all mandatory tasks, you will receive a verified certificate of completion recognized by our network of partners."
+      },
+      "q4": {
+        "question": "Is there 1-on-1 mentorship available?",
+        "answer": "Yes, members can book private 1-on-1 sessions with expert instructors to resolve complex design and code bugs."
+      }
+    }
   },
   "publicAbout": {
     "title": "About Engineering Pioneers",
@@ -1196,7 +1389,7 @@
     "empty": "About content is not configured yet.",
     "cta": "Explore courses",
     "storyTitle": "Our story",
-    "fallbackStory": "Engineering Pioneers connects Arabic-speaking learners with structured Chinese programs, live cohorts, and private sessions.",
+    "fallbackStory": "Engineering Pioneers delivers structured engineering programs, live cohorts, and expert-led curriculum for professionals across MENA.",
     "mission": "Mission",
     "vision": "Vision",
     "joinTitle": "Ready to learn with us?",
@@ -1214,17 +1407,27 @@
     "emptyBody": "This article does not have any body text yet."
   },
   "cta": {
-    "title": "Ready to Start Your Chinese Learning Journey?",
-    "subtitle": "Join Engineering Pioneers today and experience interactive classes, expert teachers, and a structured path to fluency.",
+    "title": "Ready to build real engineering skills?",
+    "subtitle": "Join Engineering Pioneers — live cohorts, expert instructors, hands-on projects, and verified certificates.",
     "actions": {
-      "createAccount": "Create Free Account",
-      "learnMore": "Learn More"
+      "createAccount": "Create free account",
+      "learnMore": "Browse courses"
     }
   },
   "footer": {
+    "disciplinesLabel": "Engineering disciplines we cover",
+    "disciplines": {
+      "structural": "Structural",
+      "bim": "BIM & Digital Twin",
+      "hvac": "HVAC & MEP",
+      "geo": "Geotechnical",
+      "transport": "Transportation",
+      "cfd": "CFD & Simulation"
+    },
     "brand": {
       "logoAlt": "Engineering Pioneers",
-      "description": "Engineering Pioneers helps Arabic speakers master Chinese through live classes, practical exercises, and expert guidance."
+      "description": "Engineering Pioneers helps Arabic-speaking engineers master practical skills through live cohorts, recorded courses, and industry-led mentorship.",
+      "location": "Cairo, Egypt"
     },
     "company": {
       "title": "Company",
@@ -1236,10 +1439,11 @@
     },
     "community": {
       "title": "Community",
-      "documentation": "Documentation",
-      "faq": "Faq",
+      "documentation": "About us",
+      "faq": "FAQ",
       "forum": "Forum",
-      "sitemap": "Sitemap"
+      "sitemap": "Sitemap",
+      "courses": "Browse courses"
     },
     "teaching": {
       "title": "Teaching",
@@ -1319,7 +1523,7 @@
   "explore": {
     "titlePrefix": "Explore Our",
     "titleAccent": "Courses",
-    "subtitle": "Browse our full catalogue of Chinese language courses — from absolute beginner to advanced HSK levels.",
+    "subtitle": "Browse our full engineering course catalog — structural, BIM, HVAC, and more. Live cohorts and recorded programs.",
     "searchPlaceholder": "Search courses or teachers…",
     "enroll": "Enroll",
     "free": "Free",
@@ -1330,7 +1534,7 @@
     "showing": "Showing {{count}} of {{total}} courses",
     "showingPaged": "Showing {{count}} on this page · {{total}} total · page {{page}}",
     "instructorFallback": "Instructor TBA",
-    "enrollmentsLabel": "seats booked",
+    "enrollmentsLabel": "learners",
     "cohorts": {
       "multiple": "{{count}} cohorts open",
       "single": "{{count}} cohort"
@@ -1355,13 +1559,8 @@
     },
     "categories": {
       "all": "All Courses",
-      "beginner": "Beginner",
-      "hsk1": "HSK 1",
-      "hsk2": "HSK 2",
-      "hsk3": "HSK 3",
-      "conversation": "Conversation",
-      "writing": "Writing",
-      "oneToOne": "1-on-1"
+      "hybrid": "Live Cohorts",
+      "recorded": "Recorded"
     },
     "courses": {
       "hsk1": {
@@ -1693,6 +1892,50 @@
       "viewResults": "View Results"
     }
   },
+  "examQuestionEditor": {
+    "bankTitle": "Question bank",
+    "drawerSubtitle": "Question bank editor",
+    "questionsCount": "{{count}} questions",
+    "addQuestion": "Add question",
+    "pointsAllocated": "Points allocated",
+    "emptyTitle": "No questions yet",
+    "emptyHint": "Click “Add question” to start building your exam.",
+    "questionText": "Question text",
+    "questionPlaceholder": "Write the question prompt…",
+    "questionType": "Question type",
+    "points": "Points",
+    "pointsShort": "pts",
+    "save": "Save",
+    "saved": "Question saved.",
+    "saveFailed": "Failed to save question.",
+    "deleted": "Question deleted.",
+    "deleteConfirm": "Delete this question?",
+    "deleteFailed": "Failed to delete question.",
+    "optionsTitle": "Answer options",
+    "optionsHint": "Click the circle to mark the correct answer.",
+    "addOption": "Add option",
+    "optionPlaceholder": "Option {{letter}}",
+    "markCorrect": "Mark as correct",
+    "modelAnswer": "Model answer",
+    "modelAnswerPlaceholder": "Expected answer for reference…",
+    "modelAnswerOptional": "Optional — instructor grading reference.",
+    "rubric": "Grading rubric",
+    "essayPlaceholder": "Key points for grading…",
+    "trueLabel": "True",
+    "falseLabel": "False",
+    "minOptions": "Add at least two options.",
+    "correctRequired": "Select the correct answer.",
+    "textRequired": "Question text is required.",
+    "pointsInvalid": "Points must be at least 1.",
+    "validation": "Please check all fields.",
+    "newQuestionDraft": "Write your question here...",
+    "types": {
+      "MULTIPLE_CHOICE": "Multiple choice",
+      "TRUE_FALSE": "True / False",
+      "SHORT_ANSWER": "Short answer",
+      "ESSAY": "Essay"
+    }
+  },
   "progress": {
     "titlePrefix": "My",
     "titleAccent": "Progress",
@@ -1703,9 +1946,9 @@
     "recentActivity": "Recent Activity",
     "stats": {
       "coursesEnrolled": "Courses Enrolled",
-      "classesAttended": "Classes Attended",
-      "homeworkDone": "Homework Done",
-      "avgScore": "Average Score"
+      "lessonsCompleted": "Lessons Completed",
+      "homeworkDone": "Homework Graded",
+      "avgScore": "Average Progress"
     }
   },
   "settings": {
@@ -2441,7 +2684,15 @@
         "topCourses": "Top courses by enrollment",
         "allYourCourses": "All your courses",
         "upcomingSessionsTitle": "Next live sessions",
-        "upcomingSessionsHint": "Your nearest scheduled sessions"
+        "upcomingSessionsHint": "Your nearest scheduled sessions",
+        "noUpcomingSessions": "No upcoming live sessions",
+        "noUpcomingSessionsHint": "Schedule group sessions from My Courses, or mark a curriculum lesson as Live with a date.",
+        "liveLesson": "Live lesson",
+        "groupSession": "Group session",
+        "privateSession": "Private",
+        "withStudent": "With",
+        "manageSession": "Manage",
+        "joinSession": "Join"
       },
       "exams": {
         "titleCol": "Exam",
@@ -2587,7 +2838,8 @@
           "resetNew": "Mark not opened",
           "courseLine": "{{course}}",
           "emptyFilter": "No submissions in this filter.",
-          "emptyAll": "When students submit homework, they will appear here.",
+          "emptyAll": "When students submit homework, they will appear here. Create assignments from a course editor (Homework tab).",
+          "goToCourses": "Go to My Courses",
           "emptyTitle": "No submissions yet",
           "stateUpdated": "Review state updated."
         }
@@ -2614,6 +2866,84 @@
         "progress": "Progress",
         "emptyTitle": "No students found",
         "emptyDescription": "Select a course to view enrolled students."
+      }
+    }
+  },
+  "recommendedCourses": {
+    "titlePrefix": "Explore Our",
+    "titleAccent": "Recommended Courses",
+    "subtitle": "Choose from live cohorts and recorded courses designed by industry leading engineers.",
+    "tabs": {
+      "all": "All Courses",
+      "live": "Live Cohorts",
+      "recorded": "Recorded Courses"
+    },
+    "exploreCurriculum": "Explore Curriculum",
+    "status": {
+      "live": "Live Cohort 🔴",
+      "recorded": "Recorded 🖥️"
+    },
+    "courses": {
+      "structural": {
+        "title": "Structural Engineering & Steel Design",
+        "description": "Master stress vectors, load analysis, and design structures utilizing industry-standard computational packages."
+      },
+      "cfd": {
+        "title": "Computational Fluid Dynamics (CFD)",
+        "description": "Understand fluid flow simulation, heat transfer, and aerodynamic analysis using open-source solvers."
+      },
+      "hvac": {
+        "title": "Advanced HVAC Systems & Planning",
+        "description": "Design efficient heating, ventilation, and air conditioning systems for commercial and residential projects."
+      },
+      "embedded": {
+        "title": "Embedded Systems & IoT Engineering",
+        "description": "Program microcontrollers, design electrical circuits, and ship connected sensors using C/C++."
+      },
+      "frontend": {
+        "title": "Elite Frontend Web Architecture",
+        "description": "Master React, Vite, Framer Motion, and robust state machines to design state-of-the-art UI canvases."
+      },
+      "infrastructure": {
+        "title": "Civil Infrastructure & Roadway Design",
+        "description": "Learn modern transportation design, drainage networks, and geotechnical analysis for major road systems."
+      }
+    }
+  },
+  "testimonials": {
+    "titlePrefix": "What Our",
+    "titleAccent": "Engineers Say",
+    "subtitle": "Hear from verified graduates who shipped projects and landed roles at elite global firms.",
+    "items": {
+      "item1": {
+        "name": "Eng. Youssef Fathy",
+        "role": "Structural Engineer at Dar Al-Handasah",
+        "text": "The live cohort on structural planning completely transformed my workflow. Designing stress vector calculations became second nature!"
+      },
+      "item2": {
+        "name": "Eng. Amina Mansour",
+        "role": "CFD Researcher at Siemens",
+        "text": "The open-source fluid solvers course gave me hands-on CFD simulations that I couldn't find in any academic university textbook."
+      },
+      "item3": {
+        "name": "Eng. Tarek Hegazi",
+        "role": "IoT Developer at Valeo",
+        "text": "Practical projects were graded weekly by senior staff. Building real embedded hardware prototypes got me my current job!"
+      },
+      "item4": {
+        "name": "Eng. Laila Shaheen",
+        "role": "Senior Architect at Orascom",
+        "text": "Flipping between Arabic LTR and RTL rules is something we deal with in design daily. The platform's layout structure was a masterclass."
+      },
+      "item5": {
+        "name": "Eng. Mahmoud Zaki",
+        "role": "HVAC Designer at Shaker Group",
+        "text": "Flexible options and expert feedback let me study and earn certificates while working full-time. Outstanding membership model."
+      },
+      "item6": {
+        "name": "Eng. Sarah Al-Otaibi",
+        "role": "Lead Architect at Red Sea Global",
+        "text": "The premium moving technology marquee showed me they use Nest.js and React. Highly polished educational materials."
       }
     }
   }

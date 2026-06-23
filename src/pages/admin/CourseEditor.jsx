@@ -1,8 +1,8 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
+﻿import { useState, useCallback, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  ArrowLeft, ArrowRight, BookOpen, ChevronDown, ChevronLeft, ChevronRight, ClipboardList, Edit3, FileText, GripVertical,
+  ArrowLeft, ArrowRight, BookOpen, ChevronDown, ChevronLeft, ChevronRight, ClipboardList, Edit3, FileText,
   Layers, Loader2, Play, Plus, Save, Trash2, Video, X, Settings, Info, Search, ExternalLink,
   PlusCircle, Layout, CheckCircle2, Clock, Hash
 } from "lucide-react";
@@ -27,235 +27,123 @@ import {
 } from "../../features/admin/exams/hooks";
 import { useAdminUsers } from "../../features/admin/users/hooks";
 import toast from "react-hot-toast";
+import { ExamQuestionBankDrawer } from "../../components/exams/ExamQuestionBank";
 
-/* ─── Question Card (For Drawer) ─── */
-function QuestionCard({ question, examId, index }) {
-  const { t } = useTranslation();
-  const updateMutation = useUpdateAdminExamQuestion();
-  const deleteMutation = useDeleteAdminExamQuestion();
-
-  const [text, setText] = useState(question.questionText || "");
-  const [type, setType] = useState(question.type || "MULTIPLE_CHOICE");
-  const [points, setPoints] = useState(question.points || 1);
-  const [correctAnswer, setCorrectAnswer] = useState(question.correctAnswer || "");
-  const [options, setOptions] = useState(question.options || ["", "", "", ""]);
-  const [dirty, setDirty] = useState(false);
-
-  const markDirty = (setter) => (val) => { setter(val); setDirty(true); };
-
-  const save = async () => {
-    try {
-      const body = { questionText: text, type, points: Number(points), correctAnswer };
-      if (type === "MULTIPLE_CHOICE") body.options = options.filter((o) => o.trim());
-      await updateMutation.mutateAsync({ examId, questionId: question.id, body });
-      setDirty(false);
-      toast.success(t("adminPages.courseEditor.toasts.questionSaved", { n: index + 1, defaultValue: "Question {{n}} saved" }));
-    } catch (err) { toast.error(getErrorMessage(err, t("adminPages.courseEditor.toasts.saveFailed", { defaultValue: "Failed to save" }))); }
-  };
-
-  return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/8 dark:bg-[#0F0F13]">
-      <div className="mb-3 flex items-center justify-between">
-        <span className="text-xs font-bold text-slate-900 dark:text-white">
-          {t("adminPages.courseEditor.exam.questionNumber", { n: index + 1, defaultValue: "Question {{n}}" })}
-        </span>
-        <div className="flex gap-2">
-          {dirty && (
-            <button onClick={save} disabled={updateMutation.isPending} className="text-[10px] font-bold text-[#EE7C11] hover:underline">
-              {updateMutation.isPending
-                ? t("adminPages.courseEditor.actions.saving", { defaultValue: "Saving..." })
-                : t("adminPages.courseEditor.actions.saveChanges", { defaultValue: "Save changes" })}
-            </button>
-          )}
-          <button 
-            onClick={() => deleteMutation.mutate({ examId, questionId: question.id })} 
-            className="text-slate-400 hover:text-red-500"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      </div>
-      <textarea 
-        value={text} 
-        onChange={(e) => markDirty(setText)(e.target.value)} 
-        className="mb-3 w-full rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm outline-none focus:border-[#EE7C11]/30 dark:border-white/5 dark:bg-[#1A1A22] dark:text-white"
-        placeholder={t("adminPages.courseEditor.exam.questionTextPlaceholder", { defaultValue: "Question text..." })}
-        rows={2}
-      />
-      <div className="grid grid-cols-2 gap-3">
-        <select value={type} onChange={(e) => markDirty(setType)(e.target.value)} className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs dark:border-white/5 dark:bg-[#1A1A22] dark:text-white">
-          <option value="MULTIPLE_CHOICE">MCQ</option>
-          <option value="TRUE_FALSE">{t("adminPages.courseEditor.exam.trueFalse", { defaultValue: "True/False" })}</option>
-          <option value="SHORT_ANSWER">{t("adminPages.courseEditor.exam.shortAnswer", { defaultValue: "Short answer" })}</option>
-        </select>
-        <input type="number" value={points} onChange={(e) => markDirty(setPoints)(e.target.value)} className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs dark:border-white/5 dark:bg-[#1A1A22] dark:text-white" placeholder={t("adminPages.courseEditor.exam.points", { defaultValue: "Points" })} />
-      </div>
-    </div>
-  );
-}
-
-/* ─── Exam Editor Drawer ─── */
+/* â”€â”€â”€ Exam Editor Drawer â”€â”€â”€ */
 function ExamEditorDrawer({ examId, onClose }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { data: exam, isLoading } = useAdminExamById(examId);
   const addQuestionMutation = useAddAdminExamQuestion();
+  const updateMutation = useUpdateAdminExamQuestion();
+  const deleteMutation = useDeleteAdminExamQuestion();
+  const [savingId, setSavingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
-  const handleAdd = async () => {
+  const handleAdd = async (body) => {
     try {
-      await addQuestionMutation.mutateAsync({
-        examId,
-        body: { questionText: "New Question", type: "MULTIPLE_CHOICE", points: 10, order: (exam?.questions?.length || 0) + 1, options: ["", "", "", ""], correctAnswer: "" }
-      });
+      await addQuestionMutation.mutateAsync({ examId, body });
       toast.success(t("adminPages.courseEditor.toasts.questionAdded", { defaultValue: "Question added" }));
-    } catch (err) { toast.error(t("adminPages.courseEditor.toasts.questionAddFailed", { defaultValue: "Failed to add question" })); }
+    } catch (err) {
+      toast.error(getErrorMessage(err, t("adminPages.courseEditor.toasts.questionAddFailed", { defaultValue: "Failed to add question" })));
+    }
   };
 
-  if (!examId) return null;
+  const handleSave = async (questionId, body) => {
+    setSavingId(questionId);
+    try {
+      await updateMutation.mutateAsync({ examId, questionId, body });
+      toast.success(t("examQuestionEditor.saved", { defaultValue: "Question saved." }));
+    } catch (err) {
+      toast.error(getErrorMessage(err, t("examQuestionEditor.saveFailed", { defaultValue: "Failed to save question." })));
+      throw err;
+    } finally {
+      setSavingId(null);
+    }
+  };
+
+  const handleDelete = async (questionId) => {
+    if (!window.confirm(t("examQuestionEditor.deleteConfirm", { defaultValue: "Delete this question?" }))) return;
+    setDeletingId(questionId);
+    try {
+      await deleteMutation.mutateAsync({ examId, questionId });
+      toast.success(t("examQuestionEditor.deleted", { defaultValue: "Question deleted." }));
+    } catch (err) {
+      toast.error(getErrorMessage(err, t("examQuestionEditor.deleteFailed", { defaultValue: "Failed to delete question." })));
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   return (
-    <div className={`fixed inset-y-0 z-[60] w-full max-w-md bg-white shadow-2xl transition-transform dark:bg-[#1A1A22] ${
-      i18n.dir() === "rtl"
-        ? "left-0 border-r border-slate-200 dark:border-white/8"
-        : "right-0 border-l border-slate-200 dark:border-white/8"
-    }`}>
-      <div className="flex h-full flex-col">
-        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-white/5">
-          <div>
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-              {exam?.title || t("dashboard.common.loading", { defaultValue: "Loading..." })}
-            </h3>
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest">
-              {t("adminPages.courseEditor.exam.questionBankEditor", { defaultValue: "Question bank editor" })}
-            </p>
-          </div>
-          <button onClick={onClose} className="rounded-lg p-1.5 hover:bg-slate-50 dark:hover:bg-white/5">
-            <X className="h-4 w-4 text-slate-400" />
-          </button>
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-5 space-y-4">
-          {isLoading ? (
-            <div className="flex py-20 justify-center"><Loader2 className="h-6 w-6 animate-spin text-[#EE7C11]" /></div>
-          ) : (
-            <>
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-slate-400 uppercase">
-                  {t("adminPages.courseEditor.exam.questionsCount", {
-                    count: exam.questions?.length || 0,
-                    defaultValue: "Questions ({{count}})",
-                  })}
-                </span>
-                <button onClick={handleAdd} className="text-[10px] font-bold text-[#EE7C11] hover:underline">
-                  {t("adminPages.courseEditor.exam.addQuestion", { defaultValue: "+ Add question" })}
-                </button>
-              </div>
-              {(exam.questions || []).map((q, i) => (
-                <QuestionCard key={q.id} question={q} examId={examId} index={i} />
-              ))}
-            </>
-          )}
-        </div>
-      </div>
-    </div>
+    <ExamQuestionBankDrawer
+      examId={examId}
+      exam={exam}
+      isLoading={isLoading}
+      onClose={onClose}
+      onAddQuestion={handleAdd}
+      onSaveQuestion={handleSave}
+      onDeleteQuestion={handleDelete}
+      isAdding={addQuestionMutation.isPending}
+      savingId={savingId}
+      deletingId={deletingId}
+    />
   );
 }
 
-import { useForm, useFieldArray } from "react-hook-form";
-
-/* ─── In-Context Exam Builder Modal ─── */
-function InContextExamBuilder({ targetId, targetType, onClose }) {
+/* â”€â”€â”€ In-Context Exam Builder (metadata â†’ question drawer) â”€â”€â”€ */
+function InContextExamBuilder({ targetId, targetType, onClose, onCreated }) {
   const { t } = useTranslation();
   const { id: courseId } = useParams();
   const queryClient = useQueryClient();
   const createExamMutation = useCreateAdminExam();
-  const addQuestionMutation = useAddAdminExamQuestion();
-  const [step, setStep] = useState(1);
 
-  const { register, control, handleSubmit, watch, setValue, formState: { errors } } = useForm({
-    defaultValues: {
-      title: "",
-      type: targetType === 'course' ? 'FINAL' : targetType === 'unit' ? 'UNIT' : 'LESSON',
-      durationMinutes: 60,
-      passingScore: 60,
-      questions: [{ questionText: "", type: "MULTIPLE_CHOICE", points: 10, options: ["", "", "", ""], correctAnswer: "0" }]
-    }
+  const [form, setForm] = useState({
+    title: "",
+    durationMinutes: 60,
+    passingScore: 60,
+    totalPoints: 100,
   });
+  const [error, setError] = useState("");
 
-  const { fields, append, remove } = useFieldArray({ control, name: "questions" });
+  const examType = targetType === "course" ? "FINAL" : targetType === "unit" ? "UNIT" : "LESSON";
 
-  // Force options for T/F questions
-  const watchedQuestions = watch("questions");
-  useEffect(() => {
-    watchedQuestions?.forEach((q, index) => {
-      if (q.type === "TRUE_FALSE" && (q.options?.length !== 2 || q.options[0] !== "True")) {
-        setValue(`questions.${index}.options`, ["True", "False"]);
-      }
-    });
-  }, [watchedQuestions, setValue]);
-
-  // Debugging validation errors
-  useEffect(() => {
-    if (Object.keys(errors).length > 0) {
-      console.warn("Exam Builder Validation Errors:", errors);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    if (!form.title.trim()) {
+      setError(t("adminPages.courseEditor.validation.titleRequired", { defaultValue: "Title is required" }));
+      return;
     }
-  }, [errors]);
-
-  const onSubmit = async (data) => {
     try {
-      // Step 1: Create the exam WITHOUT questions
       const examBody = {
-        title: data.title,
-        type: data.type,
-        durationMinutes: Number(data.durationMinutes),
-        passingScore: Number(data.passingScore),
-        status: 'AVAILABLE',
-        totalPoints: data.questions.reduce((sum, q) => sum + Number(q.points), 0),
+        title: form.title.trim(),
+        type: examType,
+        durationMinutes: Number(form.durationMinutes) || 60,
+        passingScore: Number(form.passingScore) || 60,
+        totalPoints: Number(form.totalPoints) || 100,
+        status: "AVAILABLE",
       };
-      if (targetType === 'course') examBody.courseId = targetId;
-      if (targetType === 'unit') examBody.unitId = targetId;
-      if (targetType === 'lesson') examBody.lessonId = targetId;
+      if (targetType === "course") examBody.courseId = targetId;
+      if (targetType === "unit") examBody.unitId = targetId;
+      if (targetType === "lesson") examBody.lessonId = targetId;
 
       const createdExam = await createExamMutation.mutateAsync(examBody);
-
-      // Step 2: Add each question separately
-      const examId = createdExam?.id;
-      if (examId && data.questions.length > 0) {
-        for (let i = 0; i < data.questions.length; i++) {
-          const q = data.questions[i];
-          await addQuestionMutation.mutateAsync({
-            examId,
-            body: {
-              questionText: q.questionText,
-              type: q.type,
-              points: Number(q.points),
-              order: i + 1,
-              options: q.type === "MULTIPLE_CHOICE"
-                ? q.options.filter(o => o.trim())
-                : ["True", "False"],
-              correctAnswer: q.type === "MULTIPLE_CHOICE"
-                ? q.options[Number(q.correctAnswer)]
-                : q.correctAnswer,
-            }
-          });
-        }
-      }
-
       queryClient.invalidateQueries({ queryKey: ["admin", "course", courseId] });
       queryClient.invalidateQueries({ queryKey: ["admin", "exams"] });
 
       toast.success(t("adminPages.courseEditor.toasts.examCreated", { defaultValue: "Exam created and linked successfully!" }));
+      if (createdExam?.id) onCreated?.(createdExam.id);
       onClose();
     } catch (err) {
       toast.error(getErrorMessage(err, t("adminPages.courseEditor.toasts.examCreateFailed", { defaultValue: "Failed to create exam" })));
     }
   };
 
-  const isPending = createExamMutation.isPending || addQuestionMutation.isPending;
+  const isPending = createExamMutation.isPending;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm antialiased">
-      <div className="w-full max-w-2xl max-h-[90vh] flex flex-col rounded-3xl border border-slate-200 bg-white shadow-2xl dark:border-white/8 dark:bg-[#1A1A22] overflow-hidden">
-        {/* Header */}
+      <div className="w-full max-w-lg flex flex-col rounded-3xl border border-slate-200 bg-white shadow-2xl dark:border-white/8 dark:bg-[#1A1A22] overflow-hidden">
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 dark:border-white/5">
           <div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white capitalize">
@@ -265,221 +153,80 @@ function InContextExamBuilder({ targetId, targetType, onClose }) {
               })}
             </h3>
             <p className="text-[10px] text-slate-500 uppercase tracking-widest">
-              {t("adminPages.courseEditor.exam.stepLabel", {
-                step,
-                total: 2,
-                label: step === 1
-                  ? t("adminPages.courseEditor.exam.settings", { defaultValue: "Exam settings" })
-                  : t("adminPages.courseEditor.exam.questionBank", { defaultValue: "Question bank" }),
-                defaultValue: "Step {{step}} of {{total}}: {{label}}",
-              })}
+              {t("adminPages.courseEditor.exam.settingsStepHint", { defaultValue: "Step 1: exam settings â€” then add questions" })}
             </p>
           </div>
-          <button onClick={onClose} className="rounded-xl p-2 hover:bg-slate-50 dark:hover:bg-white/5">
+          <button type="button" onClick={onClose} className="rounded-xl p-2 hover:bg-slate-50 dark:hover:bg-white/5">
             <X className="h-5 w-5 text-slate-400" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex-1 overflow-hidden flex flex-col">
-          <div className="flex-1 overflow-y-auto p-6 space-y-6">
-            {step === 1 ? (
-              <div className="space-y-4">
-                <label className="block space-y-1.5">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                    {t("adminPages.courseEditor.exam.title", { defaultValue: "Exam title" })}
-                  </span>
-                  <input 
-                    {...register("title", { required: t("adminPages.courseEditor.validation.titleRequired", { defaultValue: "Title is required" }) })}
-                    placeholder={t("adminPages.courseEditor.exam.titlePlaceholder", { defaultValue: "e.g. Midterm assessment" })} 
-                    className={`h-11 w-full rounded-xl border px-4 text-sm font-medium outline-none transition-all ${
-                      errors.title ? "border-red-500 bg-[#EE7C11]/10" : "border-slate-200 bg-slate-50 focus:border-[#EE7C11]"
-                    } dark:border-white/10 dark:bg-[#0F0F13] dark:text-white`}
-                  />
-                  {errors.title && <p className="text-[10px] font-bold text-red-500 uppercase">{errors.title.message}</p>}
-                </label>
-                <div className="grid grid-cols-2 gap-4">
-                  <label className="block space-y-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                      {t("adminPages.courseEditor.exam.duration", { defaultValue: "Duration (min)" })}
-                    </span>
-                    <input 
-                      type="number"
-                      {...register("durationMinutes", { required: true })}
-                      className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" 
-                    />
-                  </label>
-                  <label className="block space-y-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                      {t("adminPages.courseEditor.exam.passingScore", { defaultValue: "Passing score" })}
-                    </span>
-                    <input 
-                      type="number"
-                      {...register("passingScore", { required: true })}
-                      className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" 
-                    />
-                  </label>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase">
-                    {t("adminPages.courseEditor.exam.questionsBankCount", {
-                      count: fields.length,
-                      defaultValue: "Question bank ({{count}})",
-                    })}
-                  </span>
-                  <button 
-                    type="button"
-                    onClick={() => append({ questionText: "", type: "MULTIPLE_CHOICE", points: 10, options: ["", "", "", ""], correctAnswer: "0" })}
-                    className="text-[10px] font-bold text-[#EE7C11] hover:underline"
-                  >
-                    {t("adminPages.courseEditor.exam.addNewQuestion", { defaultValue: "+ Add new question" })}
-                  </button>
-                </div>
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {error ? <p className="text-xs font-bold text-red-500">{error}</p> : null}
 
-                <div className="space-y-4">
-                  {fields.map((field, index) => (
-                    <div key={field.id} className="relative rounded-2xl border border-slate-100 bg-slate-50/50 p-5 dark:border-white/5 dark:bg-white/2">
-                      <button 
-                        type="button" 
-                        onClick={() => remove(index)}
-                        className="absolute end-4 top-4 text-slate-300 hover:text-red-500"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                      <div className="mb-4 flex items-center gap-2">
-                        <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#EE7C11] text-[10px] font-bold text-white">{index + 1}</span>
-                        <input 
-                          {...register(`questions.${index}.questionText`, {
-                            required: t("adminPages.courseEditor.validation.questionRequired", {
-                              defaultValue: "Question text is required",
-                            }),
-                          })}
-                          placeholder={t("adminPages.courseEditor.exam.questionPlaceholder", { defaultValue: "Write the question..." })}
-                          className={`flex-1 bg-transparent text-sm font-bold outline-none placeholder:text-slate-300 ${
-                            errors.questions?.[index]?.questionText ? "text-red-500" : "text-slate-900 dark:text-white"
-                          }`}
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-3 mb-4">
-                        <input 
-                          type="number"
-                          {...register(`questions.${index}.points`)}
-                          placeholder={t("adminPages.courseEditor.exam.points", { defaultValue: "Points" })}
-                          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs outline-none dark:border-white/5 dark:bg-[#0F0F13] dark:text-white"
-                        />
-                        <select 
-                          {...register(`questions.${index}.type`)}
-                          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs outline-none dark:border-white/5 dark:bg-[#0F0F13] dark:text-white"
-                        >
-                          <option value="MULTIPLE_CHOICE">{t("adminPages.courseEditor.exam.multipleChoice", { defaultValue: "Multiple choice" })}</option>
-                          <option value="TRUE_FALSE">{t("adminPages.courseEditor.exam.trueFalse", { defaultValue: "True/False" })}</option>
-                        </select>
-                      </div>
-                      
-                      {watch(`questions.${index}.type`) === "MULTIPLE_CHOICE" && (
-                        <div className="grid grid-cols-2 gap-2">
-                          {[0, 1, 2, 3].map(optIndex => (
-                            <div key={optIndex} className="flex items-center gap-2">
-                              <input 
-                                type="radio" 
-                                value={String(optIndex)} 
-                                {...register(`questions.${index}.correctAnswer`)}
-                                className="accent-[#EE7C11]"
-                              />
-                              <input 
-                                {...register(`questions.${index}.options.${optIndex}`, {
-                                  required: t("adminPages.courseEditor.validation.optionRequired", {
-                                    defaultValue: "Option is required",
-                                  }),
-                                })}
-                                placeholder={t("adminPages.courseEditor.exam.optionNumber", {
-                                  n: optIndex + 1,
-                                  defaultValue: "Option {{n}}",
-                                })}
-                                className={`h-8 flex-1 rounded-lg border px-3 text-[11px] outline-none transition-all ${
-                                  errors.questions?.[index]?.options?.[optIndex] ? "border-red-500 bg-[#EE7C11]/10" : "border-slate-200 bg-white dark:border-white/5 dark:bg-[#0F0F13] dark:text-white"
-                                }`}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      )}
+          <label className="block space-y-1.5">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              {t("adminPages.courseEditor.exam.title", { defaultValue: "Exam title" })}
+            </span>
+            <input
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              placeholder={t("adminPages.courseEditor.exam.titlePlaceholder", { defaultValue: "e.g. Midterm assessment" })}
+              className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-medium outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+            />
+          </label>
 
-                      {watch(`questions.${index}.type`) === "TRUE_FALSE" && (
-                        <div className="grid grid-cols-2 gap-3">
-                          {[
-                            t("adminPages.courseEditor.exam.true", { defaultValue: "True" }),
-                            t("adminPages.courseEditor.exam.false", { defaultValue: "False" }),
-                          ].map((label, optIndex) => (
-                            <label 
-                              key={label}
-                              className={`flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 py-3 transition-all ${
-                                watch(`questions.${index}.correctAnswer`) === String(optIndex)
-                                  ? "border-[#EE7C11] bg-[#EE7C11]/5 font-bold text-[#EE7C11]"
-                                  : "border-slate-200 bg-white text-slate-500 hover:border-slate-300 dark:border-white/10 dark:bg-[#0F0F13]"
-                              }`}
-                            >
-                              <input 
-                                type="radio"
-                                value={String(optIndex)}
-                                {...register(`questions.${index}.correctAnswer`)}
-                                className="hidden"
-                              />
-                              <CheckCircle2 className={`h-4 w-4 ${watch(`questions.${index}.correctAnswer`) === String(optIndex) ? "opacity-100" : "opacity-0"}`} />
-                              <span className="text-sm">{label}</span>
-                            </label>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+          <div className="grid grid-cols-3 gap-3">
+            <label className="block space-y-1.5">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                {t("adminPages.courseEditor.exam.duration", { defaultValue: "Duration (min)" })}
+              </span>
+              <input
+                type="number"
+                min={1}
+                value={form.durationMinutes}
+                onChange={(e) => setForm({ ...form, durationMinutes: e.target.value })}
+                className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+              />
+            </label>
+            <label className="block space-y-1.5">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                {t("adminPages.courseEditor.exam.passingScore", { defaultValue: "Passing score" })}
+              </span>
+              <input
+                type="number"
+                min={0}
+                value={form.passingScore}
+                onChange={(e) => setForm({ ...form, passingScore: e.target.value })}
+                className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+              />
+            </label>
+            <label className="block space-y-1.5">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                {t("adminPages.courseEditor.exam.totalPoints", { defaultValue: "Total points" })}
+              </span>
+              <input
+                type="number"
+                min={1}
+                value={form.totalPoints}
+                onChange={(e) => setForm({ ...form, totalPoints: e.target.value })}
+                className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+              />
+            </label>
           </div>
 
-          {/* Footer */}
-          <div className="border-t border-slate-100 bg-slate-50 px-6 py-4 dark:border-white/5 dark:bg-white/2">
-            <div className="flex justify-between gap-3">
-              {step === 2 && (
-                <button 
-                  type="button" 
-                  onClick={() => setStep(1)} 
-                  className="rounded-xl border border-slate-200 px-6 py-2.5 text-xs font-bold text-slate-500 hover:bg-white dark:border-white/10"
-                >
-                  {t("adminPages.courseEditor.exam.backToSettings", { defaultValue: "Back to settings" })}
-                </button>
-              )}
-              <div className="flex flex-1 justify-end gap-3">
-                <button 
-                  type="button" 
-                  onClick={onClose} 
-                  className="rounded-xl px-6 py-2.5 text-xs font-bold text-slate-400 hover:text-slate-600"
-                >
-                  {t("adminPages.courseEditor.actions.cancel", { defaultValue: "Cancel" })}
-                </button>
-                {step === 1 ? (
-                  <button 
-                    type="button" 
-                    onClick={() => setStep(2)} 
-                    className="rounded-xl bg-[#EE7C11] px-8 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#EE7C11]/20 hover:bg-[#d9700e]"
-                  >
-                    {t("adminPages.courseEditor.exam.nextBuildQuestions", { defaultValue: "Next: build questions" })}
-                  </button>
-                ) : (
-                  <button 
-                    type="submit" 
-                    disabled={isPending}
-                    className="inline-flex items-center gap-2 rounded-xl bg-[#EE7C11] px-10 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#EE7C11]/20 hover:bg-[#d9700e] disabled:opacity-50"
-                  >
-                    {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                    {t("adminPages.courseEditor.exam.saveAndLink", { defaultValue: "Save & link exam" })}
-                  </button>
-                )}
-              </div>
-            </div>
+          <div className="flex justify-end gap-3 border-t border-slate-100 pt-4 dark:border-white/5">
+            <button type="button" onClick={onClose} className="rounded-xl px-5 py-2.5 text-xs font-bold text-slate-400 hover:text-slate-600">
+              {t("adminPages.courseEditor.actions.cancel", { defaultValue: "Cancel" })}
+            </button>
+            <button
+              type="submit"
+              disabled={isPending}
+              className="inline-flex items-center gap-2 rounded-xl bg-[#EE7C11] px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#EE7C11]/20 hover:bg-[#d9700e] disabled:opacity-50"
+            >
+              {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              {t("adminPages.courseEditor.exam.createAndEditQuestions", { defaultValue: "Create & edit questions" })}
+            </button>
           </div>
         </form>
       </div>
@@ -487,7 +234,7 @@ function InContextExamBuilder({ targetId, targetType, onClose }) {
   );
 }
 
-/* ─── Exam Manager Component ─── */
+/* â”€â”€â”€ Exam Manager Component â”€â”€â”€ */
 function ExamManager({ targetId, targetType, linkedExams, onRefresh }) {
   const { t } = useTranslation();
   const { id: courseId } = useParams();
@@ -590,14 +337,38 @@ function ExamManager({ targetId, targetType, linkedExams, onRefresh }) {
                   {t("adminPages.courseEditor.exam.editQuestions", { defaultValue: "Edit questions" })}
                 </button>
                 <Link 
-                  to={`/admin/exams/${exam.id}/submissions`}
+                  to={`/admin/exams/${exam.id}/edit`}
                   className="flex items-center justify-center rounded-lg border border-slate-200 px-2 py-2 text-slate-500 hover:bg-slate-50 dark:border-white/10 dark:hover:bg-white/5"
+                  title={t("adminPages.courseEditor.exam.openFullEditor", { defaultValue: "Open full exam editor" })}
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
+                </Link>
+                <Link 
+                  to={`/admin/exams/${exam.id}/submissions`}
+                  className="flex items-center justify-center rounded-lg border border-slate-200 px-2 py-2 text-slate-500 hover:bg-slate-50 dark:border-white/10 dark:hover:bg-white/5"
+                  title={t("adminPages.courseEditor.exam.viewSubmissions", { defaultValue: "View submissions" })}
+                >
+                  <ClipboardList className="h-3.5 w-3.5" />
                 </Link>
               </div>
             </div>
           ))}
+          <div className="grid grid-cols-2 gap-2 pt-1">
+            <button
+              type="button"
+              onClick={() => setShowCreate(true)}
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#EE7C11] py-2 text-[11px] font-bold text-white hover:bg-[#d9700e]"
+            >
+              <PlusCircle className="h-3.5 w-3.5" /> {t("adminPages.courseEditor.exam.createNew", { defaultValue: "Create new" })}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowSearch(true)}
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-white dark:hover:bg-white/5"
+            >
+              <Search className="h-3.5 w-3.5" /> {t("adminPages.courseEditor.exam.linkExisting", { defaultValue: "Link existing" })}
+            </button>
+          </div>
         </div>
       ) : (
         <div className="rounded-xl border-2 border-dashed border-slate-200 p-8 text-center dark:border-white/10">
@@ -629,7 +400,8 @@ function ExamManager({ targetId, targetType, linkedExams, onRefresh }) {
         <InContextExamBuilder 
           targetId={targetId} 
           targetType={targetType} 
-          onClose={() => setShowCreate(false)} 
+          onClose={() => setShowCreate(false)}
+          onCreated={(examId) => setEditingExamId(examId)}
         />
       )}
 
@@ -666,7 +438,7 @@ function ExamManager({ targetId, targetType, linkedExams, onRefresh }) {
   );
 }
 
-/* ─── Lesson Row ─── */
+/* â”€â”€â”€ Lesson Row â”€â”€â”€ */
 function LessonRow({ lesson, isSelected, onSelect, onDelete }) {
   const { t } = useTranslation();
   return (
@@ -681,7 +453,6 @@ function LessonRow({ lesson, isSelected, onSelect, onDelete }) {
         onClick={() => onSelect(lesson)}
         className="flex min-w-0 flex-1 items-center gap-2 px-3 py-2 text-start text-sm outline-none"
       >
-        <GripVertical className="h-3.5 w-3.5 shrink-0 text-slate-300 dark:text-slate-600" />
         <FileText className="h-4 w-4 shrink-0" />
         <span className="flex-1 truncate">{lesson.title}</span>
         {lesson.videoUrl && <Video className="h-3.5 w-3.5 shrink-0 text-emerald-500" />}
@@ -697,7 +468,7 @@ function LessonRow({ lesson, isSelected, onSelect, onDelete }) {
   );
 }
 
-/* ─── Unit Accordion (Unit → Section → Lesson) ─── */
+/* â”€â”€â”€ Unit Accordion (Unit â†’ Section â†’ Lesson) â”€â”€â”€ */
 function UnitAccordion({
   unit,
   isSelected,
@@ -816,7 +587,7 @@ function UnitAccordion({
   );
 }
 
-/* ─── Inline Editable Field ─── */
+/* â”€â”€â”€ Inline Editable Field â”€â”€â”€ */
 function InlineEdit({ value, onSave, placeholder, className = "" }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value || "");
@@ -849,7 +620,7 @@ function InlineEdit({ value, onSave, placeholder, className = "" }) {
   );
 }
 
-/* ─── Detail Editor (Polymorphic) ─── */
+/* â”€â”€â”€ Detail Editor (Polymorphic) â”€â”€â”€ */
 function DetailEditor({ node, onClose }) {
   const { t } = useTranslation();
   const updateCourseMutation = useUpdateAdminCourse();
@@ -1171,7 +942,7 @@ function DetailEditor({ node, onClose }) {
                 <div className="mt-3 space-y-1">
                   {(staff || []).map((s) => (
                     <div key={s.id} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-xs dark:bg-white/5">
-                      <span>{s?.user?.fullName || s?.user?.email} · {s.role}</span>
+                      <span>{s?.user?.fullName || s?.user?.email} Â· {s.role}</span>
                       <button
                         type="button"
                         disabled={removeStaffMutation.isPending}
@@ -1244,7 +1015,7 @@ function DetailEditor({ node, onClose }) {
 }
 
 
-/* ─── Live Sessions Tab ─── */
+/* â”€â”€â”€ Live Sessions Tab â”€â”€â”€ */
 function CourseSessionsPanel({ course }) {
   const { t } = useTranslation();
   const { data: sessions = [], isLoading } = useCourseSessions(course?.id);
@@ -1332,7 +1103,7 @@ function CourseSessionsPanel({ course }) {
           {sortedInstructors.map((i) => {
             const isOwner = i.id === (course?.instructorId || course?.instructor?.id);
             const label = isOwner
-              ? `⭐ ${i.fullName || i.name} (${t("adminPages.courseEditor.sessions.courseOwner", { defaultValue: "Course Owner" })})`
+              ? `â­ ${i.fullName || i.name} (${t("adminPages.courseEditor.sessions.courseOwner", { defaultValue: "Course Owner" })})`
               : i.fullName || i.name;
             return (
               <option key={i.id} value={i.id}>
@@ -1363,7 +1134,7 @@ function CourseSessionsPanel({ course }) {
             <div>
               <p className="font-semibold text-slate-900 dark:text-white">{session.title || t("adminPages.courseEditor.sessions.untitled", { defaultValue: "Live session" })}</p>
               <p className="mt-1 text-xs text-slate-500">
-                {session.instructor?.fullName || session.instructorId} · {new Date(session.startTime).toLocaleString()}
+                {session.instructor?.fullName || session.instructorId} Â· {new Date(session.startTime).toLocaleString()}
               </p>
               <p className="text-xs text-slate-500">{session.status}</p>
             </div>
@@ -1388,9 +1159,9 @@ function CourseSessionsPanel({ course }) {
 }
 
 
-/* ═══════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    MAIN: CourseEditor (The Studio)
-   ═══════════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 export default function CourseEditor() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -1529,7 +1300,7 @@ export default function CourseEditor() {
           <div className="min-w-0">
             <h1 className="text-xl font-bold text-slate-900 dark:text-white">{course.title}</h1>
             <p className="text-xs text-slate-500">
-              {course.category?.name || t("adminPages.courseEditor.empty.noCategory", { defaultValue: "No category" })} ·{" "}
+              {course.category?.name || t("adminPages.courseEditor.empty.noCategory", { defaultValue: "No category" })} Â·{" "}
               {course.instructor?.fullName || t("adminPages.courseEditor.empty.noInstructor", { defaultValue: "No instructor" })}
             </p>
           </div>

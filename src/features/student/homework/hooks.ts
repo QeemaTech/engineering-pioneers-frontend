@@ -1,11 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchHomeworkAssignment, fetchHomeworkByCohort, fetchMyHomework, submitHomework } from "./api";
+import { fetchHomeworkAssignment, fetchHomeworkByCourse, fetchMyHomework, submitHomework } from "./api";
 
-export function useHomeworkList(cohortId: string | undefined) {
+export function useHomeworkList(courseId: string | undefined) {
   return useQuery({
-    queryKey: ["student", "homework", cohortId],
-    queryFn: () => fetchHomeworkByCohort(cohortId as string),
-    enabled: !!cohortId,
+    queryKey: ["student", "homework", "course", courseId],
+    queryFn: () => fetchHomeworkByCourse(courseId as string),
+    enabled: !!courseId,
     retry: false,
   });
 }
@@ -32,17 +32,17 @@ export function useSubmitHomework() {
   return useMutation({
     mutationFn: ({
       homeworkId,
-      cohortId,
+      courseId,
       body,
     }: {
       homeworkId: string;
-      cohortId?: string;
+      courseId?: string;
       body: { content?: string | null; fileUrl?: string | null } | FormData;
     }) => submitHomework(homeworkId, body),
     onSuccess: (_, v) => {
       void qc.invalidateQueries({ queryKey: ["student", "homework", "mine"] });
       void qc.invalidateQueries({ queryKey: ["student", "homework", "assignment", v.homeworkId] });
-      if (v.cohortId) void qc.invalidateQueries({ queryKey: ["student", "homework", v.cohortId] });
+      if (v.courseId) void qc.invalidateQueries({ queryKey: ["student", "homework", "course", v.courseId] });
     },
   });
 }
