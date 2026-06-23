@@ -1,6 +1,6 @@
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { isNavGroup, type NavSection } from "../../../config/navigation";
 import NavGroup from "./NavGroup";
 import NavItem from "./NavItem";
@@ -35,7 +35,11 @@ function Sidebar({ sections, isMobileOpen, setIsMobileOpen }: SidebarProps) {
         className={`flex h-16 items-center border-b border-slate-100 px-3 transition-all sm:h-20 sm:px-4 dark:border-white/6 ${isCollapsed ? "lg:justify-center" : "justify-between"
           }`}
       >
-        <div className={`flex items-center gap-3 overflow-hidden whitespace-nowrap ${isCollapsed ? "lg:hidden" : ""}`}>
+        <Link
+          to="/"
+          className={`flex items-center gap-3 overflow-hidden whitespace-nowrap transition hover:opacity-80 ${isCollapsed ? "lg:hidden" : ""}`}
+          title={t("sidebarNav.items.websiteHome", { defaultValue: "Homepage" })}
+        >
           <img
             src="/assets/ChatGPT%20Image%20Mar%2025,%202026,%2002_45_22%20PM%201.svg"
             alt="Engineering Pioneers"
@@ -44,7 +48,7 @@ function Sidebar({ sections, isMobileOpen, setIsMobileOpen }: SidebarProps) {
           <h1 className="text-base font-bold tracking-tight text-slate-900 dark:text-white">
             Engineering Pioneers
           </h1>
-        </div>
+        </Link>
 
         <div className="flex items-center gap-1">
           {/* Desktop Toggle */}

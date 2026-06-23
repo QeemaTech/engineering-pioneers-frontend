@@ -1,4 +1,5 @@
-import { Bell, User, Settings, LogOut, Shield, ChevronDown, Sun, Moon, Menu, LayoutDashboard } from "lucide-react";
+import { Bell, User, Settings, LogOut, Shield, ChevronDown, Sun, Moon, Menu, LayoutDashboard, Globe, Home } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -24,9 +25,47 @@ function Topbar({ onMenuClick }) {
   };
 
   const isAdminShell = pathname.startsWith("/admin");
+  const isStudentShell = pathname.startsWith("/student");
+  const isInstructorShell = pathname.startsWith("/instructor");
 
   const profileMenuItems = useMemo(() => {
     const close = () => setIsProfileOpen(false);
+    if (isStudentShell) {
+      return [
+        {
+          icon: Home,
+          labelKey: "header.dashboardMenu.websiteHome",
+          onClick: () => {
+            close();
+            navigate("/");
+          },
+        },
+        {
+          icon: Globe,
+          labelKey: "header.dashboardMenu.websiteExplore",
+          onClick: () => {
+            close();
+            navigate("/explore");
+          },
+        },
+        {
+          icon: User,
+          labelKey: "header.dashboardMenu.account",
+          onClick: () => {
+            close();
+            navigate("/student/settings");
+          },
+        },
+        {
+          icon: LayoutDashboard,
+          labelKey: "header.dashboardMenu.studentHome",
+          onClick: () => {
+            close();
+            navigate("/student");
+          },
+        },
+      ];
+    }
     if (isAdminShell) {
       return [
         {
@@ -65,7 +104,7 @@ function Topbar({ onMenuClick }) {
         },
       },
     ];
-  }, [isAdminShell, navigate]);
+  }, [isAdminShell, isStudentShell, navigate]);
 
   const currentLng = lang;
 
@@ -83,17 +122,47 @@ function Topbar({ onMenuClick }) {
               <Menu className="h-5 w-5 sm:h-6 sm:w-6 rtl:scale-x-[-1]" />
             </button>
 
+            {isStudentShell ? (
+              <Link
+                to="/"
+                title={t("header.dashboardMenu.visitWebsite", { defaultValue: "Visit website" })}
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-pioneer-orange-normal/30 bg-pioneer-orange-light text-pioneer-orange-normal md:hidden"
+              >
+                <Globe className="h-4 w-4" />
+              </Link>
+            ) : null}
+
             <div className="hidden min-w-0 items-center gap-4 md:flex lg:gap-6">
-              <div className="flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[10px] font-bold text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-500">
-                <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                {t("overview.platformStatus")}: {t("overview.allSystemsOk")}
-              </div>
-              
-              <nav className="flex items-center gap-2 text-xs font-medium text-slate-400 dark:text-slate-500">
-                <span>{t("sidebar.adminPanel")}</span>
-                <span className="text-slate-300 dark:text-slate-700">/</span>
-                <span className="text-slate-600 dark:text-slate-300">{t("nav.overview")}</span>
-              </nav>
+              {isStudentShell ? (
+                <>
+                  <Link
+                    to="/"
+                    className="inline-flex items-center gap-2 rounded-xl border border-pioneer-orange-normal/30 bg-pioneer-orange-light px-3 py-1.5 text-xs font-bold text-pioneer-orange-normal transition hover:bg-pioneer-orange-normal hover:text-white dark:border-pioneer-orange-normal/40 dark:bg-pioneer-orange-normal/10"
+                  >
+                    <Globe className="h-3.5 w-3.5" />
+                    {t("header.dashboardMenu.visitWebsite", { defaultValue: "Visit website" })}
+                  </Link>
+                  <nav className="flex items-center gap-2 text-xs font-medium text-slate-400 dark:text-slate-500">
+                    <span>{t("header.dashboardMenu.studentPanel", { defaultValue: "Student panel" })}</span>
+                  </nav>
+                </>
+              ) : isInstructorShell ? (
+                <nav className="flex items-center gap-2 text-xs font-medium text-slate-400 dark:text-slate-500">
+                  <span>{t("header.dashboardMenu.instructorPanel", { defaultValue: "Instructor panel" })}</span>
+                </nav>
+              ) : (
+                <>
+                  <div className="flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[10px] font-bold text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-500">
+                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    {t("overview.platformStatus")}: {t("overview.allSystemsOk")}
+                  </div>
+                  <nav className="flex items-center gap-2 text-xs font-medium text-slate-400 dark:text-slate-500">
+                    <span>{t("sidebar.adminPanel")}</span>
+                    <span className="text-slate-300 dark:text-slate-700">/</span>
+                    <span className="text-slate-600 dark:text-slate-300">{t("nav.overview")}</span>
+                  </nav>
+                </>
+              )}
             </div>
           </div>
 

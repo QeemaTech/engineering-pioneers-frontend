@@ -11,7 +11,10 @@ import {
   Award,
   DollarSign,
   FileText,
+  Globe,
   GraduationCap,
+  HelpCircle,
+  Home,
   LayoutDashboard,
   MessageSquare,
   Settings2,
@@ -352,6 +355,15 @@ export function getStudentNavigation(): NavSection[] {
         { labelKey: "sidebarNav.items.tickets", path: "/student/tickets", icon: MessageSquare },
         { labelKey: "sidebarNav.items.wishlist", path: "/student/wishlist", icon: Heart },
         { labelKey: "sidebarNav.items.settings", path: "/student/settings", icon: Settings2 },
+      ],
+    },
+    {
+      labelKey: "sidebarNav.sections.studentWebsite",
+      items: [
+        { labelKey: "sidebarNav.items.websiteHome", path: "/", icon: Home, exact: true },
+        { labelKey: "sidebarNav.items.websiteExplore", path: "/explore", icon: Globe },
+        { labelKey: "sidebarNav.items.websiteAbout", path: "/about", icon: FileText },
+        { labelKey: "sidebarNav.items.websiteFaq", path: "/faq", icon: HelpCircle },
       ],
     },
   ];

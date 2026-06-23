@@ -39,7 +39,8 @@
       "financialsSecurity": "Financials & Security",
       "studentOverview": "Dashboard",
       "studentLearning": "Learning",
-      "studentServices": "Account & support"
+      "studentServices": "Account & support",
+      "studentWebsite": "Website"
     },
     "items": {
       "analytics": "Analytics",
@@ -94,7 +95,11 @@
       "payments": "Payments",
       "wishlist": "Wishlist",
       "progress": "Progress",
-      "studentHomework": "Homework"
+      "studentHomework": "Homework",
+      "websiteHome": "Homepage",
+      "websiteExplore": "Browse courses",
+      "websiteAbout": "About us",
+      "websiteFaq": "FAQ"
     }
   },
   "student": {
@@ -1232,6 +1237,12 @@
       "account": "My profile",
       "platformSettings": "Platform settings",
       "instructorHome": "Dashboard home",
+      "studentHome": "My dashboard",
+      "studentPanel": "Student panel",
+      "instructorPanel": "Instructor panel",
+      "visitWebsite": "Visit website",
+      "websiteHome": "Homepage",
+      "websiteExplore": "Browse courses",
       "switchRole": "Switch role",
       "logout": "Log out",
       "accountActions": "Account"

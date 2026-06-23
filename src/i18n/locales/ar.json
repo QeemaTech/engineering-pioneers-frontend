@@ -39,7 +39,8 @@
       "financialsSecurity": "الحساب المالي والأمان",
       "studentOverview": "لوحة التحكم",
       "studentLearning": "التعلم",
-      "studentServices": "الحساب والدعم"
+      "studentServices": "الحساب والدعم",
+      "studentWebsite": "الموقع"
     },
     "items": {
       "analytics": "التحليلات",
@@ -93,7 +94,11 @@
       "payments": "المدفوعات",
       "wishlist": "المفضلة",
       "progress": "التقدم",
-      "studentHomework": "الواجبات"
+      "studentHomework": "الواجبات",
+      "websiteHome": "الصفحة الرئيسية",
+      "websiteExplore": "استكشاف الكورسات",
+      "websiteAbout": "من نحن",
+      "websiteFaq": "الأسئلة الشائعة"
     }
   },
   "student": {
@@ -1234,6 +1239,12 @@
       "account": "ملفي الشخصي",
       "platformSettings": "إعدادات المنصة",
       "instructorHome": "الرئيسية",
+      "studentHome": "لوحتي",
+      "studentPanel": "لوحة الطالب",
+      "instructorPanel": "لوحة المدرس",
+      "visitWebsite": "زيارة الموقع",
+      "websiteHome": "الصفحة الرئيسية",
+      "websiteExplore": "استكشاف الكورسات",
       "switchRole": "تبديل الدور",
       "logout": "تسجيل الخروج",
       "accountActions": "الحساب"
