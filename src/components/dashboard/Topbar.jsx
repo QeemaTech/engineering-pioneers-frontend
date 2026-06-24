@@ -1,4 +1,4 @@
-import { Bell, User, Settings, LogOut, Shield, ChevronDown, Sun, Moon, Menu, LayoutDashboard, Globe, Home } from "lucide-react";
+import { User, Settings, LogOut, Shield, ChevronDown, Sun, Moon, Menu, LayoutDashboard, Globe, Home, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useLang } from "../../contexts/LangContext";
+import NotificationBell from "./NotificationBell";
 
 function Topbar({ onMenuClick }) {
   const { t } = useTranslation();
@@ -16,7 +17,6 @@ function Topbar({ onMenuClick }) {
   const { theme, toggleTheme } = useTheme();
   const { lang, setLang } = useLang();
   
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -27,6 +27,14 @@ function Topbar({ onMenuClick }) {
   const isAdminShell = pathname.startsWith("/admin");
   const isStudentShell = pathname.startsWith("/student");
   const isInstructorShell = pathname.startsWith("/instructor");
+
+  const roleLabel = useMemo(() => {
+    const role = typeof user?.role === "object" ? user.role.name : user?.role;
+    if (isStudentShell) return t("header.dashboardMenu.studentPanel", { defaultValue: "Student" });
+    if (isInstructorShell) return t("header.dashboardMenu.instructorPanel", { defaultValue: "Instructor" });
+    if (isAdminShell) return role || t("header.admin", { defaultValue: "Admin" });
+    return role || "";
+  }, [user?.role, isStudentShell, isInstructorShell, isAdminShell, t]);
 
   const profileMenuItems = useMemo(() => {
     const close = () => setIsProfileOpen(false);
@@ -46,6 +54,14 @@ function Topbar({ onMenuClick }) {
           onClick: () => {
             close();
             navigate("/explore");
+          },
+        },
+        {
+          icon: GraduationCap,
+          labelKey: "header.dashboardMenu.websiteInstructors",
+          onClick: () => {
+            close();
+            navigate("/instructors");
           },
         },
         {
@@ -126,7 +142,7 @@ function Topbar({ onMenuClick }) {
               <Link
                 to="/"
                 title={t("header.dashboardMenu.visitWebsite", { defaultValue: "Visit website" })}
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-pioneer-orange-normal/30 bg-pioneer-orange-light text-pioneer-orange-normal md:hidden"
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-pioneer-orange-normal/30 bg-pioneer-orange-light text-white hover:text-white md:hidden"
               >
                 <Globe className="h-4 w-4" />
               </Link>
@@ -204,49 +220,9 @@ function Topbar({ onMenuClick }) {
             </button>
           </div>
 
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-              aria-expanded={isNotificationsOpen}
-              aria-label={t("header.notifications")}
-              className={`relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors sm:h-10 sm:w-10 ${isNotificationsOpen ? "bg-pioneer-orange text-white" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white"}`}
-            >
-              <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
-              <span className="absolute end-2.5 top-2.5 h-2 w-2 rounded-full bg-pioneer-orange ring-2 ring-pioneer-light-card dark:ring-pioneer-dark-card" />
-            </button>
-
-            {isNotificationsOpen && (
-              <div className="absolute end-0 z-50 mt-3 w-[min(20rem,calc(100vw-1.5rem))] max-w-[calc(100vw-1.5rem)] rounded-2xl border border-slate-200 bg-pioneer-light-card p-3 shadow-md sm:mt-4 sm:w-80 sm:max-w-none sm:p-4 dark:border-slate-800 dark:bg-[#1E293B] dark:shadow-2xl dark:shadow-black/50 dark:backdrop-blur-xl">
-                <div className="mb-4 flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-pioneer-light-textPrimary dark:text-pioneer-dark-textPrimary">{t("header.notifications")}</h3>
-                  <button className="text-[10px] font-bold text-pioneer-orange hover:underline">Mark all read</button>
-                </div>
-                <div className="space-y-2">
-                  {[
-                    { title: "New Enrollment", body: "Ahmed Hassan joined HSK 1", time: "2m ago" },
-                    { title: "System Update", body: "v2.4 successfully deployed", time: "1h ago" },
-                    { title: "Report Ready", body: "April revenue report is ready", time: "3h ago" },
-                  ].map((note, i) => (
-                    <div key={i} className="group rounded-xl bg-slate-50 p-3 transition-colors hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10">
-                      <p className="text-xs font-bold text-slate-900 dark:text-white">{note.title}</p>
-                      <p className="mt-1 text-[10px] text-slate-500 dark:text-slate-400">{note.body}</p>
-                      <p className="mt-2 text-[8px] font-bold uppercase tracking-wider text-slate-600">{note.time}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+          <NotificationBell variant="dashboard" />
 
           <div className="hidden h-6 w-px bg-slate-200 sm:block dark:bg-white/10" />
-
-          <div className="hidden flex-col items-end md:flex">
-            <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
-              {t("overview.lastSynced")}: 2 {t("overview.minAgo")}
-            </p>
-            <div className="h-px w-8 bg-pioneer-orange/30 mt-1" />
-          </div>
 
           <div className="relative">
             <button
@@ -261,7 +237,7 @@ function Topbar({ onMenuClick }) {
                   {user?.fullName || t("header.admin")}
                 </p>
                 <p className="truncate text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                  {(typeof user?.role === "object" ? user.role.name : user?.role) || "Global Admin"}
+                  {roleLabel}
                 </p>
               </div>
               <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-100 ring-2 ring-slate-200 sm:h-10 sm:w-10 dark:bg-white/5 dark:ring-white/10">

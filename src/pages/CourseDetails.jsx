@@ -20,6 +20,7 @@ import { APP_ROLES, normalizeRole } from "../config/permissions";
 import { usePublicCourse } from "../features/public/hooks";
 import { useMyCourses } from "../features/student/courses/hooks";
 import { fetchCourseReviews, computeAverageRating } from "../features/student/reviews/api";
+import PublicCourseCurriculum from "../components/public/PublicCourseCurriculum";
 
 function Stars({ rating, max = 5, size = "h-4 w-4" }) {
   return (
@@ -235,19 +236,39 @@ export default function CourseDetails() {
 
             <section className="overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
               <h2 className="mb-4 text-xl font-bold text-slate-900">{t("courseDetails.curriculum.title")}</h2>
-              <p className="text-sm leading-relaxed text-slate-600">{t("courseDetails.curriculum.publicNotice")}</p>
+              <PublicCourseCurriculum
+                units={course.units ?? []}
+                homeworks={course.homeworks ?? []}
+                exams={course.exams ?? []}
+              />
             </section>
 
             {instructorForCard ? (
               <section className="overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
                 <h2 className="mb-5 text-xl font-bold text-slate-900">{t("courseDetails.instructor.title")}</h2>
-                <div className="flex items-start gap-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
                   <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-pioneer-orange-normal text-xl font-extrabold text-white shadow">
                     {initials(instructorForCard.fullName)}
                   </div>
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <p className="text-base font-bold text-slate-900">{instructorForCard.fullName}</p>
                     <p className="mt-2 text-sm leading-relaxed text-slate-600">{instructorForCard.bio || t("courseDetails.instructor.noBio", { defaultValue: "Bio coming soon." })}</p>
+                    {instructorForCard.id ? (
+                      <div className="mt-4 flex flex-wrap gap-3">
+                        <Link
+                          to={`/instructors/${instructorForCard.id}`}
+                          className="inline-flex items-center rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-pioneer-orange-normal hover:text-pioneer-orange-normal"
+                        >
+                          {t("courseDetails.instructor.viewProfile", { defaultValue: "View profile" })}
+                        </Link>
+                        <Link
+                          to={`/instructors/${instructorForCard.id}#book`}
+                          className="inline-flex items-center rounded-xl bg-pioneer-orange-normal px-4 py-2 text-sm font-bold text-white transition hover:bg-pioneer-orange-hover"
+                        >
+                          {t("courseDetails.instructor.bookSession", { defaultValue: "Book 1-to-1 session" })}
+                        </Link>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               </section>

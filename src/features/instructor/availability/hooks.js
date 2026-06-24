@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createAvailabilitySlot, deleteAvailabilitySlot, fetchInstructorAvailability } from "./api";
+import { createAvailabilitySlot, deleteAvailabilitySlot, fetchInstructorAvailability, updateAvailabilitySlotPrice } from "./api";
 
 export function useInstructorAvailability() {
   return useQuery({
@@ -24,6 +24,18 @@ export function useDeleteAvailabilitySlot() {
     mutationFn: deleteAvailabilitySlot,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["instructor", "availability"] });
+    },
+  });
+}
+
+export function useUpdateAvailabilitySlotPrice() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ slotId, price }) => updateAvailabilitySlotPrice(slotId, price),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["instructor", "availability"] });
+      queryClient.invalidateQueries({ queryKey: ["public", "instructor"] });
+      queryClient.invalidateQueries({ queryKey: ["student", "booking-slots"] });
     },
   });
 }

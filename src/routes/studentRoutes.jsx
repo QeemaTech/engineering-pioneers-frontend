@@ -15,6 +15,7 @@ import ExamDetails from "../pages/ExamDetails";
 import TakeExam from "../pages/TakeExam";
 import ExamResult from "../pages/ExamResult";
 import Progress from "../pages/Progress";
+import StudentAttendance from "../pages/student/Attendance";
 import BookPrivate from "../pages/BookPrivate";
 import Payments from "../pages/student/Payments";
 import Certificates from "../pages/student/Certificates";
@@ -51,6 +52,7 @@ function StudentRoutes() {
     <>
       <Route element={<GuardedRoute allowedRoles={[APP_ROLES.STUDENT]} />}>
         <Route path="/student/courses/:id/learn" element={<CourseView />} />
+        <Route path="/student/exams/:id/take" element={<TakeExam />} />
 
         <Route path="/student" element={<StudentLayout />}>
           <Route index element={<StudentOverview />} />
@@ -63,9 +65,9 @@ function StudentRoutes() {
           <Route path="homework/course/:courseId" element={<HomeworkCohort />} />
           <Route path="exams" element={<Exams />} />
           <Route path="exams/:id" element={<ExamDetails />} />
-          <Route path="exams/:id/take" element={<TakeExam />} />
           <Route path="exams/:id/results/:submissionId" element={<ExamResult />} />
           <Route path="progress" element={<Progress />} />
+          <Route path="attendance" element={<StudentAttendance />} />
           <Route path="book-session" element={<BookPrivate />} />
           <Route path="payments" element={<Payments />} />
           <Route path="certificates" element={<Certificates />} />
@@ -89,7 +91,7 @@ function StudentRoutes() {
       <Route path="/settings" element={<Navigate to="/student/settings" replace />} />
       <Route path="/recordings" element={<Navigate to="/student/recordings" replace />} />
       <Route path="/checkout" element={<Navigate to="/student/checkout" replace />} />
-      <Route path="/book-session" element={<Navigate to="/student/book-session" replace />} />
+      <Route path="/book-session" element={<Navigate to="/instructors" replace />} />
     </>
   );
 }

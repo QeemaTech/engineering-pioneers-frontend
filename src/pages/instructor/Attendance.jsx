@@ -6,6 +6,7 @@ import EmptyState from "../../components/dashboard/EmptyState";
 import { useAttendanceSessions, useMarkSessionAttendance, useSessionAttendance } from "../../features/instructor/attendance/hooks";
 import { useInstructorClassesForStudents } from "../../features/instructor/students/hooks";
 import { getErrorMessage } from "../../api/error";
+import { useAttendanceSocket } from "../../hooks/useAttendanceSocket";
 
 const DARK_INPUT =
   "h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none focus:border-[#EE7C11] dark:border-white/15 dark:bg-[#12121a] dark:text-slate-100 dark:[color-scheme:dark]";
@@ -49,6 +50,8 @@ function Attendance() {
     enabled: Boolean(activeSessionId),
   });
   const markMutation = useMarkSessionAttendance();
+
+  useAttendanceSocket({ sessionId: activeSessionId, enabled: Boolean(activeSessionId) });
 
   const summary = detail?.summary;
   const roster = detail?.roster || [];

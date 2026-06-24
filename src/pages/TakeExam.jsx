@@ -238,7 +238,7 @@ export default function TakeExam() {
         <button type="button" onClick={() => void refetch()} className="mt-4 text-pioneer-orange-normal hover:underline">
           {t("takeExam.retry", { defaultValue: "Retry" })}
         </button>
-        <Link to="/exams" className="mt-6 block text-sm text-slate-500 hover:text-pioneer-orange-normal">
+        <Link to="/student/exams" className="mt-6 block text-sm text-slate-500 hover:text-pioneer-orange-normal">
           {t("takeExam.backExams")}
         </Link>
       </div>
@@ -251,7 +251,7 @@ export default function TakeExam() {
         <AlertCircle className="mx-auto h-12 w-12 text-amber-500" />
         <h1 className="mt-4 text-xl font-bold text-slate-900">{t("takeExam.expiredIncomplete.title")}</h1>
         <p className="mt-2 text-sm text-slate-600">{t("takeExam.expiredIncomplete.body")}</p>
-        <Link to="/exams" className="mt-8 inline-block rounded-xl bg-pioneer-orange-normal px-6 py-3 text-sm font-bold text-white hover:bg-pioneer-orange-hover">
+        <Link to="/student/exams" className="mt-8 inline-block rounded-xl bg-pioneer-orange-normal px-6 py-3 text-sm font-bold text-white hover:bg-pioneer-orange-hover">
           {t("takeExam.backExams")}
         </Link>
       </div>
@@ -286,7 +286,7 @@ export default function TakeExam() {
           >
             {startExam.isPending ? t("takeExam.starting") : t("takeExam.begin")}
           </button>
-          <Link to={`/exams/${examId}`} className="mt-4 block text-center text-sm text-slate-500 hover:text-pioneer-orange-normal">
+          <Link to={`/student/exams/${examId}`} className="mt-4 block text-center text-sm text-slate-500 hover:text-pioneer-orange-normal">
             {t("takeExam.backDetail")}
           </Link>
         </div>
@@ -324,7 +324,7 @@ export default function TakeExam() {
             </div>
           </div>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Link to="/exams" className="rounded-xl border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-600 transition hover:border-pioneer-orange-normal hover:text-pioneer-orange-normal">
+            <Link to="/student/exams" className="rounded-xl border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-600 transition hover:border-pioneer-orange-normal hover:text-pioneer-orange-normal">
               {t("takeExam.result.backToExams")}
             </Link>
           </div>
@@ -346,7 +346,7 @@ export default function TakeExam() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="sticky top-[72px] z-30 bg-white shadow-sm">
+      <div className="sticky top-0 z-30 bg-white shadow-sm">
         <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
           <div className="flex h-14 items-center justify-between gap-4">
             <div className="min-w-0 flex-1">

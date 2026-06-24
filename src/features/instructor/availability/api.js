@@ -15,3 +15,8 @@ export async function deleteAvailabilitySlot(slotId) {
   const response = await client.delete(`${endpoints.instructor.availability}/${slotId}`);
   return response?.data?.data;
 }
+
+export async function updateAvailabilitySlotPrice(slotId, price) {
+  const response = await client.patch(`${endpoints.instructor.availability}/${slotId}`, { price });
+  return response?.data?.data;
+}

@@ -2,53 +2,19 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Calendar, ChevronDown, Clock, Search } from "lucide-react";
 import { useMemo, useState } from "react";
+import PageHeader from "../components/dashboard/PageHeader";
 import { useMyHomework } from "../features/student/homework/hooks";
+import {
+  deriveHomeworkUiStatus,
+  HOMEWORK_STATUS_BADGE,
+  HOMEWORK_STATUS_LABEL,
+} from "../utils/homeworkStatus";
 
 function homeworkTypeKey(type) {
   const k = String(type || "TEXT").toUpperCase();
   if (["TEXT", "FILE", "LINK"].includes(k)) return `homework.type.${k}`;
   return "homework.type.TEXT";
 }
-
-function deriveHomeworkUiStatus(hw) {
-  const now = Date.now();
-  const due = new Date(hw.dueDate).getTime();
-  const sub = hw.submission;
-  const submittedAt = sub?.submittedAt;
-
-  if (sub?.status === "GRADED") {
-    const max = Number(hw.totalPoints) || 100;
-    const g = sub.grade != null ? Number(sub.grade) : null;
-    const pct = g != null ? Math.round((g / max) * 100) : null;
-    return { key: "completed", gradePct: pct };
-  }
-  if (submittedAt) {
-    if (sub.status === "PENDING") return { key: "underReview" };
-    return { key: "submitted" };
-  }
-  if (due < now) {
-    const overdueDays = Math.max(1, Math.ceil((now - due) / 86400000));
-    return { key: "late", overdueDays };
-  }
-  const daysLeft = Math.max(0, Math.ceil((due - now) / 86400000));
-  return { key: "pending", daysLeft };
-}
-
-const STATUS_BADGE = {
-  pending: "bg-orange-100 text-orange-800",
-  late: "bg-red-100 text-red-700",
-  submitted: "bg-teal-100 text-teal-800",
-  underReview: "bg-purple-100 text-purple-800",
-  completed: "bg-green-100 text-green-700",
-};
-
-const STATUS_LABEL = {
-  pending: "homework.status.pending",
-  late: "homework.status.late",
-  submitted: "homework.status.submitted",
-  underReview: "homework.status.underReview",
-  completed: "homework.status.completed",
-};
 
 export default function Homework() {
   const { t } = useTranslation();
@@ -81,28 +47,19 @@ export default function Homework() {
 
   return (
     <div className="space-y-8">
-      <div className="text-center md:text-start">
-          <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
-            {t("homework.titlePrefix")}{" "}
-            <span className="relative inline-block">
-              <span className="relative z-10 text-pioneer-orange-normal">{t("homework.titleAccent")}</span>
-              <span
-                className="absolute -inset-x-1 bottom-0 -z-0 h-2/5 rounded-sm bg-pioneer-teal-light opacity-90"
-                aria-hidden
-              />
-            </span>
-          </h1>
-          <p className="mx-auto mt-3 max-w-xl text-base text-slate-500 md:mx-0">{t("homework.subtitle")}</p>
-        </div>
+      <PageHeader
+        title={`${t("homework.titlePrefix")} ${t("homework.titleAccent")}`}
+        subtitle={t("homework.subtitle")}
+      />
 
-        <div className="mt-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-stretch lg:max-w-3xl">
             <div className="relative min-w-0 flex-1">
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder={t("homework.searchPlaceholder")}
-                className="w-full rounded-xl border border-slate-200 bg-white py-3 pe-4 ps-4 text-sm text-slate-900 outline-none focus:border-pioneer-orange-normal focus:ring-2 focus:ring-pioneer-orange-light sm:pe-3"
+                className="w-full rounded-xl border border-slate-200 bg-white py-3 pe-4 ps-4 text-sm text-slate-900 outline-none focus:border-pioneer-orange-normal focus:ring-2 focus:ring-pioneer-orange-light dark:border-slate-600 dark:bg-[#1E293B] dark:text-white sm:pe-3"
               />
             </div>
             <button
@@ -116,7 +73,7 @@ export default function Homework() {
               <select
                 value={courseFilter}
                 onChange={(e) => setCourseFilter(e.target.value)}
-                className="h-12 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-white py-2 pe-10 ps-4 text-sm text-slate-900 outline-none focus:border-pioneer-orange-normal focus:ring-2 focus:ring-pioneer-orange-light"
+                className="h-12 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-white py-2 pe-10 ps-4 text-sm text-slate-900 outline-none focus:border-pioneer-orange-normal focus:ring-2 focus:ring-pioneer-orange-light dark:border-slate-600 dark:bg-[#1E293B] dark:text-white"
               >
                 <option value="">{t("homework.filter.allClasses", { defaultValue: "All classes" })}</option>
                 {courseOptions.map((c) => (
@@ -128,7 +85,7 @@ export default function Homework() {
               <ChevronDown className="pointer-events-none absolute end-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             </div>
           </div>
-          <p className="shrink-0 text-sm text-slate-500">
+          <p className="shrink-0 text-sm text-slate-500 dark:text-slate-400">
             {filtered.length === 0
               ? t("homework.showingNone", { defaultValue: "No assignments to show" })
               : t("homework.showingRange", {
@@ -162,25 +119,39 @@ export default function Homework() {
           {!isLoading && !isError
             ? filtered.map((hw) => {
                 const st = deriveHomeworkUiStatus(hw);
-                const badgeClass = STATUS_BADGE[st.key] || STATUS_BADGE.pending;
+                const badgeClass = HOMEWORK_STATUS_BADGE[st.key] || HOMEWORK_STATUS_BADGE.pending;
                 const typeKey = homeworkTypeKey(hw.type);
                 const ctx = hw.courseTitle || t("homework.filter.allClasses", { defaultValue: "Course" });
                 const canSubmit = st.key === "pending" || st.key === "late";
                 const ctaKey = canSubmit ? "homework.actions.submit" : "homework.actions.viewDetails";
 
                 return (
-                  <article key={hw.id} className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                  <article key={hw.id} className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700/40 dark:bg-[#1E293B]">
                     <div className="flex flex-1 flex-col p-5">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <h3 className="text-base font-bold text-slate-900">{hw.title}</h3>
-                          <p className="mt-1 text-xs text-slate-500">{ctx}</p>
+                          <h3 className="text-base font-bold text-slate-900 dark:text-white">{hw.title}</h3>
+                          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                            {ctx}
+                            {hw.courseId ? (
+                              <>
+                                {" · "}
+                                <Link
+                                  to={`/student/homework/course/${hw.courseId}`}
+                                  className="font-semibold text-pioneer-orange-normal hover:underline"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {t("homework.viewCourse", { defaultValue: "All course homework" })}
+                                </Link>
+                              </>
+                            ) : null}
+                          </p>
                           <p className="mt-1 text-[11px] font-semibold uppercase tracking-wide text-pioneer-orange-normal/90">{t(typeKey)}</p>
                         </div>
-                        <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${badgeClass}`}>{t(STATUS_LABEL[st.key])}</span>
+                        <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${badgeClass}`}>{t(HOMEWORK_STATUS_LABEL[st.key])}</span>
                       </div>
 
-                      <div className="mt-4 space-y-2 text-xs text-slate-600">
+                      <div className="mt-4 space-y-2 text-xs text-slate-600 dark:text-slate-300">
                         <div className="flex flex-wrap items-center gap-1">
                           <Calendar className="h-3.5 w-3.5 shrink-0 text-slate-400" />
                           <span>
@@ -215,7 +186,7 @@ export default function Homework() {
 
                       <Link
                         to={`/student/homework/assignment/${hw.id}`}
-                        className="mt-5 block w-full rounded-xl bg-pioneer-orange-light py-3 text-center text-sm font-bold text-pioneer-orange-normal transition hover:bg-pioneer-orange-light/80"
+                        className="mt-5 block w-full rounded-xl bg-pioneer-orange-light py-3 text-center text-sm font-bold text-pioneer-orange-normal transition hover:bg-pioneer-orange-light/80 dark:bg-pioneer-orange-normal/15 dark:hover:bg-pioneer-orange-normal/25"
                       >
                         {t(ctaKey)}
                       </Link>

@@ -15,24 +15,35 @@ import { useMyHomework } from "../../features/student/homework/hooks";
 import { useStudentExams } from "../../features/student/exams/hooks";
 import { useStudentClasses } from "../../features/student/classes/hooks";
 import { useNotifications } from "../../features/student/notifications/hooks";
-import { fetchCourseProgressStats } from "../../features/student/progress/api";
-import { useQuery } from "@tanstack/react-query";
 
-function StatCard({ label, value, icon: Icon, accent }) {
-  return (
-    <article className="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm dark:border-slate-700/40 dark:bg-[#1E293B]">
+function courseKey(course) {
+  return course.courseId ?? course.id;
+}
+
+function StatCard({ label, value, icon: Icon, accent, href }) {
+  const inner = (
+    <article className="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm transition hover:border-pioneer-orange-normal/40 dark:border-slate-700/40 dark:bg-[#1E293B]">
       <div className={`mb-3 flex h-10 w-10 items-center justify-center rounded-xl ${accent}`}>
         <Icon className="h-5 w-5 text-white" />
       </div>
       <p className="text-2xl font-extrabold text-slate-900 dark:text-white">{value}</p>
-      <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
+      <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{label}</p>
     </article>
   );
+  if (href) {
+    return (
+      <Link to={href} className="block">
+        {inner}
+      </Link>
+    );
+  }
+  return inner;
 }
 
 function deriveHomeworkPending(hw) {
   const sub = hw.submission;
   if (sub?.status === "GRADED" || sub?.submittedAt) return false;
+  if (sub?.status === "SUBMITTED") return false;
   return true;
 }
 
@@ -45,13 +56,14 @@ export default function StudentOverview() {
   const { data: notifications = [] } = useNotifications();
 
   const pendingHomework = useMemo(() => homework.filter(deriveHomeworkPending).length, [homework]);
-  const upcomingExams = useMemo(() => {
-    const now = Date.now();
-    return exams.filter((e) => {
-      const end = e.endDate ? new Date(e.endDate).getTime() : null;
-      return end == null || end > now;
-    }).length;
-  }, [exams]);
+  const upcomingExams = useMemo(
+    () =>
+      exams.filter((e) => {
+        if (e.mySubmission?.submittedAt) return false;
+        return e.status === "AVAILABLE" || e.status === "UPCOMING";
+      }).length,
+    [exams]
+  );
 
   const nextLive = useMemo(() => {
     const now = Date.now();
@@ -60,26 +72,20 @@ export default function StudentOverview() {
       .sort((a, b) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime())[0];
   }, [liveSessions]);
 
-  const { data: continueCourses = [] } = useQuery({
-    queryKey: ["student", "overview", "continue", courses.map((c) => c.id).join(",")],
-    enabled: courses.length > 0,
-    queryFn: async () => {
-      const rows = await Promise.all(
-        courses.slice(0, 4).map(async (course) => {
-          try {
-            const stat = await fetchCourseProgressStats(course.id);
-            return { ...course, progress: Math.round(Number(stat?.percentage) || 0) };
-          } catch {
-            return { ...course, progress: Math.round(Number(course.progressPercentage) || 0) };
-          }
-        })
-      );
-      return rows.filter((c) => c.progress < 100).slice(0, 3);
-    },
-    retry: false,
-  });
+  const continueCourses = useMemo(
+    () =>
+      courses
+        .map((course) => ({
+          ...course,
+          id: courseKey(course),
+          progress: Math.round(Number(course.progressPercentage) || 0),
+        }))
+        .filter((course) => course.id && course.progress < 100)
+        .slice(0, 3),
+    [courses]
+  );
 
-  const recentNotifs = notifications.slice(0, 5);
+  const recentNotifs = Array.isArray(notifications) ? notifications.slice(0, 5) : [];
 
   return (
     <div className="space-y-8">
@@ -100,6 +106,7 @@ export default function StudentOverview() {
           value={pendingHomework}
           icon={ClipboardList}
           accent="bg-gradient-to-br from-purple-500 to-purple-700"
+          href="/student/homework"
         />
         <StatCard
           label={t("student.overview.stats.exams", { defaultValue: "Upcoming exams" })}
@@ -149,7 +156,7 @@ export default function StudentOverview() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-bold text-slate-900 dark:text-white">{course.title}</p>
-                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100">
+                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700">
                       <div className="h-full rounded-full bg-pioneer-orange-normal" style={{ width: `${course.progress}%` }} />
                     </div>
                   </div>
@@ -170,7 +177,8 @@ export default function StudentOverview() {
             ) : (
               recentNotifs.map((n, i) => (
                 <div key={n.id} className={`px-4 py-3.5 ${i < recentNotifs.length - 1 ? "border-b border-slate-100 dark:border-slate-700" : ""}`}>
-                  <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{n.title || n.message}</p>
+                  <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{n.title}</p>
+                  {n.message ? <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{n.message}</p> : null}
                   <p className="mt-0.5 text-xs text-slate-400">
                     {n.createdAt ? new Date(n.createdAt).toLocaleString() : ""}
                   </p>
@@ -180,12 +188,12 @@ export default function StudentOverview() {
           </div>
 
           {nextLive ? (
-            <div className="rounded-2xl border border-pioneer-orange-normal/30 bg-pioneer-orange-light/50 p-4">
+            <div className="rounded-2xl border border-pioneer-orange-normal/30 bg-pioneer-orange-light/50 p-4 dark:bg-pioneer-orange-normal/10">
               <p className="text-xs font-bold uppercase tracking-wide text-pioneer-orange-normal">
                 {t("student.overview.nextLive", { defaultValue: "Next live session" })}
               </p>
-              <p className="mt-1 font-bold text-slate-900">{nextLive.title}</p>
-              <p className="mt-1 flex items-center gap-1 text-xs text-slate-600">
+              <p className="mt-1 font-bold text-slate-900 dark:text-white">{nextLive.title}</p>
+              <p className="mt-1 flex items-center gap-1 text-xs text-slate-600 dark:text-slate-300">
                 <Calendar className="h-3.5 w-3.5" />
                 {new Date(nextLive.scheduledAt).toLocaleString()}
               </p>

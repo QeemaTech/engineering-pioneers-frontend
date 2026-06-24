@@ -20,7 +20,7 @@ const OrangeIconWrapper = ({ children }) => (
 
 const ITEMS = [
   { key: "liveClasses", Icon: Video, to: "/explore" },
-  { key: "groupAndOneToOne", Icon: Users, to: "/book-session" },
+  { key: "groupAndOneToOne", Icon: Users, to: "/instructors" },
   { key: "homeworkAndPractice", Icon: FileCheck, to: "/signup" },
   { key: "recordedSessions", Icon: ClipboardList, to: "/student/live-sessions" },
 ];

@@ -78,6 +78,44 @@ export type PublicCoursesListResult = {
   meta: PublicPaginationMeta | null;
 };
 
+export type PublicLessonOutline = {
+  id: string;
+  title: string;
+  order: number;
+  isLive: boolean;
+  durationSeconds: number;
+};
+
+export type PublicSectionOutline = {
+  id: string;
+  title: string;
+  order: number;
+  lessons: PublicLessonOutline[];
+};
+
+export type PublicUnitOutline = {
+  id: string;
+  title: string;
+  order: number;
+  sections: PublicSectionOutline[];
+};
+
+export type PublicHomeworkOutline = {
+  id: string;
+  title: string;
+  dueDate: string;
+  unitId: string | null;
+  lessonIds: string[];
+};
+
+export type PublicExamOutline = {
+  id: string;
+  title: string;
+  type: string;
+  unitId: string | null;
+  lessonId: string | null;
+};
+
 export type PublicCourseDetail = {
   id: string;
   title: string;
@@ -90,6 +128,9 @@ export type PublicCourseDetail = {
   category?: PublicCourseCategory;
   instructor?: PublicInstructor;
   liveSessions: PublicLiveSession[];
+  units?: PublicUnitOutline[];
+  homeworks?: PublicHomeworkOutline[];
+  exams?: PublicExamOutline[];
   _count: { purchases: number };
 };
 

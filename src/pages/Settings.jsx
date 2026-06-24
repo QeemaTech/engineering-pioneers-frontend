@@ -36,13 +36,13 @@ const passwordSchema = z
 function Field({ label, error, type = "text", placeholder, rightElement, ...rest }) {
   return (
     <div className="space-y-1.5">
-      {label && <label className="block text-sm font-medium text-slate-700">{label}</label>}
+      {label && <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">{label}</label>}
       <div className="relative">
         <input
           type={type}
           placeholder={placeholder}
-          className={`w-full rounded-xl border py-3 pe-10 ps-4 text-sm outline-none transition focus:ring-2
-            ${error ? "border-red-400 focus:border-red-400 focus:ring-red-100" : "border-slate-200 focus:border-pioneer-orange focus:ring-pioneer-teal/30"}
+          className={`w-full rounded-xl border bg-white py-3 pe-10 ps-4 text-sm text-slate-900 outline-none transition focus:ring-2 dark:border-slate-600 dark:bg-[#0F172A] dark:text-white
+            ${error ? "border-red-400 focus:border-red-400 focus:ring-red-100 dark:focus:ring-red-500/20" : "border-slate-200 focus:border-pioneer-orange focus:ring-pioneer-teal/30 dark:focus:border-pioneer-orange-normal"}
           `}
           {...rest}
         />
@@ -65,7 +65,7 @@ function PasswordField({ label, error, placeholder, ...rest }) {
       type={show ? "text" : "password"}
       placeholder={placeholder}
       rightElement={
-        <button type="button" onClick={() => setShow((v) => !v)} className="text-slate-400 hover:text-slate-600">
+        <button type="button" onClick={() => setShow((v) => !v)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
           {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </button>
       }
@@ -121,11 +121,11 @@ function ProfileSection() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-      <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-5">
+      <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-5 dark:border-slate-700/40 dark:bg-slate-800/50">
         <ProfileAvatarEditor />
-        <div className="mt-4 border-t border-slate-100 pt-4">
-          <p className="text-base font-bold text-slate-900">{user?.fullName}</p>
-          <p className="text-sm text-slate-500">{user?.email}</p>
+        <div className="mt-4 border-t border-slate-100 pt-4 dark:border-slate-700/50">
+          <p className="text-base font-bold text-slate-900 dark:text-white">{user?.fullName}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{user?.email}</p>
         </div>
       </div>
 
@@ -141,7 +141,7 @@ function ProfileSection() {
           type="email"
           value={user?.email ?? ""}
           readOnly
-          className="cursor-not-allowed bg-slate-50 text-slate-400"
+          className="cursor-not-allowed bg-slate-50 text-slate-400 dark:bg-slate-800 dark:text-slate-500"
           placeholder={t("settings.profile.emailPlaceholder")}
         />
         <Field
@@ -198,7 +198,7 @@ function SecuritySection() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      <div className="flex items-center gap-2 text-base font-bold text-slate-900">
+      <div className="flex items-center gap-2 text-base font-bold text-slate-900 dark:text-white">
         <Lock className="h-4 w-4 text-pioneer-orange" />
         {t("settings.security.changePassword")}
       </div>
@@ -247,12 +247,12 @@ function NotificationsSection() {
 
   return (
     <div className="space-y-5">
-      <p className="text-sm text-slate-500">{t("settings.notifs.description")}</p>
+      <p className="text-sm text-slate-500 dark:text-slate-400">{t("settings.notifs.description")}</p>
       {NOTIF_KEYS.map((key) => (
-        <div key={key} className="flex items-center justify-between gap-4 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3.5">
+        <div key={key} className="flex items-center justify-between gap-4 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3.5 dark:border-slate-700/40 dark:bg-slate-800/50">
           <div>
-            <p className="text-sm font-semibold text-slate-800">{t(`settings.notifs.${key}.title`)}</p>
-            <p className="text-xs text-slate-500">{t(`settings.notifs.${key}.desc`)}</p>
+            <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{t(`settings.notifs.${key}.title`)}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{t(`settings.notifs.${key}.desc`)}</p>
           </div>
           <button
             type="button"
@@ -284,17 +284,17 @@ export default function Settings() {
     <div className="space-y-8">
 
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white md:text-4xl">
             {t("settings.titlePrefix")}{" "}
             <span className="text-pioneer-orange">{t("settings.titleAccent")}</span>
           </h1>
-          <p className="mt-2 text-sm text-slate-500">{t("settings.subtitle")}</p>
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{t("settings.subtitle")}</p>
         </div>
 
         <div className="flex flex-col gap-6 lg:flex-row">
 
           {/* Sidebar nav */}
-          <nav className="flex overflow-x-auto gap-1 rounded-2xl border border-slate-100 bg-white p-2 shadow-sm lg:w-52 lg:shrink-0 lg:flex-col lg:overflow-x-visible">
+          <nav className="flex overflow-x-auto gap-1 rounded-2xl border border-slate-100 bg-white p-2 shadow-sm dark:border-slate-700/40 dark:bg-[#1E293B] lg:w-52 lg:shrink-0 lg:flex-col lg:overflow-x-visible">
             {NAV.map(({ key, icon: Icon, label }) => (
               <button
                 key={key}
@@ -302,7 +302,7 @@ export default function Settings() {
                 className={`flex shrink-0 items-center gap-2.5 rounded-xl px-4 py-3 text-sm font-semibold transition-colors
                   ${tab === key
                     ? "bg-pioneer-orange/10 text-pioneer-orange"
-                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-700 dark:hover:bg-slate-700/50 dark:hover:text-slate-200"
                   }`}
               >
                 <Icon className="h-4 w-4 shrink-0" />
@@ -312,8 +312,8 @@ export default function Settings() {
           </nav>
 
           {/* Content panel */}
-          <div className="flex-1 overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-            <h2 className="mb-6 text-lg font-bold text-slate-900">{t(`settings.nav.${tab}`)}</h2>
+          <div className="flex-1 overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-700/40 dark:bg-[#1E293B]">
+            <h2 className="mb-6 text-lg font-bold text-slate-900 dark:text-white">{t(`settings.nav.${tab}`)}</h2>
             <ActiveSection />
           </div>
         </div>

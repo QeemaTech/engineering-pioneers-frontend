@@ -5,7 +5,7 @@ import EmptyState from "../../components/dashboard/EmptyState";
 import Notice from "../../components/dashboard/Notice";
 import PageHeader from "../../components/dashboard/PageHeader";
 import { getErrorMessage } from "../../api/error";
-import { useCreateAvailabilitySlot, useDeleteAvailabilitySlot, useInstructorAvailability } from "../../features/instructor/availability/hooks";
+import { useCreateAvailabilitySlot, useDeleteAvailabilitySlot, useInstructorAvailability, useUpdateAvailabilitySlotPrice } from "../../features/instructor/availability/hooks";
 
 function todayDateStr() {
   const d = new Date();
@@ -43,11 +43,14 @@ function Availability() {
   const { data: slots = [], isLoading } = useInstructorAvailability();
   const createMut = useCreateAvailabilitySlot();
   const deleteMut = useDeleteAvailabilitySlot();
+  const updatePriceMut = useUpdateAvailabilitySlotPrice();
   const [notice, setNotice] = useState(null);
 
   const [dateStr, setDateStr] = useState(todayDateStr);
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("10:00");
+  const [price, setPrice] = useState("");
+  const [priceDrafts, setPriceDrafts] = useState({});
 
   const grouped = useMemo(() => {
     const map = new Map();
@@ -73,14 +76,35 @@ function Availability() {
       setNotice({ type: "error", message: t("dashboard.instructor.pages.availability.invalidRange") });
       return;
     }
+    const parsedPrice = Number(price);
+    if (!Number.isFinite(parsedPrice) || parsedPrice <= 0) {
+      setNotice({ type: "error", message: t("dashboard.instructor.pages.availability.priceRequired") });
+      return;
+    }
     try {
       await createMut.mutateAsync({
         startTime: start.toISOString(),
         endTime: end.toISOString(),
+        price: parsedPrice,
       });
       setNotice({ type: "success", message: t("dashboard.instructor.pages.availability.added") });
     } catch (err) {
       setNotice({ type: "error", message: getErrorMessage(err, "Could not add slot.") });
+    }
+  };
+
+  const onSetPrice = async (slotId) => {
+    setNotice(null);
+    const parsedPrice = Number(priceDrafts[slotId]);
+    if (!Number.isFinite(parsedPrice) || parsedPrice <= 0) {
+      setNotice({ type: "error", message: t("dashboard.instructor.pages.availability.priceRequired") });
+      return;
+    }
+    try {
+      await updatePriceMut.mutateAsync({ slotId, price: parsedPrice });
+      setNotice({ type: "success", message: t("dashboard.instructor.pages.availability.priceUpdated") });
+    } catch (err) {
+      setNotice({ type: "error", message: getErrorMessage(err, "Could not update price.") });
     }
   };
 
@@ -149,6 +173,22 @@ function Availability() {
               </div>
             </div>
 
+            <div>
+              <label className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                {t("dashboard.instructor.pages.availability.labelPrice")}
+              </label>
+              <input
+                type="number"
+                min="1"
+                step="1"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder={t("dashboard.instructor.pages.availability.pricePlaceholder")}
+                className={fieldClass}
+              />
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{t("dashboard.instructor.pages.availability.priceHint")}</p>
+            </div>
+
             <button
               type="submit"
               disabled={createMut.isPending}
@@ -211,6 +251,32 @@ function Availability() {
                                   slot.status
                                 )}
                               </p>
+                              {slot.price > 0 ? (
+                                <p className="mt-1 text-sm font-bold text-violet-600 dark:text-violet-300">
+                                  {t("dashboard.instructor.pages.availability.slotPrice", { price: Math.round(slot.price) })}
+                                </p>
+                              ) : (
+                                <div className="mt-2 flex flex-wrap items-center gap-2">
+                                  <span className="text-xs font-semibold text-amber-600">{t("dashboard.instructor.pages.availability.priceMissing")}</span>
+                                  <input
+                                    type="number"
+                                    min="1"
+                                    step="1"
+                                    value={priceDrafts[slot.id] ?? ""}
+                                    onChange={(e) => setPriceDrafts((prev) => ({ ...prev, [slot.id]: e.target.value }))}
+                                    placeholder={t("dashboard.instructor.pages.availability.pricePlaceholder")}
+                                    className="h-9 w-28 rounded-lg border border-amber-200 bg-white px-2 text-sm dark:border-amber-500/30 dark:bg-[#0F0F13]"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => void onSetPrice(slot.id)}
+                                    disabled={updatePriceMut.isPending}
+                                    className="rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-bold text-white hover:bg-amber-600 disabled:opacity-60"
+                                  >
+                                    {t("dashboard.instructor.pages.availability.setPrice")}
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           </div>
                           {slot.status === "AVAILABLE" && (

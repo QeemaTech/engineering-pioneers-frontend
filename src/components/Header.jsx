@@ -312,10 +312,11 @@ export default function Header() {
   const navItems = [
     { to: "/", label: t("header.nav.home") },
     { to: "/explore", label: t("header.nav.explore") },
+    { to: "/instructors", label: t("header.nav.instructors", { defaultValue: "Instructors" }) },
     ...(isAuthenticated && isStudent
       ? [{ to: "/student", label: t("header.nav.myDashboard", { defaultValue: "My dashboard" }) }]
       : []),
-    ...(isAuthenticated && isStudent ? [{ to: "/student/book-session", label: t("header.nav.bookPrivate") }] : []),
+    ...(isAuthenticated && isStudent ? [{ to: "/instructors", label: t("header.nav.bookPrivate") }] : []),
   ];
 
   return (

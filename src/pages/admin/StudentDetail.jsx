@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { 
   Lock, MessageSquare, Trash2, UserX, BookOpen, Calendar, Clock, DollarSign, 
   Award, GraduationCap, ChevronRight, CheckCircle2, AlertCircle, ShieldCheck, Mail, Phone,
-  Activity, Inbox, ListChecks, Loader2, X
+  Activity, Inbox, ListChecks, Loader2, X, UserCheck
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -22,6 +22,9 @@ import { getErrorMessage } from "../../api/error";
 import { useAdminEnrollments } from "../../features/admin/enrollments/hooks";
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import StudentPerformanceUI from "../../components/features/student/StudentPerformanceUI";
+import StudentAttendanceReport from "../../components/features/student/StudentAttendanceReport";
+import { useAdminStudentAttendance } from "../../features/admin/students/attendanceHooks";
+import { useAttendanceSocket } from "../../hooks/useAttendanceSocket";
 
 const COLORS = ["#10B981", "#6366F1", "#EE7C11", "#8B5CF6", "#EF4444"];
 
@@ -57,6 +60,15 @@ function StudentDetail() {
 
   const perfQuery = useAdminStudentPerformance(id, {
     enabled: Boolean(id) && isStudent,
+  });
+
+  const attendanceQuery = useAdminStudentAttendance(id, {
+    enabled: Boolean(id) && isStudent && activeTab === "attendance",
+  });
+
+  useAttendanceSocket({
+    watchStudentId: id,
+    enabled: Boolean(id) && isStudent && activeTab === "attendance",
   });
 
   const student = useMemo(() => {
@@ -233,6 +245,7 @@ function StudentDetail() {
       { id: "overview", label: t("adminPages.studentDetail.tabOverview", { defaultValue: "Overview" }), icon: Activity },
       ...(isStudent ? [
         { id: "performance", label: t("adminPages.studentDetail.tabPerformance", { defaultValue: "Academic Performance" }), icon: GraduationCap },
+        { id: "attendance", label: t("adminPages.studentDetail.tabAttendance", { defaultValue: "Attendance" }), icon: UserCheck },
         { id: "exams", label: t("adminPages.studentDetail.tabExams", { defaultValue: "Exam Results" }), icon: Award },
         { id: "homework", label: t("adminPages.studentDetail.tabHomework", { defaultValue: "Homework Submissions" }), icon: ListChecks },
       ] : []),
@@ -733,6 +746,30 @@ function StudentDetail() {
               }}
             />
           ) : null}
+        </div>
+      )}
+
+      {activeTab === "attendance" && isStudent && (
+        <div className="space-y-6">
+          {attendanceQuery.isLoading ? (
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-slate-500 dark:border-white/8 dark:bg-[#1A1A22]">
+              <Loader2 className="mx-auto h-6 w-6 animate-spin text-[#EE7C11]" />
+              <p className="mt-2 text-sm">{t("dashboard.common.loading")}</p>
+            </div>
+          ) : attendanceQuery.isError ? (
+            <div className="rounded-2xl border border-red-200 bg-[#EE7C11]/10 p-5 text-sm text-red-700 dark:border-red-500/30">
+              {t("studentAttendance.loadError")}
+              <button type="button" onClick={() => attendanceQuery.refetch()} className="ms-3 rounded-lg bg-[#EE7C11] px-3 py-1 text-xs font-bold text-white">
+                {t("dashboard.common.refresh")}
+              </button>
+            </div>
+          ) : (
+            <StudentAttendanceReport
+              summary={attendanceQuery.data?.summary}
+              records={attendanceQuery.data?.records ?? []}
+              live
+            />
+          )}
         </div>
       )}
 

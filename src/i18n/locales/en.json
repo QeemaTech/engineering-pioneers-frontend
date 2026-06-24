@@ -98,6 +98,7 @@
       "studentHomework": "Homework",
       "websiteHome": "Homepage",
       "websiteExplore": "Browse courses",
+      "websiteInstructors": "Find instructors",
       "websiteAbout": "About us",
       "websiteFaq": "FAQ"
     }
@@ -620,6 +621,7 @@
       "delete": "Delete",
       "tabOverview": "Overview",
       "tabPerformance": "Academic Performance",
+      "tabAttendance": "Attendance",
       "tabExams": "Exam Results",
       "tabHomework": "Homework Submissions",
       "tabCourses": "Enrolled Courses",
@@ -672,6 +674,7 @@
         "completionRing": "Completion overview",
         "lessonBased": "Lesson completion",
         "cohortAvg": "Cohort progress (avg)",
+        "liveAttendance": "Live session attendance",
         "attendanceNote": "Live sessions completed in enrolled cohorts (context): {{n}}. Per-student attendance is not recorded; progress uses lessons and cohort enrollment.",
         "recentGrades": "Recent grades",
         "colType": "Type",
@@ -1212,6 +1215,7 @@
       "home": "Home",
       "subscription": "Subscription",
       "explore": "Explore",
+      "instructors": "Instructors",
       "myClasses": "My Cohorts",
       "myDashboard": "My dashboard",
       "bookPrivate": "Book session"
@@ -1243,6 +1247,7 @@
       "visitWebsite": "Visit website",
       "websiteHome": "Homepage",
       "websiteExplore": "Browse courses",
+      "websiteInstructors": "Find instructors",
       "switchRole": "Switch role",
       "logout": "Log out",
       "accountActions": "Account"
@@ -1454,7 +1459,8 @@
       "faq": "FAQ",
       "forum": "Forum",
       "sitemap": "Sitemap",
-      "courses": "Browse courses"
+      "courses": "Browse courses",
+      "instructors": "Instructors"
     },
     "teaching": {
       "title": "Teaching",
@@ -1632,6 +1638,10 @@
       "enterCode": "Enter a coupon code.",
       "contextRequired": "Coupon validation needs course or plan context.",
       "applied": "Coupon is valid for this purchase.",
+      "appliedWithDiscount": "Coupon applied — {{discount}} off. New total: {{price}}",
+      "originalPrice": "Original price",
+      "discount": "Discount",
+      "remove": "Remove",
       "invalid": "This coupon could not be applied."
     },
     "package": {
@@ -1676,6 +1686,7 @@
     "genericError": "Enrollment could not be completed. Please try again.",
     "alreadyEnrolled": "You are already enrolled in this cohort.",
     "goToClasses": "Go to My Classes",
+    "viewPayments": "View payments",
     "quota": {
       "title": "Upgrade your plan",
       "body": "Your current subscription does not allow this enrollment, or you have reached your package limit. Choose a plan that fits your goals.",
@@ -1810,7 +1821,28 @@
     "tabs": {
       "notes": "Notes",
       "materials": "Materials",
-      "objectives": "Objectives"
+      "objectives": "Objectives",
+      "lessons": "Lessons",
+      "liveSessions": "Live sessions",
+      "homework": "Homework"
+    },
+    "liveSessions": {
+      "empty": "No live sessions scheduled for this course yet.",
+      "hint": "Join from here when the countdown reaches zero.",
+      "viewAll": "View all live sessions"
+    },
+    "homework": {
+      "empty": "No homework assigned for this course yet.",
+      "hint": "Open an assignment to read instructions and submit your work.",
+      "viewAll": "View all homework"
+    },
+    "certificate": {
+      "completeTitle": "Course completed!",
+      "ready": "Claim your certificate of completion.",
+      "claim": "Claim certificate",
+      "claimError": "Could not claim certificate.",
+      "issued": "Certificate issued",
+      "viewAll": "View all certificates"
     }
   },
   "homework": {
@@ -1828,6 +1860,8 @@
     "titlePrefix": "My",
     "titleAccent": "Homework",
     "subtitle": "Track and submit your homework assignments",
+    "viewCourse": "All course homework",
+    "courseListSubtitle": "Assignments for this course",
     "due": "Due:",
     "submitted": "Submitted:",
     "grade": "Grade:",
@@ -2037,6 +2071,18 @@
       "passwordMatch": "Passwords do not match."
     }
   },
+  "liveSessions": {
+    "countdown": {
+      "startsIn": "Starts in",
+      "liveNow": "Live now",
+      "ended": "Session ended",
+      "endsIn": "Ends in",
+      "days": "Days",
+      "hours": "Hrs",
+      "minutes": "Min",
+      "seconds": "Sec"
+    }
+  },
   "recordings": {
     "titlePrefix": "Upcoming live",
     "titleAccent": "sessions & recordings",
@@ -2078,6 +2124,15 @@
       "lessons": "lessons",
       "showAll": "Show {{n}} more sections",
       "showLess": "Show less",
+      "empty": "Curriculum outline will be published soon.",
+      "homework": "Assignment",
+      "exam": "Exam",
+      "homeworkCount": "assignments",
+      "examCount": "exams",
+      "homeworkSection": "Course assignments",
+      "examSection": "Course assessments",
+      "liveLesson": "Live session",
+      "enrollHint": "Lesson videos, files, and assessments unlock after you enroll.",
       "publicNotice": "Detailed lesson outline is available to enrolled students. Choose a cohort below, then sign in to enroll."
     },
     "cohorts": {
@@ -2098,7 +2153,10 @@
       "pickFirst": "Select a cohort to continue."
     },
     "instructor": {
-      "title": "Your Instructor"
+      "title": "Your Instructor",
+      "noBio": "Bio coming soon.",
+      "viewProfile": "View profile",
+      "bookSession": "Book 1-to-1 session"
     },
     "card": {
       "previewVideo": "Preview",
@@ -2183,7 +2241,7 @@
       "link": "Please enter a valid URL.",
       "file": "Please choose a file or paste a file URL."
     },
-    "fileOrUrlHint": "Small files are embedded as a data URL. For larger files, upload elsewhere and paste the URL.",
+    "fileOrUrlHint": "Upload a file directly, or paste a hosted file URL.",
     "fileUrlPlaceholder": "Paste hosted file URL",
     "fileReady": "File attached.",
     "fileTooBig": "File is too large (max 8MB).",
@@ -2226,6 +2284,10 @@
       "tip4": "Submit before the due date to avoid a late status."
     },
     "successTitle": "Homework Submitted!",
+    "gradedTitle": "Graded submission",
+    "downloadSubmission": "Download submitted file",
+    "resubmitTitle": "Update your submission",
+    "resubmitBtn": "Update submission",
     "successMsg": "Your submission has been received. Your teacher will review it soon.",
     "backBtn": "Back to Homework"
   },
@@ -2320,6 +2382,52 @@
     "cta": "View subscription plans",
     "close": "Close"
   },
+  "publicInstructors": {
+    "badge": "Expert instructors",
+    "title": "Meet our instructors",
+    "subtitle": "Browse profiles, explore their courses, and book a private 1-on-1 session.",
+    "searchPlaceholder": "Search by name or specialty…",
+    "loadError": "Could not load instructors.",
+    "empty": "No instructors match your search.",
+    "browseCourses": "Browse courses instead",
+    "noBio": "Expert engineering instructor on Engineering Pioneers.",
+    "yearsExp": "{{n}}+ years experience",
+    "viewProfile": "View profile",
+    "bookSession": "Book 1-on-1",
+    "backToList": "All instructors",
+    "profileNotFound": "Instructor not found.",
+    "coursesTitle": "Courses by this instructor",
+    "reviewsTitle": "Student reviews",
+    "bookTitle": "Book a 1-on-1 session",
+    "bookHint": "Pick an open slot and complete payment to confirm your private session.",
+    "loginToBook": "Sign in to book",
+    "studentsOnly": "Private sessions are available for student accounts."
+  },
+  "studentAttendance": {
+    "title": "My attendance",
+    "subtitle": "Track your presence in live group sessions across your courses.",
+    "loadError": "Could not load your attendance report.",
+    "empty": "No live sessions recorded for your enrolled courses yet.",
+    "live": "Live updates enabled",
+    "untitledSession": "Live session",
+    "summary": {
+      "total": "Total sessions",
+      "present": "Present",
+      "absent": "Absent",
+      "rate": "Attendance rate"
+    },
+    "col": {
+      "session": "Session",
+      "course": "Course",
+      "date": "Date",
+      "status": "Status"
+    },
+    "status": {
+      "present": "Present",
+      "absent": "Absent",
+      "left": "Left early"
+    }
+  },
   "bookSession": {
     "title": "Book a private session",
     "subtitle": "Pick an available instructor slot. Your package must include private session quota.",
@@ -2329,6 +2437,7 @@
     "booking": "Booking…",
     "success": "Session booked!",
     "bookError": "Booking failed.",
+    "priceNotConfigured": "This slot has no price yet. The instructor must set a session price before booking.",
     "instructor": "Instructor",
     "needPlan": "Private sessions require an active plan that includes private session quota. Upgrade or subscribe to book.",
     "viewPlans": "View plans & upgrade"
@@ -2565,7 +2674,15 @@
           "added": "Slot added.",
           "invalidRange": "End time must be after start time.",
           "slotsCount": "{{count}} open slot(s)",
-          "openStatus": "Open"
+          "openStatus": "Open",
+          "labelPrice": "Session price (EGP)",
+          "pricePlaceholder": "e.g. 500",
+          "priceHint": "Students pay this amount to book this slot.",
+          "priceRequired": "Enter a valid session price greater than zero.",
+          "priceMissing": "Price not set — slot is hidden from students.",
+          "setPrice": "Set price",
+          "priceUpdated": "Session price updated.",
+          "slotPrice": "{{price}} EGP"
         },
         "exams": {
           "title": "Exams",

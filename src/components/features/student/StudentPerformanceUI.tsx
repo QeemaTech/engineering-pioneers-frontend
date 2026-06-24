@@ -51,7 +51,11 @@ export type StudentPerformancePayload = {
     totalLessonsInEnrolledCourses: number;
     attendance: {
       mode: string;
-      completedLiveSessionsInEnrolledCohorts: number;
+      totalSessions?: number;
+      presentCount?: number;
+      absentCount?: number;
+      attendanceRatePercent?: number;
+      completedLiveSessionsInEnrolledCohorts?: number;
       lessonCompletionRatePercent: number;
       cohortProgressAveragePercent: number;
     };
@@ -269,11 +273,18 @@ export default function StudentPerformanceUI({ data }: { data: StudentPerformanc
                 <span className="font-semibold text-slate-900 dark:text-white">{t(`${I18N_PREFIX}.cohortAvg`)}:</span>{" "}
                 {pr.cohortProgressAveragePercent}%
               </p>
-              <p className="text-xs text-slate-500">
-                {t(`${I18N_PREFIX}.attendanceNote`, {
-                  n: pr.attendance.completedLiveSessionsInEnrolledCohorts,
-                })}
-              </p>
+              {pr.attendance?.mode === "live_sessions" ? (
+                <p>
+                  <span className="font-semibold text-slate-900 dark:text-white">{t(`${I18N_PREFIX}.liveAttendance`)}:</span>{" "}
+                  {pr.attendance.presentCount ?? 0}/{pr.attendance.totalSessions ?? 0} ({pr.attendance.attendanceRatePercent ?? 0}%)
+                </p>
+              ) : (
+                <p className="text-xs text-slate-500">
+                  {t(`${I18N_PREFIX}.attendanceNote`, {
+                    n: pr.attendance?.completedLiveSessionsInEnrolledCohorts ?? 0,
+                  })}
+                </p>
+              )}
             </div>
           </div>
         </Section>

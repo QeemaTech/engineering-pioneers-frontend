@@ -75,6 +75,7 @@ export default function Footer() {
         { to: "/faq", label: t("footer.community.faq") },
         { to: "/community", label: t("footer.community.documentation") },
         { to: "/explore", label: t("footer.community.courses", { defaultValue: isRtl ? "تصفح الدورات" : "Browse courses" }) },
+        { to: "/instructors", label: t("footer.community.instructors", { defaultValue: isRtl ? "المدرّسون" : "Instructors" }) },
       ],
     },
     {
