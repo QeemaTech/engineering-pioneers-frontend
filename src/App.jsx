@@ -17,6 +17,7 @@ import AboutPage from "./pages/AboutPage";
 import BlogsPage from "./pages/BlogsPage";
 import BlogPostPage from "./pages/BlogPostPage";
 import StaticContentPage from "./pages/StaticContentPage";
+import VerifyCertificate from "./pages/VerifyCertificate";
 import AccessDenied from "./pages/AccessDenied";
 import AdminRoutes from "./routes/adminRoutes";
 import InstructorRoutes from "./routes/instructorRoutes";
@@ -69,6 +70,7 @@ function App() {
           <Route path="/blogs" element={<BlogsPage />} />
           <Route path="/blogs/:slug" element={<BlogPostPage />} />
           <Route path="/courses/:id" element={<CourseDetails />} />
+          <Route path="/verify-certificate/:serial" element={<VerifyCertificate />} />
         </Route>
 
         <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />

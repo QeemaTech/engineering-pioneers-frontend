@@ -24,6 +24,7 @@ const endpoints = {
     financials: "/admin/financials",
     coupons: "/admin/coupons",
     certificates: "/admin/certificates",
+    downloadCertificate: (id) => `/admin/certificates/${id}/download`,
     payouts: "/admin/payouts",
     cms: "/admin/cms",
     settings: "/admin/settings",
@@ -90,6 +91,7 @@ const endpoints = {
     recordingNotes: (sourceType, id) => `/student/recordings/${sourceType}/${id}/notes`,
     recordingNote: (sourceType, id, noteId) => `/student/recordings/${sourceType}/${id}/notes/${noteId}`,
     certificates: "/student/certificates",
+    downloadCertificate: (id) => `/student/certificates/${id}/download`,
     claimCertificate: (courseId) => `/student/courses/${courseId}/certificates/claim`,
     myPayments: "/student/financials/my-payments",
     tickets: "/student/tickets",
@@ -124,6 +126,8 @@ const endpoints = {
     banners: "/public/banners",
     post: (slug) => `/public/posts/${encodeURIComponent(slug)}`,
     siteSettings: "/public/settings",
+    verifyCertificate: (serial) => `/certificates/verify/${encodeURIComponent(serial)}`,
+    downloadCertificateBySerial: (serial) => `/certificates/verify/${encodeURIComponent(serial)}/download`,
   },
 };
 

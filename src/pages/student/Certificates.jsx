@@ -1,27 +1,23 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Award, Download, Loader2 } from "lucide-react";
+import { Award, Download, ExternalLink, Loader2 } from "lucide-react";
 import PageHeader from "../../components/dashboard/PageHeader";
-import { useClaimCertificate, useMyCertificates } from "../../features/student/certificates/hooks";
+import { useClaimCertificate, useDownloadStudentCertificate, useMyCertificates } from "../../features/student/certificates/hooks";
 import { useMyCourses } from "../../features/student/courses/hooks";
 import { getErrorMessage } from "../../api/error";
-
-function downloadBlob(blob, filename) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
+import { downloadBlob, getStaticCertificateUrl, openCertificateDownloadUrl } from "../../utils/certificate";
 
 export default function Certificates() {
   const { t } = useTranslation();
   const { data: certificates = [], isLoading, isError, error, refetch } = useMyCertificates();
   const { data: courses = [] } = useMyCourses();
   const claim = useClaimCertificate();
+  const download = useDownloadStudentCertificate();
   const [claimErr, setClaimErr] = useState("");
   const [claimingId, setClaimingId] = useState(null);
+  const [downloadingId, setDownloadingId] = useState(null);
+  const [downloadErr, setDownloadErr] = useState("");
 
   const completedWithoutCert = courses.filter(
     (c) => c.isCompleted && !certificates.some((cert) => cert.courseId === c.id || cert.courseId === c.courseId)
@@ -40,6 +36,29 @@ export default function Certificates() {
     }
   };
 
+  const handleDownload = async (cert) => {
+    setDownloadErr("");
+    setDownloadingId(cert.id);
+    try {
+      const staticUrl = getStaticCertificateUrl(cert.links?.pdfUrl || cert.pdfUrl);
+      if (staticUrl) {
+        window.open(staticUrl, "_blank", "noopener,noreferrer");
+        return;
+      }
+      const blob = await download.mutateAsync(cert.id);
+      downloadBlob(blob, `certificate-${cert.serialNumber}.pdf`);
+    } catch (e) {
+      setDownloadErr(getErrorMessage(e, t("student.certificates.downloadError", { defaultValue: "Could not download certificate." })));
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
+  const handlePublicDownload = (cert) => {
+    const path = cert.links?.publicDownloadPath;
+    if (path) openCertificateDownloadUrl(path);
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -48,6 +67,7 @@ export default function Certificates() {
       />
 
       {claimErr ? <p className="text-sm text-red-600">{claimErr}</p> : null}
+      {downloadErr ? <p className="text-sm text-red-600">{downloadErr}</p> : null}
 
       {completedWithoutCert.length > 0 ? (
         <section className="rounded-2xl border border-pioneer-orange-normal/30 bg-pioneer-orange-light/40 p-5">
@@ -101,6 +121,35 @@ export default function Certificates() {
                 {cert.issuedAt ? new Date(cert.issuedAt).toLocaleDateString() : "—"}
               </p>
               <p className="mt-1 font-mono text-[11px] text-slate-400">{cert.serialNumber}</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  disabled={downloadingId === cert.id}
+                  onClick={() => void handleDownload(cert)}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-pioneer-orange-normal px-3 py-1.5 text-xs font-bold text-white hover:bg-pioneer-orange-hover disabled:opacity-50"
+                >
+                  {downloadingId === cert.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+                  {t("student.certificates.download", { defaultValue: "Download PDF" })}
+                </button>
+                {cert.links?.verifyUrl ? (
+                  <Link
+                    to={cert.links.verifyUrl}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    {t("student.certificates.verifyLink", { defaultValue: "Verify link" })}
+                  </Link>
+                ) : null}
+                {cert.links?.publicDownloadPath ? (
+                  <button
+                    type="button"
+                    onClick={() => handlePublicDownload(cert)}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
+                  >
+                    {t("student.certificates.shareDownload", { defaultValue: "Shareable download" })}
+                  </button>
+                ) : null}
+              </div>
             </article>
           ))}
         </div>

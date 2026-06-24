@@ -1,19 +1,23 @@
 import { useMemo, useState } from "react";
-import { Award, Plus, RefreshCcw, Search } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Award, Download, ExternalLink, Loader2, Plus, RefreshCcw, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import PageHeader from "../../components/ui/PageHeader";
-import { useAdminCertificates, useIssueAdminCertificate } from "../../features/admin/certificates/hooks";
+import { useAdminCertificates, useDownloadAdminCertificate, useIssueAdminCertificate } from "../../features/admin/certificates/hooks";
 import { useAdminUsers } from "../../features/admin/users/hooks";
 import { useAdminCourses } from "../../features/admin/courses/hooks";
 import { useAdminExams } from "../../features/admin/exams/hooks";
 import { getErrorMessage } from "../../api/error";
+import { downloadBlob, getStaticCertificateUrl, openCertificateDownloadUrl } from "../../utils/certificate";
 
 function Certificates() {
   const { t, i18n } = useTranslation();
   const tx = (key, fallback) => t(key, { defaultValue: fallback });
   const [search, setSearch] = useState("");
   const [showIssueModal, setShowIssueModal] = useState(false);
+  const [downloadingId, setDownloadingId] = useState(null);
+  const downloadMutation = useDownloadAdminCertificate();
   const { data, isLoading, isError, error, isFetching, refetch } = useAdminCertificates({ page: 1, limit: 100 });
 
   const certs = data?.certificates || [];
@@ -29,6 +33,23 @@ function Certificates() {
       );
     });
   }, [certs, search]);
+
+  const handleDownload = async (cert) => {
+    setDownloadingId(cert.id);
+    try {
+      const staticUrl = getStaticCertificateUrl(cert.links?.pdfUrl || cert.pdfUrl);
+      if (staticUrl) {
+        window.open(staticUrl, "_blank", "noopener,noreferrer");
+        return;
+      }
+      const blob = await downloadMutation.mutateAsync(cert.id);
+      downloadBlob(blob, `certificate-${cert.serialNumber}.pdf`);
+    } catch (err) {
+      toast.error(getErrorMessage(err, tx("adminPages.certificates.downloadError", "Failed to download certificate")));
+    } finally {
+      setDownloadingId(null);
+    }
+  };
 
   return (
     <section className="space-y-6">
@@ -88,6 +109,7 @@ function Certificates() {
                   <th className="px-4 py-3 text-start text-xs font-bold uppercase tracking-wider text-slate-500">{tx("adminPages.certificates.course", "Course")}</th>
                   <th className="px-4 py-3 text-start text-xs font-bold uppercase tracking-wider text-slate-500">{tx("adminPages.certificates.serial", "Serial")}</th>
                   <th className="px-4 py-3 text-start text-xs font-bold uppercase tracking-wider text-slate-500">{tx("adminPages.certificates.date", "Issued Date")}</th>
+                  <th className="px-4 py-3 text-start text-xs font-bold uppercase tracking-wider text-slate-500">{tx("adminPages.certificates.actions", "Actions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-white/5">
@@ -98,13 +120,46 @@ function Certificates() {
                     <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{cert.course?.title || "-"}</td>
                     <td className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-300">{cert.serialNumber || "-"}</td>
                     <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
-                      {cert.createdAt ? new Date(cert.createdAt).toLocaleDateString(i18n.language) : "-"}
+                      {cert.issuedAt ? new Date(cert.issuedAt).toLocaleDateString(i18n.language) : "-"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          disabled={downloadingId === cert.id}
+                          onClick={() => void handleDownload(cert)}
+                          className="inline-flex items-center gap-1 rounded-lg bg-[#EE7C11] px-2.5 py-1.5 text-xs font-bold text-white hover:bg-[#d9700e] disabled:opacity-60"
+                        >
+                          {downloadingId === cert.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+                          {tx("adminPages.certificates.download", "Download")}
+                        </button>
+                        {cert.links?.verifyUrl ? (
+                          <Link
+                            to={cert.links.verifyUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-slate-200"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" />
+                            {tx("adminPages.certificates.verify", "Verify")}
+                          </Link>
+                        ) : null}
+                        {cert.links?.publicDownloadPath ? (
+                          <button
+                            type="button"
+                            onClick={() => openCertificateDownloadUrl(cert.links.publicDownloadPath)}
+                            className="text-xs font-semibold text-[#EE7C11] hover:underline"
+                          >
+                            {tx("adminPages.certificates.publicLink", "Public link")}
+                          </button>
+                        ) : null}
+                      </div>
                     </td>
                   </tr>
                 ))}
                 {!filtered.length ? (
                   <tr>
-                    <td colSpan={5} className="px-4 py-12 text-center text-sm text-slate-500">
+                    <td colSpan={6} className="px-4 py-12 text-center text-sm text-slate-500">
                       <div className="inline-flex flex-col items-center gap-2">
                         <Award className="h-7 w-7 text-slate-400" />
                         {tx("adminPages.certificates.empty", "No certificates found")}
@@ -148,12 +203,7 @@ function IssueCertificateModal({ onClose }) {
         courseId: courseId || undefined,
         examId: examId || undefined,
       });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${title || "certificate"}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      downloadBlob(blob, `${title || "certificate"}.pdf`);
       toast.success(tx("adminPages.certificates.issueSuccess", "Certificate issued successfully"));
       onClose();
     } catch (err) {
@@ -213,4 +263,3 @@ function IssueCertificateModal({ onClose }) {
 }
 
 export default Certificates;
-

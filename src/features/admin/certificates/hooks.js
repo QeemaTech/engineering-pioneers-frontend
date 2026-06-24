@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchAdminCertificates, issueAdminCertificate } from "./api";
+import { downloadAdminCertificate, fetchAdminCertificates, issueAdminCertificate } from "./api";
 
 const CERTIFICATES_KEY = ["admin", "certificates"];
 
@@ -16,6 +16,12 @@ export function useIssueAdminCertificate() {
   return useMutation({
     mutationFn: issueAdminCertificate,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: CERTIFICATES_KEY }),
+  });
+}
+
+export function useDownloadAdminCertificate() {
+  return useMutation({
+    mutationFn: downloadAdminCertificate,
   });
 }
 

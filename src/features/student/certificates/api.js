@@ -14,3 +14,10 @@ export async function claimCourseCertificate(courseId) {
   );
   return res.data;
 }
+
+export async function downloadStudentCertificate(certificateId) {
+  const res = await client.get(endpoints.student.downloadCertificate(certificateId), {
+    responseType: "blob",
+  });
+  return res.data;
+}

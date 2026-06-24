@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { claimCourseCertificate, fetchMyCertificates } from "./api";
+import { claimCourseCertificate, downloadStudentCertificate, fetchMyCertificates } from "./api";
 
 export function useMyCertificates() {
   return useQuery({
@@ -16,5 +16,11 @@ export function useClaimCertificate() {
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["student", "certificates"] });
     },
+  });
+}
+
+export function useDownloadStudentCertificate() {
+  return useMutation({
+    mutationFn: downloadStudentCertificate,
   });
 }

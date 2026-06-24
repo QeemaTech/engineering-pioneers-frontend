@@ -16,17 +16,9 @@ import LessonQna from "../components/student/LessonQna";
 import CourseLiveSessionsPanel from "../components/student/CourseLiveSessionsPanel";
 import CourseHomeworkPanel from "../components/student/CourseHomeworkPanel";
 import { useMyCourses } from "../features/student/courses/hooks";
-import { useClaimCertificate, useMyCertificates } from "../features/student/certificates/hooks";
+import { useClaimCertificate, useDownloadStudentCertificate, useMyCertificates } from "../features/student/certificates/hooks";
 import { getErrorMessage } from "../api/error";
-
-function downloadBlob(blob, filename) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
+import { downloadBlob, getStaticCertificateUrl } from "../utils/certificate";
 
 const TYPE_ICON = {
   video: <Play className="h-3.5 w-3.5" />,
@@ -176,8 +168,10 @@ export default function CourseView() {
   const resources = Array.isArray(resourcesData) ? resourcesData : [];
   const { data: certificates = [] } = useMyCertificates();
   const claimCertificate = useClaimCertificate();
+  const downloadCertificate = useDownloadStudentCertificate();
   const [certClaimErr, setCertClaimErr] = useState("");
   const [claimingCert, setClaimingCert] = useState(false);
+  const [downloadingCert, setDownloadingCert] = useState(false);
 
   const pct = stats?.percentage != null ? Math.round(Number(stats.percentage)) : 0;
   const completedCount = stats?.completedLessons ?? doneSet.size;
@@ -196,6 +190,25 @@ export default function CourseView() {
       setCertClaimErr(getErrorMessage(e, t("courseView.certificate.claimError", { defaultValue: "Could not claim certificate." })));
     } finally {
       setClaimingCert(false);
+    }
+  };
+
+  const handleDownloadCertificate = async () => {
+    if (!existingCert?.id) return;
+    setCertClaimErr("");
+    setDownloadingCert(true);
+    try {
+      const staticUrl = getStaticCertificateUrl(existingCert.links?.pdfUrl || existingCert.pdfUrl);
+      if (staticUrl) {
+        window.open(staticUrl, "_blank", "noopener,noreferrer");
+        return;
+      }
+      const blob = await downloadCertificate.mutateAsync(existingCert.id);
+      downloadBlob(blob, `certificate-${existingCert.serialNumber}.pdf`);
+    } catch (e) {
+      setCertClaimErr(getErrorMessage(e, t("courseView.certificate.downloadError", { defaultValue: "Could not download certificate." })));
+    } finally {
+      setDownloadingCert(false);
     }
   };
 
@@ -318,12 +331,31 @@ export default function CourseView() {
                         {t("courseView.certificate.claim", { defaultValue: "Claim certificate" })}
                       </button>
                     ) : (
-                      <Link
-                        to="/student/certificates"
-                        className="mt-2 block text-center text-[11px] font-semibold text-pioneer-orange-normal hover:underline"
-                      >
-                        {t("courseView.certificate.viewAll", { defaultValue: "View all certificates" })}
-                      </Link>
+                      <div className="mt-2 space-y-2">
+                        <button
+                          type="button"
+                          disabled={downloadingCert}
+                          onClick={() => void handleDownloadCertificate()}
+                          className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-pioneer-orange-normal px-3 py-2 text-xs font-bold text-white hover:bg-pioneer-orange-hover disabled:opacity-50"
+                        >
+                          {downloadingCert ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+                          {t("courseView.certificate.download", { defaultValue: "Download certificate" })}
+                        </button>
+                        {existingCert?.links?.verifyUrl ? (
+                          <Link
+                            to={existingCert.links.verifyUrl}
+                            className="block text-center text-[11px] font-semibold text-pioneer-orange-normal hover:underline"
+                          >
+                            {t("courseView.certificate.verifyLink", { defaultValue: "Verification link" })}
+                          </Link>
+                        ) : null}
+                        <Link
+                          to="/student/certificates"
+                          className="block text-center text-[11px] font-semibold text-slate-500 hover:underline"
+                        >
+                          {t("courseView.certificate.viewAll", { defaultValue: "View all certificates" })}
+                        </Link>
+                      </div>
                     )}
                   </div>
                 </div>
