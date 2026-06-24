@@ -70,15 +70,15 @@ function Sidebar({ sections, isMobileOpen, setIsMobileOpen }: SidebarProps) {
       </div>
 
       <div className="h-[calc(100vh-4rem)] overflow-y-auto overscroll-y-contain py-4 no-scrollbar sm:h-[calc(100vh-5rem)]">
-        {sections.map((section) => (
-          <div key={section.labelKey} className="mb-3">
+        {sections.map((section, idx) => (
+          <div key={section.labelKey} className={`mb-4 pb-4 ${idx < sections.length - 1 ? "border-b border-slate-100 dark:border-white/5" : ""}`}>
             {!isCollapsed ? <SectionLabel label={section.labelKey} /> : null}
-            <nav className="space-y-1 px-2">
+            <nav className="space-y-2 px-2">
               {section.items.map((item) =>
                 isNavGroup(item) ? (
                   <NavGroup key={item.labelKey} group={item} isCollapsed={isCollapsed} />
                 ) : (
-                  <NavItem key={item.path} item={item} isCollapsed={isCollapsed} />
+                  <NavItem key={item.labelKey} item={item} isCollapsed={isCollapsed} />
                 )
               )}
             </nav>
