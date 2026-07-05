@@ -8,7 +8,7 @@ import useAuthStore from "../store/authStore";
 import { APP_ROLES, normalizeRole } from "../config/permissions";
 import { usePublicCourse } from "../features/public/hooks";
 import { getErrorMessage } from "../api/error";
-import { postStudentCourseCheckout, validateStudentCoupon } from "../features/student/financials/api";
+import { postStudentCourseCheckout, validateStudentCoupon, fetchLiveSessionDetails, postStudentLiveSessionCheckout } from "../features/student/financials/api";
 import { applyCouponDiscount, couponDiscountLabel } from "../features/student/financials/coupon";
 
 function formatPrice(price, isRtl) {
@@ -26,6 +26,8 @@ export default function Checkout() {
   const role = normalizeRole(user?.role);
 
   const courseId = (searchParams.get("courseId") || "").trim();
+  const pricingTierId = (searchParams.get("pricingTierId") || "").trim();
+  const liveSessionId = (searchParams.get("liveSessionId") || "").trim();
 
   const [localError, setLocalError] = useState("");
   const [flow, setFlow] = useState("form");
@@ -40,6 +42,10 @@ export default function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState("BANK_TRANSFER");
   const [receiptUrl, setReceiptUrl] = useState("");
 
+  const [liveSession, setLiveSession] = useState(null);
+  const [liveSessionLoading, setLiveSessionLoading] = useState(false);
+  const [liveSessionError, setLiveSessionError] = useState(false);
+
   const {
     data: course,
     isLoading: courseLoading,
@@ -48,23 +54,50 @@ export default function Checkout() {
   } = usePublicCourse(courseId || undefined);
 
   useEffect(() => {
-    setFlow("form");
-    setOrderMeta({ reusedPending: false });
-    setLocalError("");
-    setCouponCode("");
-    setCouponMessage("");
-    setAppliedCoupon(null);
+    if (courseId) {
+      setFlow("form");
+      setOrderMeta({ reusedPending: false });
+      setLocalError("");
+      setCouponCode("");
+      setCouponMessage("");
+      setAppliedCoupon(null);
+    }
   }, [courseId]);
 
+  useEffect(() => {
+    if (liveSessionId) {
+      setFlow("form");
+      setOrderMeta({ reusedPending: false });
+      setLocalError("");
+      setLiveSessionLoading(true);
+      setLiveSessionError(false);
+      fetchLiveSessionDetails(liveSessionId)
+        .then(setLiveSession)
+        .catch((err) => {
+          console.error(err);
+          setLiveSessionError(true);
+        })
+        .finally(() => setLiveSessionLoading(false));
+    }
+  }, [liveSessionId]);
+
+  const selectedTier = useMemo(() => {
+    if (!pricingTierId || !course?.pricingTiers) return null;
+    return course.pricingTiers.find((t) => t.id === pricingTierId);
+  }, [course, pricingTierId]);
+
   const courseAmount = useMemo(() => {
+    if (liveSessionId) return Number(liveSession?.price || 0);
+    if (selectedTier) return Number(selectedTier.price);
     if (!course?.isLifetimePurchasable) return 0;
     return Number(course.price);
-  }, [course]);
+  }, [course, selectedTier, liveSession, liveSessionId]);
 
   const finalAmount = useMemo(() => {
     if (!courseAmount) return 0;
+    if (liveSessionId) return courseAmount;
     return appliedCoupon ? applyCouponDiscount(courseAmount, appliedCoupon) : courseAmount;
-  }, [courseAmount, appliedCoupon]);
+  }, [courseAmount, appliedCoupon, liveSessionId]);
 
   const discountAmount = useMemo(() => Math.max(0, courseAmount - finalAmount), [courseAmount, finalAmount]);
 
@@ -86,7 +119,7 @@ export default function Checkout() {
   if (role === APP_ROLES.INSTRUCTOR) return <Navigate to="/instructor" replace />;
   if (role !== APP_ROLES.STUDENT) return <Navigate to="/" replace />;
 
-  if (!courseId) {
+  if (!courseId && !liveSessionId) {
     return (
       <div className="mx-auto max-w-lg py-16 text-center">
         <AlertCircle className="mx-auto h-12 w-12 text-amber-500" />
@@ -99,7 +132,8 @@ export default function Checkout() {
     );
   }
 
-  const courseMissing = courseFetched && !courseError && !course;
+  const courseMissing = courseId && courseFetched && !courseError && !course;
+  const liveSessionMissing = liveSessionId && !liveSessionLoading && !liveSessionError && !liveSession;
   const priceLabel = formatPrice(finalAmount, isRtl);
   const originalPriceLabel = formatPrice(courseAmount, isRtl);
   const discountLabel = formatPrice(discountAmount, isRtl);
@@ -139,7 +173,7 @@ export default function Checkout() {
   };
 
   const handlePurchase = async () => {
-    if (!courseId) return;
+    if (!courseId && !liveSessionId) return;
     setLocalError("");
     const url = receiptUrl.trim();
     if (!url) {
@@ -152,7 +186,7 @@ export default function Checkout() {
       setLocalError(t("checkout.package.receiptUrlInvalid"));
       return;
     }
-    if (!finalAmount || Number.isNaN(finalAmount)) {
+    if (!finalAmount && finalAmount !== 0) {
       setLocalError(t("checkout.package.amountInvalid"));
       return;
     }
@@ -163,19 +197,29 @@ export default function Checkout() {
         receiptUrl: url,
         amount: finalAmount,
       };
-      if (appliedCoupon?.code) {
-        payload.couponCode = appliedCoupon.code;
-      } else if (couponCode.trim()) {
-        payload.couponCode = couponCode.trim();
+      if (liveSessionId) {
+        const data = await postStudentLiveSessionCheckout(liveSessionId, payload);
+        setOrderMeta({ reusedPending: Boolean(data?.reusedPending) });
+        setFlow("success");
+        toast.success(isRtl ? "تم إرسال طلب الحجز بنجاح." : "Seat booking request submitted.");
+      } else {
+        if (pricingTierId) {
+          payload.pricingTierId = pricingTierId;
+        }
+        if (appliedCoupon?.code) {
+          payload.couponCode = appliedCoupon.code;
+        } else if (couponCode.trim()) {
+          payload.couponCode = couponCode.trim();
+        }
+        const data = await postStudentCourseCheckout(courseId, payload);
+        setOrderMeta({ reusedPending: Boolean(data?.reusedPending) });
+        setFlow("success");
+        toast.success(t("checkout.cohort.successToast", { defaultValue: "Payment submitted." }));
       }
-      const data = await postStudentCourseCheckout(courseId, payload);
-      setOrderMeta({ reusedPending: Boolean(data?.reusedPending) });
-      setFlow("success");
-      toast.success(t("checkout.cohort.successToast", { defaultValue: "Payment submitted." }));
     } catch (e) {
       const status = e?.response?.status;
       if (status === 409) {
-        setLocalError(t("checkout.alreadyEnrolled", { defaultValue: "You already own this course." }));
+        setLocalError(isRtl ? "أنت بالفعل مشترك في هذا المحتوى." : "You already have access to this.");
         return;
       }
       setLocalError(getErrorMessage(e, t("checkout.cohort.directSubmitError", { defaultValue: "Could not submit payment." })));
@@ -225,17 +269,11 @@ export default function Checkout() {
                 >
                   {t("checkout.viewPayments", { defaultValue: "View payments" })}
                 </Link>
-                <Link
-                  to={`/courses/${courseId}`}
-                  className="inline-flex items-center justify-center rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
-                >
-                  {t("checkout.cancel")}
-                </Link>
               </div>
             </>
           ) : null}
 
-          {flow !== "success" && courseLoading ? (
+          {flow !== "success" && (courseLoading || liveSessionLoading) ? (
             <div className="flex items-center gap-2 text-slate-500">
               <Loader2 className="h-5 w-5 animate-spin" />
               {t("checkout.loading")}
@@ -243,7 +281,9 @@ export default function Checkout() {
           ) : null}
 
           {flow !== "success" && courseError ? <p className="text-sm text-red-600">{t("checkout.courseLoadError")}</p> : null}
+          {flow !== "success" && liveSessionError ? <p className="text-sm text-red-600">{isRtl ? "عذراً، فشل تحميل تفاصيل الحصة المباشرة." : "Error loading live session details."}</p> : null}
           {flow !== "success" && courseMissing ? <p className="text-sm text-red-600">{t("checkout.courseNotFound")}</p> : null}
+          {flow !== "success" && liveSessionMissing ? <p className="text-sm text-red-600">{isRtl ? "لم يتم العثور على الحصة المباشرة المطلوبة." : "Live session not found."}</p> : null}
 
           {flow !== "success" && course && !courseLoading ? (
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-600 dark:bg-slate-800/50">
@@ -253,6 +293,7 @@ export default function Checkout() {
                 {course.type === "HYBRID"
                   ? t("courseDetails.type.hybrid", { defaultValue: "Hybrid" })
                   : t("courseDetails.type.recorded", { defaultValue: "Recorded" })}
+                {selectedTier ? ` · ${isRtl ? (selectedTier.nameAr || selectedTier.name) : selectedTier.name}` : ""}
               </p>
               <p className="mt-2 text-lg font-extrabold text-pioneer-orange-normal">{priceLabel}</p>
               {appliedCoupon && discountAmount > 0 ? (
@@ -268,53 +309,66 @@ export default function Checkout() {
             </div>
           ) : null}
 
+          {flow !== "success" && liveSession && !liveSessionLoading ? (
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-600 dark:bg-slate-800/50">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{isRtl ? "الحصة المباشرة" : "Live Session"}</p>
+              <p className="mt-1 text-lg font-bold text-slate-900 dark:text-white">{liveSession.title}</p>
+              <p className="mt-1 text-xs text-slate-500">
+                {isRtl ? "المحاضر: " : "Instructor: "} {liveSession.instructor?.fullName || "—"}
+              </p>
+              <p className="mt-2 text-lg font-extrabold text-pioneer-orange-normal">{priceLabel}</p>
+            </div>
+          ) : null}
+
           {flow !== "success" && course && !course.isLifetimePurchasable ? (
             <div className="rounded-xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
               {t("courseDetails.card.notPurchasable", { defaultValue: "This course is not available for purchase." })}
             </div>
           ) : null}
 
-          {flow !== "success" && course?.isLifetimePurchasable ? (
+          {flow !== "success" && ((course && course.isLifetimePurchasable) || liveSession) ? (
             <>
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-600 dark:bg-slate-800/50">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("checkout.coupon.label")}</p>
-                <div className="mt-2 flex flex-col gap-2 sm:flex-row">
-                  <input
-                    value={couponCode}
-                    onChange={(e) => {
-                      setCouponCode(e.target.value);
-                      if (appliedCoupon) {
-                        setAppliedCoupon(null);
-                        setCouponMessage("");
-                      }
-                    }}
-                    placeholder={t("checkout.coupon.placeholder")}
-                    className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-[#0F172A] dark:text-white"
-                  />
-                  <button
-                    type="button"
-                    disabled={couponValidating}
-                    onClick={() => void handleApplyCoupon()}
-                    className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold hover:bg-slate-50 disabled:opacity-50 dark:border-slate-600 dark:bg-[#0F172A] dark:text-white dark:hover:bg-slate-800"
-                  >
-                    {couponValidating ? t("dashboard.common.loading") : t("checkout.coupon.apply")}
-                  </button>
-                  {appliedCoupon ? (
+              {courseId ? (
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-600 dark:bg-slate-800/50">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("checkout.coupon.label")}</p>
+                  <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+                    <input
+                      value={couponCode}
+                      onChange={(e) => {
+                        setCouponCode(e.target.value);
+                        if (appliedCoupon) {
+                          setAppliedCoupon(null);
+                          setCouponMessage("");
+                        }
+                      }}
+                      placeholder={t("checkout.coupon.placeholder")}
+                      className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-[#0F172A] dark:text-white"
+                    />
                     <button
                       type="button"
-                      onClick={handleRemoveCoupon}
-                      className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+                      disabled={couponValidating}
+                      onClick={() => void handleApplyCoupon()}
+                      className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold hover:bg-slate-50 disabled:opacity-50 dark:border-slate-600 dark:bg-[#0F172A] dark:text-white dark:hover:bg-slate-800"
                     >
-                      {t("checkout.coupon.remove", { defaultValue: "Remove" })}
+                      {couponValidating ? t("dashboard.common.loading") : t("checkout.coupon.apply")}
                     </button>
+                    {appliedCoupon ? (
+                      <button
+                        type="button"
+                        onClick={handleRemoveCoupon}
+                        className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+                      >
+                        {t("checkout.coupon.remove", { defaultValue: "Remove" })}
+                      </button>
+                    ) : null}
+                  </div>
+                  {couponMessage ? (
+                    <p className={`mt-2 text-sm ${appliedCoupon ? "font-medium text-green-700 dark:text-green-400" : "text-slate-600 dark:text-slate-400"}`}>
+                      {couponMessage}
+                    </p>
                   ) : null}
                 </div>
-                {couponMessage ? (
-                  <p className={`mt-2 text-sm ${appliedCoupon ? "font-medium text-green-700 dark:text-green-400" : "text-slate-600 dark:text-slate-400"}`}>
-                    {couponMessage}
-                  </p>
-                ) : null}
-              </div>
+              ) : null}
 
               <div>
                 <label htmlFor="pay-method" className="text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -356,22 +410,24 @@ export default function Checkout() {
             </div>
           ) : null}
 
-          {flow !== "success" && course?.isLifetimePurchasable ? (
+          {flow !== "success" && ((course && course.isLifetimePurchasable) || liveSession) ? (
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
               <Link
-                to={`/courses/${courseId}`}
+                to={liveSessionId ? "/student/live-sessions" : `/courses/${courseId}`}
                 className="inline-flex items-center justify-center rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
               >
                 {t("checkout.cancel")}
               </Link>
               <button
                 type="button"
-                disabled={!course || courseMissing || submitting}
+                disabled={submitting}
                 onClick={() => void handlePurchase()}
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-pioneer-orange-normal px-5 py-3 text-sm font-bold text-white transition hover:bg-pioneer-orange-hover disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
-                {t("checkout.cohort.payCohort", { price: priceLabel })}
+                {liveSessionId 
+                  ? (isRtl ? `احجز مقعدك (${priceLabel})` : `Book Seat (${priceLabel})`) 
+                  : t("checkout.cohort.payCohort", { price: priceLabel })}
               </button>
             </div>
           ) : null}

@@ -1,4 +1,4 @@
-﻿import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -620,9 +620,20 @@ function InlineEdit({ value, onSave, placeholder, className = "" }) {
   );
 }
 
-/* â”€â”€â”€ Detail Editor (Polymorphic) â”€â”€â”€ */
+const LEVELS = [
+  { value: "GENERAL", labelAr: "عام / عمومي", labelEn: "General / Public" },
+  { value: "PREPARATORY", labelAr: "إعدادي هندسة", labelEn: "Preparatory Year" },
+  { value: "FIRST_YEAR", labelAr: "الفرقة الأولى", labelEn: "First Year" },
+  { value: "SECOND_YEAR", labelAr: "الفرقة الثانية", labelEn: "Second Year" },
+  { value: "THIRD_YEAR", labelAr: "الفرقة الثالثة", labelEn: "Third Year" },
+  { value: "FOURTH_YEAR", labelAr: "الفرقة الرابعة / التخرج", labelEn: "Fourth Year" },
+  { value: "GRADUATE", labelAr: "خريج / محترف", labelEn: "Graduate / Professional" },
+];
+
+/* ─── Detail Editor (Polymorphic) ─── */
 function DetailEditor({ node, onClose }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.language?.startsWith("ar");
   const updateCourseMutation = useUpdateAdminCourse();
   const updateUnitMutation = useUpdateAdminUnit();
   const updateLessonMutation = useUpdateAdminLesson();
@@ -649,6 +660,8 @@ function DetailEditor({ node, onClose }) {
     isActive: false,
     categoryId: "",
     instructorId: "",
+    pricingTiers: [],
+    targetLevels: [],
   });
   const [isPending, setIsPending] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -667,6 +680,8 @@ function DetailEditor({ node, onClose }) {
         isActive: node.data.isActive === true,
         categoryId: node.data.categoryId || node.data.category?.id || "",
         instructorId: node.data.instructorId || node.data.instructor?.id || "",
+        pricingTiers: node.data.pricingTiers || [],
+        targetLevels: node.data.targetLevels || [],
       });
     }
     setSaved(false);
@@ -691,6 +706,8 @@ function DetailEditor({ node, onClose }) {
             isActive: formData.isActive,
             categoryId: formData.categoryId === "" ? null : (formData.categoryId || undefined),
             instructorId: formData.instructorId === "" ? null : (formData.instructorId || undefined),
+            pricingTiers: formData.pricingTiers,
+            targetLevels: formData.targetLevels,
           } 
         });
       } else if (node.type === "unit") {
@@ -851,6 +868,174 @@ function DetailEditor({ node, onClose }) {
                   />
                   {t("adminPages.addCourse.lifetimePurchasable", { defaultValue: "Allow lifetime purchase" })}
                 </label>
+              </div>
+
+              {/* Target Academic Years/Levels */}
+              <div className="space-y-1.5 mt-4">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  {isRtl ? "السنوات الدراسية المستهدفة" : "Target Academic Levels"}
+                </span>
+                <div className="grid grid-cols-2 gap-2 rounded-xl bg-slate-50 dark:bg-[#0F0F13] p-4 border border-slate-100 dark:border-white/5">
+                  {LEVELS.map((lvl) => (
+                    <label key={lvl.value} className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={(formData.targetLevels || []).includes(lvl.value)}
+                        onChange={() => {
+                          const current = formData.targetLevels || [];
+                          const updated = current.includes(lvl.value)
+                            ? current.filter((v) => v !== lvl.value)
+                            : [...current, lvl.value];
+                          setFormData({ ...formData, targetLevels: updated });
+                        }}
+                        className="rounded text-pioneer-orange-normal focus:ring-pioneer-orange-normal/30 h-4 w-4"
+                      />
+                      <span>{isRtl ? lvl.labelAr : lvl.labelEn}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Pricing Tiers Section */}
+              <div className="mt-6 border-t border-slate-100 dark:border-slate-800 pt-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-500">
+                    خيارات التسعير ومدد الاشتراك (الترم / السنة / إلخ)
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newTiers = [
+                          ...(formData.pricingTiers || []),
+                          { name: "6 Months", nameAr: "٦ أشهر", price: 0, durationDays: 180, isActive: true }
+                        ];
+                        setFormData({ ...formData, pricingTiers: newTiers });
+                      }}
+                      className="inline-flex items-center gap-1 rounded bg-[#EE7C11]/10 border border-[#EE7C11]/30 px-2.5 py-1 text-xs font-bold text-[#EE7C11] hover:bg-[#EE7C11]/20 transition"
+                    >
+                      + ٦ أشهر
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newTiers = [
+                          ...(formData.pricingTiers || []),
+                          { name: "1 Year", nameAr: "سنة واحدة", price: 0, durationDays: 365, isActive: true }
+                        ];
+                        setFormData({ ...formData, pricingTiers: newTiers });
+                      }}
+                      className="inline-flex items-center gap-1 rounded bg-[#EE7C11]/10 border border-[#EE7C11]/30 px-2.5 py-1 text-xs font-bold text-[#EE7C11] hover:bg-[#EE7C11]/20 transition"
+                    >
+                      + سنة
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newTiers = [
+                          ...(formData.pricingTiers || []),
+                          { name: "Lifetime", nameAr: "مدى الحياة", price: 0, durationDays: null, isActive: true }
+                        ];
+                        setFormData({ ...formData, pricingTiers: newTiers });
+                      }}
+                      className="inline-flex items-center gap-1 rounded bg-[#EE7C11]/10 border border-[#EE7C11]/30 px-2.5 py-1 text-xs font-bold text-[#EE7C11] hover:bg-[#EE7C11]/20 transition"
+                    >
+                      + مدى الحياة
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newTiers = [
+                          ...(formData.pricingTiers || []),
+                          { name: "Custom", nameAr: "فترة مخصصة", price: 0, durationDays: 120, isActive: true }
+                        ];
+                        setFormData({ ...formData, pricingTiers: newTiers });
+                      }}
+                      className="inline-flex items-center gap-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 text-xs font-bold transition dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10"
+                    >
+                      + تخصيص فترة
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {(formData.pricingTiers || []).map((tier, idx) => (
+                    <div key={idx} className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 relative">
+                      <label className="block space-y-1 md:col-span-1">
+                        <span className="text-[9px] font-bold text-slate-400">الاسم بالإنجليزية</span>
+                        <input
+                          type="text"
+                          value={tier.name}
+                          onChange={(e) => {
+                            const newTiers = [...formData.pricingTiers];
+                            newTiers[idx].name = e.target.value;
+                            setFormData({ ...formData, pricingTiers: newTiers });
+                          }}
+                          className="h-9 w-full rounded border border-slate-200 bg-white px-2.5 text-xs dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                        />
+                      </label>
+                      <label className="block space-y-1 md:col-span-1">
+                        <span className="text-[9px] font-bold text-slate-400">الاسم بالعربية</span>
+                        <input
+                          type="text"
+                          value={tier.nameAr}
+                          onChange={(e) => {
+                            const newTiers = [...formData.pricingTiers];
+                            newTiers[idx].nameAr = e.target.value;
+                            setFormData({ ...formData, pricingTiers: newTiers });
+                          }}
+                          className="h-9 w-full rounded border border-slate-200 bg-white px-2.5 text-xs dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                        />
+                      </label>
+                      <label className="block space-y-1 md:col-span-1">
+                        <span className="text-[9px] font-bold text-slate-400">السعر (جنيه)</span>
+                        <input
+                          type="number"
+                          min={0}
+                          value={tier.price}
+                          onChange={(e) => {
+                            const newTiers = [...formData.pricingTiers];
+                            newTiers[idx].price = Number(e.target.value) || 0;
+                            setFormData({ ...formData, pricingTiers: newTiers });
+                          }}
+                          className="h-9 w-full rounded border border-slate-200 bg-white px-2.5 text-xs dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                        />
+                      </label>
+                      <label className="block space-y-1 md:col-span-1">
+                        <span className="text-[9px] font-bold text-slate-400">المدة بالأيام</span>
+                        <input
+                          type="number"
+                          min={1}
+                          value={tier.durationDays || ""}
+                          placeholder="مثلاً 120"
+                          onChange={(e) => {
+                            const newTiers = [...formData.pricingTiers];
+                            newTiers[idx].durationDays = e.target.value ? Number(e.target.value) : null;
+                            setFormData({ ...formData, pricingTiers: newTiers });
+                          }}
+                          className="h-9 w-full rounded border border-slate-200 bg-white px-2.5 text-xs dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                        />
+                      </label>
+                      <div className="flex items-end justify-end pb-1.5 md:col-span-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newTiers = (formData.pricingTiers || []).filter((_, i) => i !== idx);
+                            setFormData({ ...formData, pricingTiers: newTiers });
+                          }}
+                          className="rounded bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 text-xs font-bold transition"
+                        >
+                          حذف الخيار
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {(formData.pricingTiers || []).length === 0 && (
+                    <p className="text-xs italic text-slate-400 text-center py-2">
+                      لا يوجد خيارات تسعير إضافية محددة. سيتم اعتماد خيار الشراء مدى الحياة فقط كخيار افتراضي.
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">

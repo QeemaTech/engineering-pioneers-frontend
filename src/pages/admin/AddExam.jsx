@@ -9,7 +9,7 @@ import { getErrorMessage } from "../../api/error";
 const EXAM_TYPES = ["STANDALONE", "FINAL", "UNIT", "LESSON"];
 
 function AddExam() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const createMutation = useCreateAdminExam();
 
@@ -20,6 +20,27 @@ function AddExam() {
     totalPoints: 100,
     passingScore: 60,
   });
+  const [selectedLevels, setSelectedLevels] = useState(["GENERAL"]);
+  const isRtl = i18n.language?.startsWith("ar");
+
+  const LEVELS = [
+    { value: "GENERAL", labelAr: "عام / عمومي", labelEn: "General / Public" },
+    { value: "PREPARATORY", labelAr: "إعدادي هندسة", labelEn: "Preparatory Year" },
+    { value: "FIRST_YEAR", labelAr: "الفرقة الأولى", labelEn: "First Year" },
+    { value: "SECOND_YEAR", labelAr: "الفرقة الثانية", labelEn: "Second Year" },
+    { value: "THIRD_YEAR", labelAr: "الفرقة الثالثة", labelEn: "Third Year" },
+    { value: "FOURTH_YEAR", labelAr: "الفرقة الرابعة / التخرج", labelEn: "Fourth Year" },
+    { value: "GRADUATE", labelAr: "خريج / محترف", labelEn: "Graduate / Professional" },
+  ];
+
+  const handleLevelToggle = (lvl) => {
+    if (selectedLevels.includes(lvl)) {
+      setSelectedLevels(selectedLevels.filter((l) => l !== lvl));
+    } else {
+      setSelectedLevels([...selectedLevels, lvl]);
+    }
+  };
+
   const [error, setError] = useState("");
 
   const set = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
@@ -35,6 +56,7 @@ function AddExam() {
         durationMinutes: Number(form.durationMinutes),
         totalPoints: Number(form.totalPoints),
         passingScore: Number(form.passingScore),
+        targetLevels: selectedLevels.length > 0 ? selectedLevels : ["GENERAL"],
       });
       if (!exam?.id) throw new Error(t("adminPages.addExam.errorId", { defaultValue: "Exam was created but ID was not returned." }));
       navigate(`/admin/exams/${exam.id}/edit`);
@@ -116,6 +138,26 @@ function AddExam() {
               </span>
               <input type="number" min={1} value={form.passingScore} onChange={(e) => set("passingScore", e.target.value)} className="h-12 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition-all focus:border-[#EE7C11]/50 focus:ring-2 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
             </label>
+          </div>
+
+          {/* Academic target levels */}
+          <div className="space-y-2 pt-2">
+            <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+              {isRtl ? "السنوات الدراسية المستهدفة" : "Target Academic Levels"}
+            </span>
+            <div className="grid grid-cols-2 gap-2 rounded-xl bg-slate-50 dark:bg-[#0F0F13] p-4 border border-slate-100 dark:border-white/5">
+              {LEVELS.map((lvl) => (
+                <label key={lvl.value} className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedLevels.includes(lvl.value)}
+                    onChange={() => handleLevelToggle(lvl.value)}
+                    className="rounded text-pioneer-orange-normal focus:ring-pioneer-orange-normal/30 h-4 w-4"
+                  />
+                  <span>{isRtl ? lvl.labelAr : lvl.labelEn}</span>
+                </label>
+              ))}
+            </div>
           </div>
         </div>
 

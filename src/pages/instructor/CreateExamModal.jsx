@@ -66,7 +66,18 @@ export default function CreateExamModal({
   lockCourse = false,
   initialScope = null,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.language?.startsWith("ar");
+
+  const LEVELS = [
+    { value: "GENERAL", labelAr: "عام / عمومي", labelEn: "General / Public" },
+    { value: "PREPARATORY", labelAr: "إعدادي هندسة", labelEn: "Preparatory Year" },
+    { value: "FIRST_YEAR", labelAr: "الفرقة الأولى", labelEn: "First Year" },
+    { value: "SECOND_YEAR", labelAr: "الفرقة الثانية", labelEn: "Second Year" },
+    { value: "THIRD_YEAR", labelAr: "الفرقة الثالثة", labelEn: "Third Year" },
+    { value: "FOURTH_YEAR", labelAr: "الفرقة الرابعة / التخرج", labelEn: "Fourth Year" },
+    { value: "GRADUATE", labelAr: "خريج / محترف", labelEn: "Graduate / Professional" },
+  ];
 
   const [courseId, setCourseId] = useState(defaultCourseId || courses[0]?.id || "");
   const [scopeType, setScopeType] = useState("course");
@@ -78,6 +89,7 @@ export default function CreateExamModal({
   const [totalPoints, setTotalPoints] = useState("100");
   const [passingScore, setPassingScore] = useState("60");
   const [scheduledAt, setScheduledAt] = useState("");
+  const [selectedLevels, setSelectedLevels] = useState(["GENERAL"]);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [coveredTopicsText, setCoveredTopicsText] = useState("");
   const [examStructureText, setExamStructureText] = useState("");
@@ -85,6 +97,14 @@ export default function CreateExamModal({
   const [preparationTipsText, setPreparationTipsText] = useState("");
   const [readyMessage, setReadyMessage] = useState("");
   const [formError, setFormError] = useState("");
+
+  const handleLevelToggle = (lvl) => {
+    if (selectedLevels.includes(lvl)) {
+      setSelectedLevels(selectedLevels.filter((l) => l !== lvl));
+    } else {
+      setSelectedLevels([...selectedLevels, lvl]);
+    }
+  };
 
   useEffect(() => {
     if (defaultCourseId) setCourseId(defaultCourseId);
@@ -198,6 +218,7 @@ export default function CreateExamModal({
         importantInstructions: textToList(importantInstructionsText),
         preparationTips: textToList(preparationTipsText),
         readyMessage: readyMessage.trim() || undefined,
+        targetLevels: selectedLevels.length > 0 ? selectedLevels : ["GENERAL"],
       };
       if (scopeType === "unit") body.unitId = unitId;
       if (scopeType === "lesson") body.lessonId = lessonId;
@@ -488,6 +509,26 @@ export default function CreateExamModal({
                       className={INPUT}
                     />
                   </label>
+                </div>
+
+                {/* Target Academic Years/Levels */}
+                <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-white/5">
+                  <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                    {isRtl ? "السنوات الدراسية المستهدفة" : "Target Academic Levels"}
+                  </span>
+                  <div className="grid grid-cols-2 gap-2 rounded-xl bg-slate-50 dark:bg-[#0F0F13] p-4 border border-slate-100 dark:border-white/5">
+                    {LEVELS.map((lvl) => (
+                      <label key={lvl.value} className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedLevels.includes(lvl.value)}
+                          onChange={() => handleLevelToggle(lvl.value)}
+                          className="rounded text-pioneer-orange-normal focus:ring-pioneer-orange-normal/30 h-4 w-4"
+                        />
+                        <span>{isRtl ? lvl.labelAr : lvl.labelEn}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
               </section>
 

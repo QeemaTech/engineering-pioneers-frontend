@@ -162,6 +162,10 @@ function InstructorPayouts() {
   const [rejectPayoutId, setRejectPayoutId] = useState(null);
   const [rejectionReason, setRejectionReason] = useState("");
 
+  const [payPayoutId, setPayPayoutId] = useState(null);
+  const [payNotes, setPayNotes] = useState("");
+  const [payReceiptFile, setPayReceiptFile] = useState(null);
+
   const { data: payouts = [], isLoading, isError, error, refetch, isFetching } = useAdminPayouts({
     ...(statusFilter ? { status: statusFilter } : {}),
   });
@@ -207,6 +211,30 @@ function InstructorPayouts() {
     setRejectPayoutId(null);
     setRejectionReason("");
     await runProcess(id, "REJECTED", notes);
+  };
+
+  const handleConfirmPaid = async () => {
+    if (!payPayoutId) return;
+
+    const formData = new FormData();
+    formData.append("status", "PAID");
+    formData.append("adminNotes", payNotes.trim());
+    if (payReceiptFile) {
+      formData.append("receipt", payReceiptFile);
+    }
+
+    const id = payPayoutId;
+    setPayPayoutId(null);
+    setPayNotes("");
+    setPayReceiptFile(null);
+
+    try {
+      await processMutation.mutateAsync({ id, body: formData });
+      toast.success(t("adminPages.payouts.updated", { defaultValue: "Payout marked as paid." }));
+      void refetch();
+    } catch (e) {
+      toast.error(getErrorMessage(e, t("adminPages.payouts.processFailed", { defaultValue: "Could not process payout." })));
+    }
   };
 
   // Dynamic Status Badge Tone
@@ -436,10 +464,22 @@ function InstructorPayouts() {
                         {(() => {
                           if (r.status === "PAID") {
                             return (
-                              <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-450 flex items-center gap-1">
-                                <Check className="h-4 w-4" />
-                                {isRtl ? "تم الدفع بنجاح" : "Paid"}
-                              </span>
+                              <div className="flex flex-col items-start gap-1">
+                                <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-450 flex items-center gap-1">
+                                  <Check className="h-4 w-4" />
+                                  {isRtl ? "تم الدفع بنجاح" : "Paid"}
+                                </span>
+                                {r.receiptUrl && (
+                                  <a
+                                    href={`${import.meta.env.VITE_API_URL || ""}${r.receiptUrl}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[11px] font-bold text-[#EE7C11] hover:underline"
+                                  >
+                                    {isRtl ? "عرض الإيصال 📄" : "View Receipt 📄"}
+                                  </a>
+                                )}
+                              </div>
                             );
                           }
                           if (r.status === "REJECTED") {
@@ -480,7 +520,11 @@ function InstructorPayouts() {
                               <button
                                 type="button"
                                 disabled={busy}
-                                onClick={() => void runProcess(r.id, "PAID")}
+                                onClick={() => {
+                                  setPayPayoutId(r.id);
+                                  setPayNotes("");
+                                  setPayReceiptFile(null);
+                                }}
                                 className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#EE7C11] to-[#EE7C11]/90 hover:from-[#d9700e] hover:to-[#c4640d] px-4 py-2 text-xs font-bold text-white shadow-md shadow-orange-500/20 transition-all duration-200 transform hover:scale-[1.02]"
                               >
                                 <DollarSign className="h-3.5 w-3.5" />
@@ -539,9 +583,75 @@ function InstructorPayouts() {
               <button
                 type="button"
                 onClick={handleConfirmReject}
-                className="rounded-xl bg-rose-600 hover:bg-rose-700 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-rose-600/20 transition-all duration-200"
+                className="rounded-xl bg-rose-650 hover:bg-rose-700 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-rose-600/20 transition-all duration-200"
               >
                 {isRtl ? "تأكيد الرفض" : "Confirm Reject"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Payout Completion Receipt Upload Dialog Modal */}
+      {payPayoutId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-955/75 backdrop-blur-xs p-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-205 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-900 dark:text-white">
+            <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-slate-800">
+              <DollarSign className="h-5 w-5 text-emerald-500" />
+              {isRtl ? "تأكيد تحويل الدفعة للمحاضر" : "Confirm Payout Transfer"}
+            </h3>
+
+            <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+              {isRtl
+                ? "يرجى إدخال أي ملاحظات اختيارية ورفع إثبات التحويل (صورة أو ملف PDF) لتأكيد عملية الدفع للمحاضر."
+                : "Please add any optional notes and upload the transfer receipt (Image or PDF) to confirm the payout."}
+            </p>
+
+            <div className="mt-4 space-y-4">
+              <div>
+                <label className="text-[10px] font-bold text-slate-550 dark:text-slate-400 uppercase tracking-wider block mb-1.5">
+                  {isRtl ? "ملاحظات إضافية" : "Additional Notes"}
+                </label>
+                <textarea
+                  value={payNotes}
+                  onChange={(e) => setPayNotes(e.target.value)}
+                  placeholder={isRtl ? "مثال: تم التحويل بنجاح عبر فودافون كاش" : "e.g., Successfully transferred via Vodafone Cash"}
+                  rows={2}
+                  className="w-full rounded-xl border border-slate-200 bg-white p-3 text-sm dark:border-white/10 dark:bg-slate-950 dark:text-white focus:border-[#EE7C11] focus:ring-1 focus:ring-[#EE7C11] outline-none transition-all resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-bold text-slate-550 dark:text-slate-400 uppercase tracking-wider block mb-1.5">
+                  {isRtl ? "إرفاق إثبات الدفع (اختياري)" : "Attach Receipt / Proof (Optional)"}
+                </label>
+                <input
+                  type="file"
+                  accept="image/*,application/pdf"
+                  onChange={(e) => setPayReceiptFile(e.target.files[0] || null)}
+                  className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#EE7C11]/10 file:text-[#EE7C11] hover:file:bg-[#EE7C11]/20 cursor-pointer"
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-2.5 border-t border-slate-105 pt-4 dark:border-slate-800">
+              <button
+                type="button"
+                onClick={() => {
+                  setPayPayoutId(null);
+                  setPayNotes("");
+                  setPayReceiptFile(null);
+                }}
+                className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-650 hover:bg-slate-50 dark:border-white/10 dark:text-slate-300 dark:hover:bg-slate-800/60 transition-all"
+              >
+                {t("dashboard.common.cancel")}
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmPaid}
+                className="rounded-xl bg-emerald-600 hover:bg-emerald-700 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-emerald-600/20 transition-all duration-200"
+              >
+                {isRtl ? "تأكيد وإتمام الدفع" : "Confirm Payment"}
               </button>
             </div>
           </div>

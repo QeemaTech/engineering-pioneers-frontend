@@ -15,6 +15,7 @@ const signupSchema = z
     fullName: z.string().min(3).max(100),
     email: z.string().min(1).email(),
     phone: z.string().regex(/^\+?[0-9]{7,15}$/).or(z.literal("")).optional(),
+    academicLevel: z.string().optional().nullable(),
     password: z
       .string()
       .min(8)
@@ -59,7 +60,7 @@ function PasswordStrength({ password }) {
 }
 
 export default function Signup() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const registerUser = useAuthStore((s) => s.register);
@@ -75,7 +76,7 @@ export default function Signup() {
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(signupSchema),
-    defaultValues: { fullName: "", email: "", phone: "", password: "", confirmPassword: "" },
+    defaultValues: { fullName: "", email: "", phone: "", academicLevel: "", password: "", confirmPassword: "" },
   });
 
   const passwordValue = watch("password");
@@ -89,6 +90,7 @@ export default function Signup() {
         password: values.password,
         confirmPassword: values.confirmPassword,
         ...(values.phone ? { phone: values.phone } : {}),
+        ...(values.academicLevel ? { academicLevel: values.academicLevel } : {}),
       });
       const roleName = String(user?.role?.name || user?.role || "").trim().toUpperCase();
 
@@ -147,6 +149,18 @@ export default function Signup() {
             <Phone className="pointer-events-none absolute start-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input type="tel" autoComplete="tel" placeholder={t("auth.signup.phonePlaceholder")} className={inputClass} {...register("phone")} />
           </div>
+        </Field>
+
+        <Field label={i18n.language?.startsWith("ar") ? "الفرقة الدراسية" : "Academic Year / Level"} error={errors.academicLevel?.message}>
+          <select className={inputClass + " bg-white dark:bg-[#0F0F13] cursor-pointer"} {...register("academicLevel")}>
+            <option value="">{i18n.language?.startsWith("ar") ? "اختر الفرقة الدراسية..." : "Select Academic Level..."}</option>
+            <option value="PREPARATORY">{i18n.language?.startsWith("ar") ? "إعدادي هندسة" : "Preparatory Year (إعدادي هندسة)"}</option>
+            <option value="FIRST_YEAR">{i18n.language?.startsWith("ar") ? "الفرقة الأولى" : "First Year (الفرقة الأولى)"}</option>
+            <option value="SECOND_YEAR">{i18n.language?.startsWith("ar") ? "الفرقة الثانية" : "Second Year (الفرقة الثانية)"}</option>
+            <option value="THIRD_YEAR">{i18n.language?.startsWith("ar") ? "الفرقة الثالثة" : "Third Year (الفرقة الثالثة)"}</option>
+            <option value="FOURTH_YEAR">{i18n.language?.startsWith("ar") ? "الفرقة الرابعة / التخرج" : "Fourth Year / Graduation (الفرقة الرابعة)"}</option>
+            <option value="GRADUATE">{i18n.language?.startsWith("ar") ? "خريج / محترف" : "Graduate / Professional (خريج)"}</option>
+          </select>
         </Field>
 
         <Field label={t("auth.signup.passwordLabel")} error={errors.password?.message}>

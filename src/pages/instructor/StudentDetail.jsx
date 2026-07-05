@@ -10,7 +10,8 @@ import { useInstructorStudentPerformance } from "../../features/instructor/stude
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 function InstructorStudentDetail() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.language?.startsWith("ar");
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -26,6 +27,7 @@ function InstructorStudentDetail() {
         joinDate: apiStudent.createdAt ? new Date(apiStudent.createdAt).toLocaleDateString() : "-",
         status: apiStudent.isActive ? "Active" : "Inactive",
         lastLogin: apiStudent.lastLoginAt ? new Date(apiStudent.lastLoginAt).toLocaleString() : "-",
+        academicLevel: apiStudent.academicLevel,
       }
     : null;
 
@@ -142,7 +144,19 @@ function InstructorStudentDetail() {
               .join("")}
           </div>
           <div className="min-w-0 flex-1">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">{student.name}</h2>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">{student.name}</h2>
+              {student.academicLevel && (
+                <span className="inline-flex items-center rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-500/20 dark:text-indigo-300 px-2.5 py-0.5 text-xs font-semibold">
+                  {student.academicLevel === "PREPARATORY" ? (isRtl ? "إعدادي هندسة" : "Prep Year") :
+                   student.academicLevel === "FIRST_YEAR" ? (isRtl ? "الفرقة الأولى" : "Year 1") :
+                   student.academicLevel === "SECOND_YEAR" ? (isRtl ? "الفرقة الثانية" : "Year 2") :
+                   student.academicLevel === "THIRD_YEAR" ? (isRtl ? "الفرقة الثالثة" : "Year 3") :
+                   student.academicLevel === "FOURTH_YEAR" ? (isRtl ? "الفرقة الرابعة" : "Year 4") :
+                   student.academicLevel === "GRADUATE" ? (isRtl ? "خريج" : "Graduate") : student.academicLevel}
+                </span>
+              )}
+            </div>
             <p className="text-sm text-slate-500">{student.email}</p>
             <p className="text-xs text-slate-500">{student.joinDate}</p>
           </div>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Search, Play, Pencil, Trash2, ExternalLink, Loader2 } from "lucide-react";
+import { Search, Play, Pencil, Trash2, ExternalLink, Loader2, FileText } from "lucide-react";
 import toast from "react-hot-toast";
 import DataTable from "../../components/dashboard/DataTable";
 import EmptyState from "../../components/dashboard/EmptyState";
@@ -12,6 +12,7 @@ import { useAssignAdminCourseInstructor } from "../../features/admin/courses/hoo
 import ContentStatusBadge from "../../components/ui/ContentStatusBadge";
 import { useDeleteAdminCourse, useSubmitCourseForReview, useUpdateAdminCourse } from "../../features/admin/courses/hooks";
 import { getErrorMessage } from "../../api/error";
+import client from "../../api/client";
 
 function Courses() {
   const { t } = useTranslation();
@@ -24,6 +25,28 @@ function Courses() {
   const instructors = instructorsData?.instructors || [];
 
   const deleteMutation = useDeleteAdminCourse();
+  const [downloadingCourseId, setDownloadingCourseId] = useState(null);
+
+  const handleDownloadReviewsPdf = async (courseId) => {
+    setDownloadingCourseId(courseId);
+    try {
+      const response = await client.get(`/admin/reviews/export-pdf?courseId=${courseId}`, {
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `course-reviews-${courseId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      toast.success(t("adminPages.courses.pdfSuccess", { defaultValue: "Reviews PDF downloaded successfully!" }));
+    } catch (e) {
+      toast.error(t("adminPages.courses.pdfError", { defaultValue: "Failed to download reviews PDF report." }));
+    } finally {
+      setDownloadingCourseId(null);
+    }
+  };
 
   const submitForReview = async (course) => {
     try {
@@ -169,6 +192,18 @@ function Courses() {
                 >
                   <Pencil className="h-4 w-4" />
                 </Link>
+                <button
+                  onClick={() => void handleDownloadReviewsPdf(row.id)}
+                  disabled={downloadingCourseId === row.id}
+                  className="inline-flex rounded-md p-2 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 disabled:opacity-40"
+                  title={t("adminPages.courses.downloadReviews", { defaultValue: "Download reviews PDF report" })}
+                >
+                  {downloadingCourseId === row.id ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <FileText className="h-4 w-4" />
+                  )}
+                </button>
                 <button
                   onClick={() => void submitForReview(row)}
                   disabled={submitReviewMutation.isPending || String(row.status || "").toUpperCase() !== "DRAFT"}

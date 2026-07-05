@@ -13,6 +13,16 @@ import {
 import { getErrorMessage } from "../../api/error";
 import { ExamQuestionBank } from "../../components/exams/ExamQuestionBank";
 
+const LEVELS = [
+  { value: "GENERAL", labelAr: "عام / عمومي", labelEn: "General / Public" },
+  { value: "PREPARATORY", labelAr: "إعدادي هندسة", labelEn: "Preparatory Year" },
+  { value: "FIRST_YEAR", labelAr: "الفرقة الأولى", labelEn: "First Year" },
+  { value: "SECOND_YEAR", labelAr: "الفرقة الثانية", labelEn: "Second Year" },
+  { value: "THIRD_YEAR", labelAr: "الفرقة الثالثة", labelEn: "Third Year" },
+  { value: "FOURTH_YEAR", labelAr: "الفرقة الرابعة / التخرج", labelEn: "Fourth Year" },
+  { value: "GRADUATE", labelAr: "خريج / محترف", labelEn: "Graduate / Professional" },
+];
+
 const listToText = (value) => {
   if (!Array.isArray(value)) return "";
   return value
@@ -60,7 +70,8 @@ const textToStructure = (value) =>
    MAIN: ExamEditor
    ═══════════════════════════════════════ */
 export default function ExamEditor() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.language?.startsWith("ar");
   const label = (key, fallback, opts) => t(`adminPages.examEditor.${key}`, { defaultValue: fallback, ...opts });
   const { id } = useParams();
   const navigate = useNavigate();
@@ -91,6 +102,7 @@ export default function ExamEditor() {
       importantInstructionsText: listToText(exam.importantInstructions),
       preparationTipsText: listToText(exam.preparationTips),
       readyMessage: exam.readyMessage || "",
+      targetLevels: exam.targetLevels || [],
     });
     setEditingSettings(true);
   };
@@ -112,6 +124,7 @@ export default function ExamEditor() {
           importantInstructions: textToList(settings.importantInstructionsText),
           preparationTips: textToList(settings.preparationTipsText),
           readyMessage: settings.readyMessage?.trim() || null,
+          targetLevels: settings.targetLevels,
         },
       });
       setEditingSettings(false);
@@ -233,6 +246,33 @@ export default function ExamEditor() {
             <label className="block space-y-1"><span className="text-xs font-bold text-slate-500">Duration (min)</span><input type="number" min={1} value={settings.durationMinutes} onChange={(e) => setSettings({ ...settings, durationMinutes: e.target.value })} className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" /></label>
             <label className="block space-y-1"><span className="text-xs font-bold text-slate-500">Total Points</span><input type="number" min={1} value={settings.totalPoints} onChange={(e) => setSettings({ ...settings, totalPoints: e.target.value })} className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" /></label>
             <label className="block space-y-1"><span className="text-xs font-bold text-slate-500">Passing Score</span><input type="number" min={1} value={settings.passingScore} onChange={(e) => setSettings({ ...settings, passingScore: e.target.value })} className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" /></label>
+            
+            {/* Target Academic Years/Levels */}
+            <div className="sm:col-span-3">
+              <span className="text-xs font-bold text-slate-500">
+                {isRtl ? "السنوات الدراسية المستهدفة" : "Target Academic Levels"}
+              </span>
+              <div className="mt-1.5 grid grid-cols-2 gap-2 rounded-xl bg-slate-50 dark:bg-[#0F0F13] p-4 border border-slate-100 dark:border-white/5">
+                {LEVELS.map((lvl) => (
+                  <label key={lvl.value} className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={(settings.targetLevels || []).includes(lvl.value)}
+                      onChange={() => {
+                        const current = settings.targetLevels || [];
+                        const updated = current.includes(lvl.value)
+                          ? current.filter((v) => v !== lvl.value)
+                          : [...current, lvl.value];
+                        setSettings({ ...settings, targetLevels: updated });
+                      }}
+                      className="rounded text-pioneer-orange-normal focus:ring-pioneer-orange-normal/30 h-4 w-4"
+                    />
+                    <span>{isRtl ? lvl.labelAr : lvl.labelEn}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
             <div className="sm:col-span-3">
               <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-400">Mobile Details</h3>
               <div className="grid gap-4 sm:grid-cols-2">

@@ -1,7 +1,10 @@
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, CheckCircle2, XCircle } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, CheckCircle2, XCircle, Download, RefreshCw } from "lucide-react";
 import DataTable from "../../components/ui/DataTable";
 import { useAdminExamSubmissions, useAdminExamById } from "../../features/admin/exams/hooks";
+import client from "../../api/client";
+import toast from "react-hot-toast";
 
 export default function ExamSubmissions() {
   const { id } = useParams();
@@ -9,14 +12,51 @@ export default function ExamSubmissions() {
   const { data, isLoading } = useAdminExamSubmissions(id, { page: 1, limit: 200 });
   const submissions = data?.submissions || [];
 
+  const [exporting, setExporting] = useState(false);
+
+  const handleExportXlsx = async () => {
+    setExporting(true);
+    try {
+      const response = await client.get(`/admin/exams/${id}/submissions/export-xlsx`, {
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `exam-submissions-${id}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      toast.success("Excel sheet downloaded successfully!");
+    } catch (e) {
+      toast.error("Failed to export submissions.");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <section className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Link to="/admin/exams" className="rounded-lg border border-slate-200 p-2 text-slate-500 hover:bg-slate-50 dark:border-white/10 dark:text-slate-400 dark:hover:bg-white/5"><ArrowLeft className="h-4 w-4" /></Link>
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">Submissions</h1>
-          <p className="text-xs text-slate-500">{exam?.title || "Loading..."}</p>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Link to="/admin/exams" className="rounded-lg border border-slate-200 p-2 text-slate-500 hover:bg-slate-50 dark:border-white/10 dark:text-slate-400 dark:hover:bg-white/5"><ArrowLeft className="h-4 w-4" /></Link>
+          <div>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-white">Submissions</h1>
+            <p className="text-xs text-slate-500">{exam?.title || "Loading..."}</p>
+          </div>
         </div>
+
+        {submissions.length > 0 && (
+          <button
+            type="button"
+            disabled={exporting}
+            onClick={handleExportXlsx}
+            className="flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-emerald-500/20 transition-all disabled:opacity-50"
+          >
+            {exporting ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+            Export Excel (.xlsx)
+          </button>
+        )}
       </div>
 
       {isLoading ? (

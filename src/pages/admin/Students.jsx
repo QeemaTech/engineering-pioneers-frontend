@@ -13,7 +13,7 @@ import StatusBadge from "../../components/ui/StatusBadge";
 import { getErrorMessage } from "../../api/error";
 
 function Students() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
   const [sort, setSort] = useState("Newest");
@@ -31,9 +31,15 @@ function Students() {
   const setPasswordMutation = useSetAdminUserPassword();
   const [editing, setEditing] = useState(null);
   const [creating, setCreating] = useState(false);
+  
   const [modalName, setModalName] = useState("");
   const [modalEmail, setModalEmail] = useState("");
   const [modalPassword, setModalPassword] = useState("");
+  const [modalPhone, setModalPhone] = useState("");
+  const [modalAcademicLevel, setModalAcademicLevel] = useState("");
+  const [modalIsActive, setModalIsActive] = useState(true);
+
+  const isRtl = i18n.language?.startsWith("ar");
   const students = data?.users || [];
 
   const filtered = useMemo(() => {
@@ -55,7 +61,19 @@ function Students() {
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-700 dark:bg-white/10 dark:text-white">
             {String(row.fullName || "ST").split(" ").map((n) => n[0]).slice(0, 2).join("")}
           </div>
-          <span className="font-semibold text-slate-900 dark:text-white">{row.fullName || "-"}</span>
+          <div>
+            <span className="font-semibold text-slate-900 dark:text-white block">{row.fullName || "-"}</span>
+            {row.academicLevel && (
+              <span className="text-[10px] bg-slate-100 dark:bg-slate-800 px-1 rounded font-medium text-slate-500 dark:text-slate-400">
+                {row.academicLevel === "PREPARATORY" ? (isRtl ? "إعدادي هندسة" : "Prep Year") :
+                 row.academicLevel === "FIRST_YEAR" ? (isRtl ? "الفرقة الأولى" : "Year 1") :
+                 row.academicLevel === "SECOND_YEAR" ? (isRtl ? "الفرقة الثانية" : "Year 2") :
+                 row.academicLevel === "THIRD_YEAR" ? (isRtl ? "الفرقة الثالثة" : "Year 3") :
+                 row.academicLevel === "FOURTH_YEAR" ? (isRtl ? "الفرقة الرابعة" : "Year 4") :
+                 row.academicLevel === "GRADUATE" ? (isRtl ? "خريج" : "Graduate") : row.academicLevel}
+              </span>
+            )}
+          </div>
         </div>
       ),
     },
@@ -87,7 +105,20 @@ function Students() {
       title: t("adminPages.students.table.actions"),
       render: (_, row) => (
         <div className="flex items-center gap-1">
-          <button onClick={() => { setEditing(row); setModalName(row.fullName || ""); setModalEmail(row.email || ""); setModalPassword(""); }} className="inline-flex rounded-md p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-white/15">Edit</button>
+          <button
+            onClick={() => {
+              setEditing(row);
+              setModalName(row.fullName || "");
+              setModalEmail(row.email || "");
+              setModalPassword("");
+              setModalPhone(row.phone || "");
+              setModalAcademicLevel(row.academicLevel || "");
+              setModalIsActive(row.isActive !== false);
+            }}
+            className="inline-flex rounded-md px-2.5 py-1.5 text-xs font-bold text-[#EE7C11] hover:bg-[#EE7C11]/10 transition"
+          >
+            Edit
+          </button>
           <Link to={`/admin/students/${row.id || row.userId}`} className="inline-flex rounded-md p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-white/15">
             <Eye className="h-4 w-4" />
           </Link>
@@ -109,8 +140,11 @@ function Students() {
               setModalName("");
               setModalEmail("");
               setModalPassword("");
+              setModalPhone("");
+              setModalAcademicLevel("");
+              setModalIsActive(true);
             }}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#EE7C11] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-opacity-95 shadow-sm"
           >
             <Plus className="h-4 w-4" />
             {t("adminPages.students.addStudent")}
@@ -138,182 +172,324 @@ function Students() {
             label: t("adminPages.students.newThisWeek"),
             value: data?.meta?.studentStats?.joinedThisWeek ?? 0,
             icon: Plus,
-            iconWrap: "bg-amber-500/10 text-amber-400",
+            iconWrap: "bg-orange-500/10 text-[#EE7C11]",
           },
         ]}
       />
-      <FilterBar>
-        <div className="relative lg:col-span-6">
-          <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("adminPages.students.searchPlaceholder")} className="h-10 w-full rounded-lg border border-slate-200 bg-white ps-9 pe-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
-        </div>
-        <select value={status} onChange={(e) => setStatus(e.target.value)} className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-slate-300 lg:col-span-3">
-          {["All", "Active", "Inactive", "Banned"].map((s) => <option key={s}>{s}</option>)}
-        </select>
-        <select value={sort} onChange={(e) => setSort(e.target.value)} className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-slate-300 lg:col-span-3">
-          {["Newest", "Oldest", "Name A-Z"].map((s) => <option key={s}>{s}</option>)}
-        </select>
-      </FilterBar>
-      {isLoading ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-500 dark:border-white/8 dark:bg-[#1A1A22] dark:text-slate-400">Loading students...</div>
-      ) : isError ? (
-        <div className="rounded-xl border border-red-200 bg-[#EE7C11]/10 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-[#EE7C11]/10 dark:text-red-300">
-          {getErrorMessage(error, "Failed to load students.")}
-          <button onClick={() => refetch()} className="ms-3 rounded bg-[#EE7C11] px-2 py-1 text-xs font-bold text-white">Retry</button>
-        </div>
-      ) : filtered.length ? (
-        <DataTable
-          columns={columns}
-          rows={filtered}
-          pagination={
-            <div className="flex justify-end gap-2">
-              {Array.from({ length: Math.max(1, Math.ceil((data?.meta?.total || filtered.length) / 8)) }).map((_, idx) => {
-                const p = idx + 1;
-                return (
-                <button key={p} onClick={() => setPage(p)} className={`rounded-md px-3 py-1 text-sm ${page === p ? "bg-[#EE7C11] text-white" : "border border-slate-200 text-slate-600 dark:border-white/10 dark:text-slate-300"}`}>
-                  {p}
-                </button>
-              )})}
+      <FilterBar
+        search={search}
+        onSearchChange={(v) => { setSearch(v); setPage(1); }}
+        searchPlaceholder={t("adminPages.students.searchPlaceholder")}
+        filters={[
+          {
+            key: "status",
+            value: status,
+            onChange: (v) => { setStatus(v); setPage(1); },
+            options: ["All", "Active", "Suspended"],
+          },
+          {
+            key: "sort",
+            value: sort,
+            onChange: setSort,
+            options: ["Newest", "Oldest", "Name A-Z"],
+          },
+        ]}
+      />
+
+      {isLoading ? <p className="text-sm text-slate-500">{t("dashboard.common.loading")}</p> : null}
+      {isError ? (
+        <p className="text-sm text-red-600 dark:text-red-300">
+          {getErrorMessage(error, "Failed to load students list.")}
+        </p>
+      ) : null}
+
+      {!isLoading && !isError ? (
+        filtered.length === 0 ? (
+          <EmptyState title={t("adminPages.students.empty")} />
+        ) : (
+          <div className="space-y-4">
+            <DataTable columns={columns} rows={filtered} />
+          </div>
+        )
+      ) : null}
+
+      {/* CREATE STUDENT MODAL */}
+      {creating && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl dark:bg-[#1A1A22] max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 pb-2 border-b border-slate-100 dark:border-white/5">
+              {isRtl ? "إضافة طالب جديد" : "Create New Student"}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  {isRtl ? "الاسم الكامل" : "Full Name"} *
+                </label>
+                <input
+                  required
+                  value={modalName}
+                  onChange={(e) => setModalName(e.target.value)}
+                  placeholder={t("adminPages.students.table.name")}
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  {isRtl ? "البريد الإلكتروني" : "Email Address"} *
+                </label>
+                <input
+                  required
+                  type="email"
+                  value={modalEmail}
+                  onChange={(e) => setModalEmail(e.target.value)}
+                  placeholder={t("adminPages.students.table.email")}
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  {isRtl ? "رقم الهاتف" : "Phone Number"}
+                </label>
+                <input
+                  type="tel"
+                  value={modalPhone}
+                  onChange={(e) => setModalPhone(e.target.value)}
+                  placeholder="+201..."
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  {isRtl ? "المستوى الدراسي / السنة" : "Academic Level"}
+                </label>
+                <select
+                  value={modalAcademicLevel}
+                  onChange={(e) => setModalAcademicLevel(e.target.value)}
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                >
+                  <option value="">{isRtl ? "عام / غير محدد" : "General / Unspecified"}</option>
+                  <option value="PREPARATORY">{isRtl ? "إعدادي هندسة" : "Preparatory Year"}</option>
+                  <option value="FIRST_YEAR">{isRtl ? "الفرقة الأولى" : "First Year"}</option>
+                  <option value="SECOND_YEAR">{isRtl ? "الفرقة الثانية" : "Second Year"}</option>
+                  <option value="THIRD_YEAR">{isRtl ? "الفرقة الثالثة" : "Third Year"}</option>
+                  <option value="FOURTH_YEAR">{isRtl ? "الفرقة الرابعة" : "Fourth Year"}</option>
+                  <option value="GRADUATE">{isRtl ? "خريج" : "Graduate"}</option>
+                </select>
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  {isRtl ? "كلمة المرور" : "Password"} *
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={modalPassword}
+                  onChange={(e) => setModalPassword(e.target.value)}
+                  placeholder={isRtl ? "لا تقل عن 8 أحرف" : "Minimum 8 characters"}
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                />
+              </div>
             </div>
-          }
-        />
-      ) : (
-        <EmptyState
-          title={t("adminPages.students.empty")}
-          message={t("adminPages.students.subtitle")}
-          cta={
-            <button
-              type="button"
-              onClick={() => {
-                setCreating(true);
-                setModalName("");
-                setModalEmail("");
-                setModalPassword("");
-              }}
-              className="rounded-lg bg-[#EE7C11] px-4 py-2 text-sm font-bold text-white"
-            >
-              {t("adminPages.students.addFirst")}
-            </button>
-          }
-        />
+
+            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100 dark:border-white/5">
+              <button
+                type="button"
+                onClick={() => setCreating(false)}
+                className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition dark:border-white/10 dark:text-white dark:hover:bg-slate-800"
+              >
+                {isRtl ? "إلغاء" : "Cancel"}
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!modalName || !modalEmail || modalPassword.length < 8) {
+                    toast.error(isRtl ? "يرجى ملء جميع الحقول المطلوبة. كلمة المرور لا تقل عن 8 رموز." : "Please fill all required fields. Password must be at least 8 characters.");
+                    return;
+                  }
+                  try {
+                    await createMutation.mutateAsync({
+                      fullName: modalName,
+                      email: modalEmail,
+                      password: modalPassword,
+                      confirmPassword: modalPassword,
+                      phone: modalPhone || undefined,
+                      academicLevel: modalAcademicLevel || undefined,
+                    });
+                    toast.success(isRtl ? "تم إنشاء حساب الطالب بنجاح" : "Student created successfully.");
+                    setCreating(false);
+                    setModalName("");
+                    setModalEmail("");
+                    setModalPassword("");
+                    setModalPhone("");
+                    setModalAcademicLevel("");
+                    refetch();
+                  } catch (err) {
+                    toast.error(getErrorMessage(err, "Failed to create student."));
+                  }
+                }}
+                className="rounded-xl bg-[#EE7C11] px-5 py-2.5 text-sm font-bold text-white transition"
+              >
+                {createMutation.isPending ? (isRtl ? "جاري الحفظ..." : "Saving...") : (isRtl ? "حفظ" : "Save Student")}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
-      {creating ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-5 shadow-xl dark:border-white/10 dark:bg-[#1A1A22]">
-            <h3 className="mb-3 text-lg font-bold text-slate-900 dark:text-white">{t("adminPages.students.addStudent")}</h3>
-            <div className="space-y-3">
-              <input
-                value={modalName}
-                onChange={(e) => setModalName(e.target.value)}
-                placeholder={t("adminPages.students.table.name")}
-                className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
-              />
-              <input
-                value={modalEmail}
-                onChange={(e) => setModalEmail(e.target.value)}
-                placeholder={t("adminPages.students.table.email")}
-                className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
-              />
+
+      {/* EDIT STUDENT MODAL */}
+      {editing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl dark:bg-[#1A1A22] max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 pb-2 border-b border-slate-100 dark:border-white/5">
+              {isRtl ? "تعديل الملف الشخصي للطالب" : "Edit Student Profile"}
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  {isRtl ? "الاسم الكامل" : "Full Name"}
+                </label>
+                <input
+                  value={modalName}
+                  onChange={(e) => setModalName(e.target.value)}
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  {isRtl ? "البريد الإلكتروني" : "Email Address"}
+                </label>
+                <input
+                  type="email"
+                  value={modalEmail}
+                  onChange={(e) => setModalEmail(e.target.value)}
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  {isRtl ? "رقم الهاتف" : "Phone Number"}
+                </label>
+                <input
+                  type="tel"
+                  value={modalPhone}
+                  onChange={(e) => setModalPhone(e.target.value)}
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  {isRtl ? "المستوى الدراسي / السنة" : "Academic Level"}
+                </label>
+                <select
+                  value={modalAcademicLevel}
+                  onChange={(e) => setModalAcademicLevel(e.target.value)}
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                >
+                  <option value="">{isRtl ? "عام / غير محدد" : "General / Unspecified"}</option>
+                  <option value="PREPARATORY">{isRtl ? "إعدادي هندسة" : "Preparatory Year"}</option>
+                  <option value="FIRST_YEAR">{isRtl ? "الفرقة الأولى" : "First Year"}</option>
+                  <option value="SECOND_YEAR">{isRtl ? "الفرقة الثانية" : "Second Year"}</option>
+                  <option value="THIRD_YEAR">{isRtl ? "الفرقة الثالثة" : "Third Year"}</option>
+                  <option value="FOURTH_YEAR">{isRtl ? "الفرقة الرابعة" : "Fourth Year"}</option>
+                  <option value="GRADUATE">{isRtl ? "خريج" : "Graduate"}</option>
+                </select>
+              </div>
+
+              <div className="md:col-span-2 flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-[#0F0F13] border border-slate-100 dark:border-white/5">
+                <div>
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                    {isRtl ? "حالة الحساب" : "Account Status"}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {isRtl ? "تعليق حساب الطالب يمنعه من تسجيل الدخول للمنصة." : "Suspending the account blocks the student from signing in."}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    id="isActiveToggle"
+                    type="checkbox"
+                    checked={modalIsActive}
+                    onChange={(e) => setModalIsActive(e.target.checked)}
+                    className="rounded text-[#EE7C11] focus:ring-[#EE7C11]/30 h-5 w-5 cursor-pointer"
+                  />
+                  <label htmlFor="isActiveToggle" className="text-sm font-bold text-slate-700 dark:text-slate-300 cursor-pointer">
+                    {modalIsActive ? (isRtl ? "نشط" : "Active") : (isRtl ? "معلق" : "Suspended")}
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50/50 p-4 text-xs text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/5 dark:text-amber-300">
+              <p className="font-bold uppercase tracking-wider text-amber-800 dark:text-amber-200">
+                {isRtl ? "تعديل كلمة المرور (اختياري)" : "Update Password (Optional)"}
+              </p>
+              <p className="mt-1">
+                {isRtl ? "في حال قمت بتعيين كلمة مرور جديدة، فسيتم تسجيل خروج الطالب تلقائياً من جميع أجهزته الحالية." : "If you set a new password, the student will be logged out from all active sessions."}
+              </p>
               <input
                 type="password"
                 value={modalPassword}
                 onChange={(e) => setModalPassword(e.target.value)}
-                placeholder="Password (min 8 chars)"
-                className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                placeholder={isRtl ? "كلمة المرور الجديدة (8 رموز كحد أدنى)" : "New password (min 8 characters)"}
+                className="mt-2.5 h-10 w-full rounded-xl border border-amber-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-amber-500 dark:border-amber-500/30 dark:bg-[#0F0F13] dark:text-white"
               />
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setCreating(false)}
-                  className="rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-white/10 dark:text-white"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    if (!modalName || !modalEmail || modalPassword.length < 8) {
-                      toast.error("Please fill all fields. Password must be at least 8 characters.");
-                      return;
-                    }
-                    try {
-                      await createMutation.mutateAsync({
+            </div>
+
+            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100 dark:border-white/5">
+              <button
+                type="button"
+                onClick={() => { setEditing(null); setModalPassword(""); }}
+                className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition dark:border-white/10 dark:text-white dark:hover:bg-slate-800"
+              >
+                {isRtl ? "إلغاء" : "Cancel"}
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    await updateMutation.mutateAsync({
+                      id: editing.id,
+                      body: {
                         fullName: modalName,
                         email: modalEmail,
-                        password: modalPassword,
-                        confirmPassword: modalPassword,
-                      });
-                      toast.success("Student created successfully.");
-                      setCreating(false);
-                      setModalName("");
-                      setModalEmail("");
-                      setModalPassword("");
-                    } catch (err) {
-                      toast.error(getErrorMessage(err, "Failed to create student."));
-                    }
-                  }}
-                  className="rounded-lg bg-[#EE7C11] px-3 py-2 text-sm font-bold text-white"
-                >
-                  {createMutation.isPending ? "Saving..." : "Save"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
-      {editing ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-5 shadow-xl dark:border-white/10 dark:bg-[#1A1A22]">
-            <h3 className="mb-3 text-lg font-bold text-slate-900 dark:text-white">Edit Student</h3>
-            <div className="space-y-3">
-              <input value={modalName} onChange={(e) => setModalName(e.target.value)} className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
-              <input value={modalEmail} onChange={(e) => setModalEmail(e.target.value)} className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white" />
-              <div className="flex justify-end gap-2">
-                <button onClick={() => { setEditing(null); setModalPassword(""); }} className="rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-white/10 dark:text-white">Cancel</button>
-                <button
-                  onClick={async () => {
-                    try {
-                      await updateMutation.mutateAsync({
-                        id: editing.id,
-                        body: { fullName: modalName, email: modalEmail },
-                      });
-                      if (modalPassword) {
-                        if (modalPassword.length < 8) {
-                          toast.error("Password must be at least 8 characters.");
-                          return;
-                        }
-                        await setPasswordMutation.mutateAsync({ id: editing.id, newPassword: modalPassword });
+                        phone: modalPhone || undefined,
+                        academicLevel: modalAcademicLevel || null,
+                        isActive: modalIsActive,
+                      },
+                    });
+                    if (modalPassword) {
+                      if (modalPassword.length < 8) {
+                        toast.error(isRtl ? "كلمة المرور يجب أن لا تقل عن 8 رموز." : "Password must be at least 8 characters.");
+                        return;
                       }
-                      toast.success("Student profile updated successfully.");
-                      setEditing(null);
-                      setModalPassword("");
-                    } catch (err) {
-                      toast.error(getErrorMessage(err, "Failed to update student profile."));
+                      await setPasswordMutation.mutateAsync({ id: editing.id, newPassword: modalPassword });
                     }
-                  }}
-                  className="rounded-lg bg-[#EE7C11] px-3 py-2 text-sm font-bold text-white"
-                >
-                  Save
-                </button>
-              </div>
-            </div>
-            <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
-              <p className="font-bold uppercase tracking-wider">Warning</p>
-              <p className="mt-1">If you set a new password, the student will be logged out from existing sessions.</p>
-              <input
-                type="password"
-                value={modalPassword}
-                onChange={(e) => setModalPassword(e.target.value)}
-                placeholder="New password (optional)"
-                className="mt-2 h-10 w-full rounded-lg border border-amber-300 bg-white px-3 text-sm text-slate-900 dark:border-amber-500/30 dark:bg-[#0F0F13] dark:text-white"
-              />
+                    toast.success(isRtl ? "تم تعديل بيانات الطالب بنجاح" : "Student profile updated successfully.");
+                    setEditing(null);
+                    setModalPassword("");
+                    refetch();
+                  } catch (err) {
+                    toast.error(getErrorMessage(err, "Failed to update student profile."));
+                  }
+                }}
+                className="rounded-xl bg-[#EE7C11] px-5 py-2.5 text-sm font-bold text-white transition"
+              >
+                {updateMutation.isPending ? (isRtl ? "جاري الحفظ..." : "Saving...") : (isRtl ? "حفظ التعديلات" : "Save Changes")}
+              </button>
             </div>
           </div>
         </div>
-      ) : null}
+      )}
     </section>
   );
 }
 
 export default Students;
-

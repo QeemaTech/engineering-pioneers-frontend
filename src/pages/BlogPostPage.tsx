@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import axios from "axios";
 import { usePublicPost } from "../features/public/hooks";
 import { localizedPostFields } from "../utils/cmsLocale";
+import SocialShare from "../components/SocialShare";
 
 function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null;
@@ -119,6 +120,9 @@ export default function BlogPostPage() {
               </p>
               <div className="mt-10 border-t border-slate-100 pt-8">
                 <PostBody content={content} />
+              </div>
+              <div className="mt-8 border-t border-slate-100 pt-6">
+                <SocialShare url={window.location.href} title={title} />
               </div>
             </div>
           </article>

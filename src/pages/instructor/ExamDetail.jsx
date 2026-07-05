@@ -1,7 +1,9 @@
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowRight, Clock, FileQuestion, Loader2, Users } from "lucide-react";
+import { ArrowRight, Clock, FileQuestion, Loader2, Users, Download, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import client from "../../api/client";
+import toast from "react-hot-toast";
 import Notice from "../../components/dashboard/Notice";
 import DataTable from "../../components/dashboard/DataTable";
 import { getErrorMessage } from "../../api/error";
@@ -43,9 +45,34 @@ function StatCard({ icon: Icon, label, value, accent }) {
 }
 
 function InstructorExamDetail() {
-  const { examId } = useParams();
   const { t, i18n } = useTranslation();
+  const isRtl = i18n.dir() === "rtl";
+  const { examId } = useParams();
   const dir = i18n.dir();
+
+  const [exporting, setExporting] = useState(false);
+
+  const handleExportXlsx = async () => {
+    if (!examId) return;
+    setExporting(true);
+    try {
+      const response = await client.get(`/instructor/exams/${examId}/submissions/export-xlsx`, {
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `exam-submissions-${examId}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      toast.success(isRtl ? "تم تحميل ملف الإكسل بنجاح!" : "Excel sheet downloaded successfully!");
+    } catch (e) {
+      toast.error(isRtl ? "فشل تصدير النتائج" : "Failed to export submissions.");
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const { data: exam, isLoading: loadingExam, isError: examError, error: examErr } = useInstructorExamDetail(examId);
   const { data: submissions = [], isLoading: loadingSubs } = useInstructorExamSubmissions(examId);
@@ -204,10 +231,21 @@ function InstructorExamDetail() {
 
       {/* Submissions */}
       <div className={`${CARD} overflow-hidden`}>
-        <div className="border-b border-slate-200 px-5 py-4 dark:border-white/10">
+        <div className="border-b border-slate-200 px-5 py-4 dark:border-white/10 flex items-center justify-between">
           <h2 className="text-base font-bold text-slate-900 dark:text-white">
             {t("dashboard.instructor.exams.detailPage.submissionsTitle")}
           </h2>
+          {submissions.length > 0 && (
+            <button
+              type="button"
+              disabled={exporting}
+              onClick={handleExportXlsx}
+              className="flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 text-xs font-bold text-white shadow-md shadow-emerald-500/20 transition-all disabled:opacity-50"
+            >
+              {exporting ? <RefreshCw className="h-3 w-3 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+              {isRtl ? "تصدير إكسل (.xlsx)" : "Export Excel (.xlsx)"}
+            </button>
+          )}
         </div>
         <div className="p-2">
           {loadingSubs ? (

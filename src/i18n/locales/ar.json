@@ -14,7 +14,7 @@
     "overview": "نظرة عامة",
     "finance": "المالية",
     "users": "المستخدمون",
-    "instructors": "المدرسون",
+    "instructors": "المحاضرون",
     "courses": "الكورسات",
     "enrollments": "التسجيلات",
     "cms": "إدارة المحتوى",
@@ -33,7 +33,7 @@
       "management": "الإدارة",
       "content": "المحتوى",
       "system": "النظام",
-      "instructor": "المدرس",
+      "instructor": "المحاضر",
       "academicMatrix": "إدارة المحتوى والتعليم",
       "liveOps": "الطلاب والتشغيل لايف",
       "financialsSecurity": "الحساب المالي والأمان",
@@ -50,7 +50,7 @@
       "students": "الطلاب",
       "studentsList": "قائمة الطلاب",
       "addStudent": "إضافة طالب",
-      "instructors": "المدرسون",
+      "instructors": "المحاضرون",
       "list": "القائمة",
       "payouts": "الدفعات",
       "courses": "الكورسات",
@@ -77,7 +77,7 @@
       "myCourses": "كورساتي",
       "qna": "الأسئلة والأجوبة",
       "performance": "أدائي",
-      "homework": "الواجبات والتقييم",
+      "homework": "الاسايمينت والتقييم",
       "availability": "التوفر والجدولة",
       "exams": "الاختبارات",
       "wallet": "المحفظة",
@@ -94,10 +94,10 @@
       "payments": "المدفوعات",
       "wishlist": "المفضلة",
       "progress": "التقدم",
-      "studentHomework": "الواجبات",
+      "studentHomework": "الاسايمينت",
       "websiteHome": "الصفحة الرئيسية",
       "websiteExplore": "استكشاف الكورسات",
-      "websiteInstructors": "تصفح المدرّسين",
+      "websiteInstructors": "تصفح المحاضرين",
       "websiteAbout": "من نحن",
       "websiteFaq": "الأسئلة الشائعة"
     }
@@ -108,7 +108,7 @@
       "subtitle": "لوحة تعلمك في لمحة.",
       "stats": {
         "courses": "الكورسات المسجّلة",
-        "homework": "واجبات معلّقة",
+        "homework": "اسايمينت معلّقة",
         "exams": "اختبارات قادمة",
         "live": "الحصة المباشرة القادمة"
       },
@@ -224,21 +224,21 @@
     },
     "cohorts": {
       "title": "الدفعات (Cohorts)",
-      "subtitle": "إنشاء وإدارة دفعات الكورس (الجدول، المدرس، السعر).",
+      "subtitle": "إنشاء وإدارة دفعات الكورس (الجدول، المحاضر، السعر).",
       "addCohort": "إضافة دفعة",
       "editCohort": "تعديل الدفعة",
       "filters": {
         "course": "الكورس",
-        "instructor": "المدرس",
+        "instructor": "المحاضر",
         "type": "النوع",
         "allCourses": "كل الكورسات",
-        "allInstructors": "كل المدرسين",
+        "allInstructors": "كل المحاضرين",
         "allTypes": "كل الأنواع"
       },
       "table": {
         "name": "الدفعة",
         "course": "الكورس",
-        "instructor": "المدرس",
+        "instructor": "المحاضر",
         "type": "الصيغة",
         "status": "الحالة",
         "start": "البداية",
@@ -250,7 +250,7 @@
       "form": {
         "name": "اسم الدفعة",
         "course": "الكورس",
-        "instructor": "المدرس",
+        "instructor": "المحاضر",
         "typeLive": "مباشر",
         "typeRecorded": "مسجّل",
         "status": "الحالة",
@@ -409,7 +409,7 @@
       },
       "empty": {
         "noCategory": "بدون تصنيف",
-        "noInstructor": "بدون مدرس",
+        "noInstructor": "بدون محاضر",
         "noUnits": "لا توجد وحدات بعد",
         "selectItem": "اختر عنصرًا لتعديله",
         "untitledUnit": "وحدة بدون عنوان"
@@ -577,7 +577,7 @@
       "identity": "الهوية",
       "permissions": "الصلاحيات والدور",
       "openStudent": "فتح سجل الطالب",
-      "openInstructor": "فتح سجل المدرّس",
+      "openInstructor": "فتح سجل المحاضر",
       "lastLogin": "آخر دخول",
       "customRole": "دور مخصص",
       "loadError": "تعذر تحميل هذا المستخدم."
@@ -622,7 +622,7 @@
       "tabPerformance": "الأداء الأكاديمي",
       "tabAttendance": "الحضور والغياب",
       "tabExams": "نتائج الامتحانات",
-      "tabHomework": "تسجيلات الواجبات",
+      "tabHomework": "تسجيلات الاسايمينت",
       "tabCourses": "الكورسات المسجلة",
       "loading": "جاري تحميل ملف الطالب...",
       "loadError": "تعذر تحميل تفاصيل الطالب.",
@@ -640,9 +640,9 @@
         "pending": "معلق"
       },
       "homeworks": {
-        "title": "تقديمات الواجبات",
-        "empty": "لا توجد واجبات مقدمة.",
-        "colTitle": "عنوان الواجب",
+        "title": "تقديمات الاسايمينت",
+        "empty": "لا توجد اسايمينت مقدمة.",
+        "colTitle": "عنوان الاسايمينت",
         "colCourse": "الكورس",
         "colSubmitted": "تاريخ التقديم",
         "colGrade": "الدرجة",
@@ -655,7 +655,7 @@
         "loadError": "تعذر تحميل بيانات الأداء لهذا الطالب.",
         "avgExam": "متوسط درجة الامتحان",
         "examsTaken": "{{count}} امتحان مقدّم",
-        "hwCompletion": "إكمال الواجبات",
+        "hwCompletion": "إكمال الاسايمينت",
         "hwAvg": "متوسط الدرجة: {{score}}",
         "overallProgress": "التقدم الإجمالي",
         "lessonsDone": "{{done}} / {{total}} درس مكتمل",
@@ -666,7 +666,7 @@
         "noExams": "لا توجد امتحانات مقدمة بعد.",
         "passRate": "نسبة النجاح (المصححة)",
         "ungradedExam": "غير مصحح / غير معروف",
-        "homeworkPipeline": "مسار الواجبات",
+        "homeworkPipeline": "مسار الاسايمينت",
         "graded": "مصحح",
         "pendingGrade": "بانتظار التصحيح",
         "notSubmitted": "غير مقدّم",
@@ -681,14 +681,14 @@
         "colScore": "الدرجة",
         "colDate": "التاريخ",
         "exam": "امتحان",
-        "homework": "واجب",
+        "homework": "اسايمينت",
         "noGrades": "لا توجد درجات حديثة.",
         "inProgress": "قيد التقدم"
       }
     },
     "instructorsList": {
-      "title": "قائمة المدرسين",
-      "subtitle": "إدارة دليل المدرسين",
+      "title": "قائمة المحاضرين",
+      "subtitle": "إدارة دليل المحاضرين",
       "name": "الاسم",
       "email": "البريد",
       "coursesCount": "الكورسات",
@@ -714,17 +714,17 @@
       "suspend": "إيقاف",
       "sendMessage": "إرسال رسالة",
       "tabPerformance": "الأداء",
-      "performanceLoadError": "تعذر تحميل مؤشرات الأداء لهذا المدرس.",
+      "performanceLoadError": "تعذر تحميل مؤشرات الأداء لهذا المحاضر.",
       "tabAvailability": "التوفر",
-      "availabilitySubtitle": "الفترات المفتوحة القادمة التي نشرها المدرس للحجز.",
+      "availabilitySubtitle": "الفترات المفتوحة القادمة التي نشرها المحاضر للحجز.",
       "availabilityEmpty": "لا يوجد توفر قادم.",
       "availabilityLoadError": "تعذر تحميل جدول التوفر.",
       "availabilitySlotStatus": "متاح",
       "active": "نشط",
       "inactive": "غير نشط",
-      "loadingProfile": "جاري تحميل ملف المدرس...",
-      "loadErrorTitle": "تعذر تحميل بيانات المدرس",
-      "loadErrorDesc": "لا يمكن استرداد تفاصيل المدرس.",
+      "loadingProfile": "جاري تحميل ملف المحاضر...",
+      "loadErrorTitle": "تعذر تحميل بيانات المحاضر",
+      "loadErrorDesc": "لا يمكن استرداد تفاصيل المحاضر.",
       "yearsExp": "سنوات خبرة",
       "tabOverview": "نظرة عامة",
       "tabWallet": "المحفظة والمالية",
@@ -736,7 +736,7 @@
       "experience": "الخبرة",
       "years": "سنوات",
       "studentsPerCourse": "الطلاب لكل كورس",
-      "noCourses": "لا توجد كورسات متاحة لهذا المدرس بعد.",
+      "noCourses": "لا توجد كورسات متاحة لهذا المحاضر بعد.",
       "courseVisibility": "مزيج ظهور الكورسات",
       "noCoursesYet": "لم يتم إنشاء أي كورسات بعد.",
       "quickActions": "إجراءات سريعة",
@@ -755,11 +755,11 @@
         "managePayouts": "إدارة كل طلبات الدفع",
         "payoutMethod": "طريقة الدفع",
         "commissionTitle": "توزيع الإيرادات",
-        "commissionSubtitle": "نسبة كل عملية بيع تُحوَّل لهذا المدرس. المنصة تحتفظ بالباقي.",
-        "commissionInstructor": "حصة المدرس",
+        "commissionSubtitle": "نسبة كل عملية بيع تُحوَّل لهذا المحاضر. المنصة تحتفظ بالباقي.",
+        "commissionInstructor": "حصة المحاضر",
         "commissionPlatform": "حصة المنصة",
-        "commissionRate": "نسبة المدرس (%)",
-        "commissionExample": "عند بيع بقيمة {{amount}} {{currency}}، يحصل المدرس على {{instructorAmount}} {{currency}} والمنصة على {{platformAmount}} {{currency}}.",
+        "commissionRate": "نسبة المحاضر (%)",
+        "commissionExample": "عند بيع بقيمة {{amount}} {{currency}}، يحصل المحاضر على {{instructorAmount}} {{currency}} والمنصة على {{platformAmount}} {{currency}}.",
         "commissionSave": "حفظ نسبة العمولة",
         "commissionSaved": "تم تحديث نسبة العمولة",
         "commissionSaveFailed": "تعذر تحديث نسبة العمولة",
@@ -769,21 +769,21 @@
       "editProfile": "تعديل الملف",
       "saveProfile": "حفظ التغييرات",
       "cancelEdit": "إلغاء",
-      "profileSaved": "تم تحديث بيانات المدرس",
-      "profileSaveFailed": "تعذر تحديث بيانات المدرس",
-      "statusUpdated": "تم تحديث حالة المدرس",
-      "statusUpdateFailed": "تعذر تحديث حالة المدرس",
+      "profileSaved": "تم تحديث بيانات المحاضر",
+      "profileSaveFailed": "تعذر تحديث بيانات المحاضر",
+      "statusUpdated": "تم تحديث حالة المحاضر",
+      "statusUpdateFailed": "تعذر تحديث حالة المحاضر",
       "changePassword": "تغيير كلمة المرور",
       "newPassword": "كلمة مرور جديدة",
-      "passwordHint": "تغيير كلمة المرور ينهي جلسات المدرس الحالية.",
+      "passwordHint": "تغيير كلمة المرور ينهي جلسات المحاضر الحالية.",
       "passwordUpdated": "تم تحديث كلمة المرور",
       "passwordUpdateFailed": "تعذر تحديث كلمة المرور",
       "passwordTooShort": "كلمة المرور يجب أن تكون 8 أحرف على الأقل",
       "bio": "نبذة",
       "phoneInvalid": "رقم الهاتف: 7–15 رقمًا، ويمكن أن يبدأ بـ +",
       "courses": {
-        "title": "كورسات المدرس",
-        "empty": "لا توجد كورسات مدرجة لهذا المدرس.",
+        "title": "كورسات المحاضر",
+        "empty": "لا توجد كورسات مدرجة لهذا المحاضر.",
         "colTitle": "عنوان الكورس",
         "colType": "النوع",
         "colStudents": "الطلاب المسجلون",
@@ -792,26 +792,26 @@
       },
       "availability": {
         "title": "فترات التوفر",
-        "subtitle": "فترات التقويم النشطة التي قام المدرس بتكوينها لحجوزات الطلاب",
+        "subtitle": "فترات التقويم النشطة التي قام المحاضر بتكوينها لحجوزات الطلاب",
         "loading": "جاري تحميل التوفر...",
-        "loadError": "فشل تحميل فترات المدرس.",
+        "loadError": "فشل تحميل فترات المحاضر.",
         "refresh": "تحديث",
         "empty": "لا توجد فترات توفر قادمة منشورة بعد."
       },
       "reviews": {
         "title": "تقييمات ومراجعات الطلاب",
-        "empty": "لا توجد مراجعات منشورة لهذا المدرس بعد.",
+        "empty": "لا توجد مراجعات منشورة لهذا المحاضر بعد.",
         "anonymous": "طالب مجهول",
         "ratingOnly": "ترك تقييماً فقط (لا توجد مراجعة مكتوبة)."
       }
     },
     "payouts": {
       "title": "الدفعات",
-      "subtitle": "اعتماد أو رفض أو تأكيد دفعات المدرسين (مرتبطة بالمحفظة).",
+      "subtitle": "اعتماد أو رفض أو تأكيد دفعات المحاضرين (مرتبطة بالمحفظة).",
       "totalPaid": "إجمالي المدفوع هذا الشهر",
       "pending": "دفعات معلقة",
       "nextDate": "تاريخ الدفعة التالية",
-      "instructor": "المدرس",
+      "instructor": "المحاضر",
       "amount": "المبلغ",
       "period": "الفترة",
       "status": "الحالة",
@@ -837,7 +837,7 @@
       "titlePlaceholder": "مثال: HSK المستوى الثاني — الصينية المتوسطة",
       "descriptionPlaceholder": "ملخص قصير لما سيتعلمه الطلاب...",
       "titleRequired": "عنوان الكورس مطلوب.",
-      "instructorRequired": "المدرس مطلوب.",
+      "instructorRequired": "المحاضر مطلوب.",
       "missingId": "تم إنشاء الكورس لكن لم يرجع المعرّف.",
       "createFailed": "فشل إنشاء الكورس.",
       "creating": "جاري الإنشاء...",
@@ -848,7 +848,7 @@
       "titleField": "عنوان الكورس",
       "description": "الوصف",
       "category": "التصنيف",
-      "instructor": "المدرس",
+      "instructor": "المحاضر",
       "price": "السعر",
       "level": "المستوى",
       "thumbnailUpload": "اسحب الصورة أو انقر للتصفح",
@@ -879,7 +879,7 @@
       "revenue": "إيراد التسجيلات",
       "student": "الطالب",
       "course": "الكورس",
-      "instructor": "المدرس",
+      "instructor": "المحاضر",
       "cohort": "الدفعة",
       "enrolledDate": "تاريخ التسجيل",
       "progress": "التقدم",
@@ -1001,10 +1001,10 @@
       "subtitle": "إدارة منصة نظرة عامة",
       "courses": "الكورسات",
       "students": "الطلاب",
-      "instructors": "المدرسين",
+      "instructors": "المحاضرين",
       "enrollments": "التسجيلات",
       "studentStatus": "حالة أداء الطالب",
-      "instructorStatus": "حالة أداء المدرس",
+      "instructorStatus": "حالة أداء المحاضر",
       "enrollmentGrowth": "نمو التسجيلات"
     },
     "coupons": {
@@ -1071,7 +1071,7 @@
     },
     "tickets": {
       "title": "تذاكر الدعم الفني",
-      "subtitle": "إدارة طلبات الدعم المقدمة من الطلاب والمدرسين",
+      "subtitle": "إدارة طلبات الدعم المقدمة من الطلاب والمحاضرين",
       "newBtn": "تذكرة جديدة",
       "statsOpen": "التذاكر المفتوحة",
       "statsInProgress": "قيد المعالجة",
@@ -1081,7 +1081,7 @@
       "loading": "جاري تحميل التذاكر...",
       "loadError": "فشل تحميل تذاكر الدعم.",
       "emptyTitle": "لم يتم العثور على تذاكر",
-      "emptyDesc": "ستظهر طلبات الدعم هنا بمجرد أن يقوم الطلاب أو المدرسون بتقديمها.",
+      "emptyDesc": "ستظهر طلبات الدعم هنا بمجرد أن يقوم الطلاب أو المحاضرون بتقديمها.",
       "noAccess": "ليس لديك صلاحية لإدارة تذاكر الدعم الفني.",
       "noMatch": "لا توجد تذاكر تطابق عوامل التصفية الخاصة بك.",
       "tooltipView": "عرض التذكرة",
@@ -1116,7 +1116,7 @@
     "title": "نظرة عامة",
     "subtitle": "تتبع نمو المنصة والمقاييس الرئيسية",
     "totalStudents": "إجمالي الطلاب",
-    "totalInstructors": "إجمالي المدرسين",
+    "totalInstructors": "إجمالي المحاضرين",
     "activeCourses": "الكورسات النشطة",
     "totalRevenue": "إجمالي الإيرادات",
     "vsLastMonth": "مقارنة بالشهر الماضي",
@@ -1125,7 +1125,7 @@
     "monthlyEarnings": "نظرة عامة على الأرباح الشهرية",
     "weeklyEnrollments": "التسجيلات الأسبوعية",
     "studentActivity": "نشاط الطلاب",
-    "topInstructors": "أفضل المدرسين",
+    "topInstructors": "أفضل المحاضرين",
     "bestTeachers": "المعلمون الأفضل أداءً",
     "activityFeed": "سجل النشاط",
     "viewAll": "عرض الكل",
@@ -1217,7 +1217,7 @@
       "home": "الرئيسية",
       "subscription": "الاشتراك",
       "explore": "استكشاف",
-      "instructors": "المدرّسون",
+      "instructors": "المحاضرون",
       "myClasses": "كورساتي",
       "myDashboard": "لوحتي",
       "bookPrivate": "حجز جلسة"
@@ -1233,7 +1233,7 @@
       "open": "فتح قائمة المستخدم",
       "myClasses": "كورساتي",
       "recordings": "التسجيلات",
-      "homework": "الواجبات",
+      "homework": "الاسايمينت",
       "exams": "الامتحانات",
       "progress": "تقدمي",
       "settings": "الإعدادات",
@@ -1245,11 +1245,11 @@
       "instructorHome": "الرئيسية",
       "studentHome": "لوحتي",
       "studentPanel": "لوحة الطالب",
-      "instructorPanel": "لوحة المدرس",
+      "instructorPanel": "لوحة المحاضر",
       "visitWebsite": "زيارة الموقع",
       "websiteHome": "الصفحة الرئيسية",
       "websiteExplore": "استكشاف الكورسات",
-      "websiteInstructors": "تصفح المدرّسين",
+      "websiteInstructors": "تصفح المحاضرين",
       "switchRole": "تبديل الدور",
       "logout": "تسجيل الخروج",
       "accountActions": "الحساب"
@@ -1426,7 +1426,7 @@
   },
   "cta": {
     "title": "هل أنت مستعد لبناء مهارات هندسية حقيقية؟",
-    "subtitle": "انضم إلى رواد الهندسة — مجموعات حية، مدرّسون خبراء، مشاريع عملية، وشهادات معتمدة.",
+    "subtitle": "انضم إلى رواد الهندسة — مجموعات حية، محاضرون خبراء، مشاريع عملية، وشهادات معتمدة.",
     "actions": {
       "createAccount": "أنشئ حساباً مجانياً",
       "learnMore": "تصفح الدورات"
@@ -1462,7 +1462,7 @@
       "forum": "المنتدى",
       "sitemap": "خريطة الموقع",
       "courses": "تصفح الدورات",
-      "instructors": "المدرّسون"
+      "instructors": "المحاضرون"
     },
     "teaching": {
       "title": "التدريس",
@@ -1552,7 +1552,7 @@
     "clearFilters": "مسح الفلاتر",
     "showing": "عرض {{count}} من أصل {{total}} دورة",
     "showingPaged": "عرض {{count}} في هذه الصفحة · {{total}} إجمالاً · الصفحة {{page}}",
-    "instructorFallback": "المدرّس سيُعلَن لاحقاً",
+    "instructorFallback": "المحاضر سيُعلَن لاحقاً",
     "enrollmentsLabel": "متعلّم",
     "cohorts": {
       "multiple": "{{count}} دفعات مفتوحة",
@@ -1682,7 +1682,7 @@
     "type": "الصيغة",
     "status": "الحالة",
     "starts": "البداية",
-    "instructor": "المدرّس",
+    "instructor": "المحاضر",
     "confirm": "تأكيد التسجيل",
     "cancel": "رجوع",
     "genericError": "تعذّر إتمام التسجيل. حاول مرة أخرى.",
@@ -1740,11 +1740,11 @@
     "features": {
       "feature1": "ما يصل إلى 5 مقاعد في الفصول الجماعية شهريًا",
       "feature2": "الوصول إلى مكتبة الجلسات المسجلة",
-      "feature3": "واجبات منزلية منظمة",
+      "feature3": "اسايمينت منزلية منظمة",
       "feature4": "لوحة تتبع التقدم",
       "feature5": "دعم المجتمع على مدار الساعة",
       "feature6": "إعادة مشاهدة غير محدودة للجلسات",
-      "feature7": "واجبات منظمة وتتبع للتقدم"
+      "feature7": "اسايمينت منظمة وتتبع للتقدم"
     }
   },
   "myClasses": {
@@ -1826,7 +1826,7 @@
       "objectives": "الأهداف",
       "lessons": "الدروس",
       "liveSessions": "الحصص المباشرة",
-      "homework": "الواجبات"
+      "homework": "الاسايمينت"
     },
     "liveSessions": {
       "empty": "لا توجد حصص مباشرة مجدولة لهذا الكورس بعد.",
@@ -1834,9 +1834,9 @@
       "viewAll": "عرض كل الحصص المباشرة"
     },
     "homework": {
-      "empty": "لا توجد واجبات لهذا الكورس بعد.",
-      "hint": "افتح الواجب لقراءة التعليمات ورفع عملك.",
-      "viewAll": "عرض كل الواجبات"
+      "empty": "لا توجد اسايمينت لهذا الكورس بعد.",
+      "hint": "افتح الاسايمينت لقراءة التعليمات ورفع عملك.",
+      "viewAll": "عرض كل الاسايمينت"
     },
     "certificate": {
       "completeTitle": "أكملت الكورس!",
@@ -1848,27 +1848,27 @@
     }
   },
   "homework": {
-    "hubTitle": "الواجبات حسب الدفعة",
-    "hubSubtitle": "اختر دفعة لعرض الواجبات.",
-    "loadError": "تعذّر تحميل الواجبات.",
-    "emptyCohort": "لا واجبات لهذه الدفعة.",
-    "hubLoadError": "تعذّر تحميل الواجبات.",
-    "hubEmpty": "لا واجبات لصفوفك بعد.",
-    "emptyFilter": "لا واجبات تطابق البحث أو الدفعة المختارة.",
-    "showingNone": "لا واجبات للعرض",
+    "hubTitle": "الاسايمينت حسب الدفعة",
+    "hubSubtitle": "اختر دفعة لعرض الاسايمينت.",
+    "loadError": "تعذّر تحميل الاسايمينت.",
+    "emptyCohort": "لا اسايمينت لهذه الدفعة.",
+    "hubLoadError": "تعذّر تحميل الاسايمينت.",
+    "hubEmpty": "لا اسايمينت لصفوفك بعد.",
+    "emptyFilter": "لا اسايمينت تطابق البحث أو الدفعة المختارة.",
+    "showingNone": "لا اسايمينت للعرض",
     "showingRange": "عرض {{from}}–{{to}} من {{total}} نتيجة",
     "searchAria": "بحث",
-    "titlePrefix": "واجباتي",
+    "titlePrefix": "اسايمينتي",
     "titleAccent": "المنزلية",
-    "subtitle": "تتبع وتسليم واجباتك المنزلية",
-    "viewCourse": "كل واجبات الكورس",
-    "courseListSubtitle": "واجبات هذا الكورس",
+    "subtitle": "تتبع وتسليم اسايمينتك المنزلية",
+    "viewCourse": "كل اسايمينت الكورس",
+    "courseListSubtitle": "اسايمينت هذا الكورس",
     "due": "الموعد النهائي:",
     "submitted": "تم التسليم:",
     "grade": "الدرجة:",
     "gradePct": "الدرجة: {{pct}}٪",
-    "searchPlaceholder": "ابحث عن الواجبات…",
-    "showing": "عرض {{count}} من {{total}} واجبات",
+    "searchPlaceholder": "ابحث عن الاسايمينت…",
+    "showing": "عرض {{count}} من {{total}} اسايمينت",
     "contextLine": "{{courseTitle}} · {{cohortName}}",
     "daysLeft": "({{n}} يوم متبقٍ)",
     "overdue": "متأخر {{n}} يوماً",
@@ -1889,7 +1889,7 @@
       "allClasses": "جميع الدفعات"
     },
     "actions": {
-      "submit": "تسليم الواجب",
+      "submit": "تسليم الاسايمينت",
       "viewDetails": "عرض التفاصيل",
       "viewResults": "عرض النتائج"
     },
@@ -1964,7 +1964,7 @@
     "markCorrect": "تحديد كإجابة صحيحة",
     "modelAnswer": "الإجابة النموذجية",
     "modelAnswerPlaceholder": "الإجابة المتوقعة للمرجعية…",
-    "modelAnswerOptional": "اختياري — مرجع للمدرس عند التصحيح.",
+    "modelAnswerOptional": "اختياري — مرجع للمحاضر عند التصحيح.",
     "rubric": "معايير التصحيح",
     "essayPlaceholder": "النقاط الأساسية للتصحيح…",
     "trueLabel": "صح",
@@ -1994,7 +1994,7 @@
       "coursesEnrolled": "الكورسات المسجلة",
       "classesAttended": "الدروس المكتملة",
       "lessonsCompleted": "الدروس المكتملة",
-      "homeworkDone": "واجبات مُقيّمة",
+      "homeworkDone": "اسايمينت مُقيّمة",
       "avgScore": "متوسط التقدم"
     }
   },
@@ -2049,8 +2049,8 @@
         "desc": "يتم إشعارك قبل 30 دقيقة من بدء درسك."
       },
       "homeworkDeadlines": {
-        "title": "مواعيد الواجبات",
-        "desc": "تذكيرات عند اقتراب الموعد النهائي للواجب."
+        "title": "مواعيد الاسايمينت",
+        "desc": "تذكيرات عند اقتراب الموعد النهائي للاسايمينت."
       },
       "examAlerts": {
         "title": "تنبيهات الاختبارات",
@@ -2088,9 +2088,9 @@
   "recordings": {
     "titlePrefix": "جلسات حية",
     "titleAccent": "وتسجيلات",
-    "subtitle": "دفعاتك المسجّلة والجلسات القادمة وروابط الاجتماع. ستظهر التسجيلات عندما ينشرها المدرّس لمجموعتك.",
+    "subtitle": "دفعاتك المسجّلة والجلسات القادمة وروابط الاجتماع. ستظهر التسجيلات عندما ينشرها المحاضر لمجموعتك.",
     "watchBtn": "مشاهدة التسجيل",
-    "searchPlaceholder": "ابحث بالدفعة أو الكورس أو المدرّس…",
+    "searchPlaceholder": "ابحث بالدفعة أو الكورس أو المحاضر…",
     "showing": "عرض {{count}} من {{total}} جلسة",
     "videoPlaceholder": "مشغل الفيديو قريباً…",
     "close": "إغلاق",
@@ -2127,11 +2127,11 @@
       "showAll": "عرض {{n}} وحدة إضافية",
       "showLess": "عرض أقل",
       "empty": "سيتم نشر محتوى الكورس قريبًا.",
-      "homework": "واجب",
+      "homework": "اسايمينت",
       "exam": "امتحان",
-      "homeworkCount": "واجب",
+      "homeworkCount": "اسايمينت",
       "examCount": "امتحان",
-      "homeworkSection": "واجبات الكورس",
+      "homeworkSection": "اسايمينت الكورس",
       "examSection": "اختبارات الكورس",
       "liveLesson": "جلسة مباشرة",
       "enrollHint": "فيديوهات الدروس والملفات والاختبارات تُفتح بعد التسجيل في الكورس.",
@@ -2139,11 +2139,11 @@
     },
     "cohorts": {
       "title": "اختر دفعتك",
-      "subtitle": "لكل دفعة جدولها ومدرّسها وسعرها.",
+      "subtitle": "لكل دفعة جدولها ومحاضرها وسعرها.",
       "type": "الصيغة",
       "status": "الحالة",
       "starts": "البداية",
-      "instructor": "المدرّس",
+      "instructor": "المحاضر",
       "enrolled": "المسجّلون حالياً",
       "seats": "المقاعد",
       "price": "السعر",
@@ -2181,7 +2181,7 @@
       "liveSession": "جلسات مباشرة مع مدرب معتمد",
       "videoHours": "50+ ساعة فيديو عند الطلب",
       "downloadable": "أوراق عمل وملفات PDF قابلة للتنزيل",
-      "instructorSupport": "دعم المدرّس وملاحظات على تقدمك",
+      "instructorSupport": "دعم المحاضر وملاحظات على تقدمك",
       "fullLifetime": "وصول كامل مدى الحياة",
       "guarantee": "ضمان استرداد المال خلال 30 يوماً"
     }
@@ -2248,15 +2248,15 @@
     "fileReady": "تم إرفاق الملف.",
     "fileTooBig": "الملف كبير جداً (الحد 10 ميجابايت).",
     "fileReadError": "تعذّر قراءة الملف.",
-    "notFound": "الواجب غير موجود.",
-    "back": "العودة إلى الواجبات",
+    "notFound": "الاسايمينت غير موجود.",
+    "back": "العودة إلى الاسايمينت",
     "due": "الموعد النهائي:",
     "instructions": {
       "title": "التعليمات"
     },
     "requirements": {
       "title": "المتطلبات",
-      "fallbackDefault": "اتبع تعليمات المدرّس وسلّم قبل الموعد النهائي.",
+      "fallbackDefault": "اتبع تعليمات المحاضر وسلّم قبل الموعد النهائي.",
       "fallback": {
         "TEXT": "قدّم إجابة كتابية كما هو موضح في التعليمات.",
         "FILE": "ارفع الملفات المطلوبة (صوت أو PDF أو صور) ضمن الحد المسموح.",
@@ -2265,11 +2265,11 @@
     },
     "contextSubtitle": "{{courseTitle}} · {{cohortName}}",
     "submitCard": {
-      "title": "تسليم الواجب",
+      "title": "تسليم الاسايمينت",
       "answerLabel": "إجابتك",
       "answerPlaceholder": "اكتب إجاباتك هنا...",
       "uploadLabel": "رفع الملفات",
-      "submitBtn": "تسليم الواجب",
+      "submitBtn": "تسليم الاسايمينت",
       "submitting": "جارٍ التسليم…"
     },
     "upload": {
@@ -2285,13 +2285,13 @@
       "tip3": "استخدم أنواع الملفات والأحجام المذكورة أعلاه.",
       "tip4": "سلّم قبل الموعد لتجنب حالة التأخير."
     },
-    "successTitle": "تم تسليم الواجب!",
+    "successTitle": "تم تسليم الاسايمينت!",
     "gradedTitle": "التسليم المُقيَّم",
     "downloadSubmission": "تحميل الملف المُسلَّم",
     "resubmitTitle": "تحديث التسليم",
     "resubmitBtn": "تحديث التسليم",
     "successMsg": "تم استلام تسليمك. سيراجعه معلمك قريباً.",
-    "backBtn": "العودة إلى الواجبات"
+    "backBtn": "العودة إلى الاسايمينت"
   },
   "takeExam": {
     "strip": {
@@ -2334,7 +2334,7 @@
     "starting": "جارٍ البدء…",
     "notAvailable": "لا يمكن بدء هذا الاختبار (الحالة: {{status}}).",
     "noQuestions": "لا توجد أسئلة لهذا الاختبار بعد.",
-    "noMcqOptions": "لم تُضف خيارات إجابة لهذا السؤال. تواصل مع المدرّس.",
+    "noMcqOptions": "لم تُضف خيارات إجابة لهذا السؤال. تواصل مع المحاضر.",
     "true": "صحيح",
     "false": "خطأ",
     "shortAnswerPlaceholder": "اكتب إجابتك…",
@@ -2376,7 +2376,7 @@
     "empty": "أنت غير مسجّل في أي كورس بعد. استكشف الكورسات للتسجيل.",
     "progress": "مكتمل",
     "continue": "متابعة التعلم",
-    "homework": "الواجبات"
+    "homework": "الاسايمينت"
   },
   "quotaModal": {
     "title": "ترقية خطتك",
@@ -2385,20 +2385,20 @@
     "close": "إغلاق"
   },
   "publicInstructors": {
-    "badge": "مدرّسون خبراء",
-    "title": "تعرّف على مدرّسينا",
+    "badge": "محاضرون خبراء",
+    "title": "تعرّف على محاضرينا",
     "subtitle": "تصفّح الملفات، استكشف كورساتهم، واحجز جلسة فردية 1-to-1.",
     "searchPlaceholder": "ابحث بالاسم أو التخصص…",
-    "loadError": "تعذّر تحميل المدرّسين.",
-    "empty": "لا يوجد مدرّسون يطابقون بحثك.",
+    "loadError": "تعذّر تحميل المحاضرين.",
+    "empty": "لا يوجد محاضرون يطابقون بحثك.",
     "browseCourses": "تصفح الكورسات بدلًا من ذلك",
-    "noBio": "مدرّس هندسي خبير على Engineering Pioneers.",
+    "noBio": "محاضر هندسي خبير على Engineering Pioneers.",
     "yearsExp": "{{n}}+ سنوات خبرة",
     "viewProfile": "عرض الملف",
     "bookSession": "حجز 1-to-1",
-    "backToList": "كل المدرّسين",
-    "profileNotFound": "المدرّس غير موجود.",
-    "coursesTitle": "كورسات هذا المدرّس",
+    "backToList": "كل المحاضرين",
+    "profileNotFound": "المحاضر غير موجود.",
+    "coursesTitle": "كورسات هذا المحاضر",
     "reviewsTitle": "تقييمات الطلاب",
     "bookTitle": "احجز جلسة فردية",
     "bookHint": "اختر موعدًا متاحًا وأكمل الدفع لتأكيد جلستك الخاصة.",
@@ -2432,15 +2432,15 @@
   },
   "bookSession": {
     "title": "حجز جلسة خاصة",
-    "subtitle": "اختر موعداً متاحاً مع المدرّس. يجب أن تسمح باقاتك بحصص خاصة.",
+    "subtitle": "اختر موعداً متاحاً مع المحاضر. يجب أن تسمح باقاتك بحصص خاصة.",
     "loadError": "تعذّر تحميل المواعيد المتاحة.",
     "empty": "لا توجد مواعيد مفتوحة حالياً.",
     "book": "احجز",
     "booking": "جارٍ الحجز…",
     "success": "تم حجز الجلسة!",
     "bookError": "فشل الحجز.",
-    "priceNotConfigured": "لم يُضبط سعر هذه الفترة بعد. يجب على المدرّس تعيين سعر الجلسة قبل الحجز.",
-    "instructor": "المدرّس",
+    "priceNotConfigured": "لم يُضبط سعر هذه الفترة بعد. يجب على المحاضر تعيين سعر الجلسة قبل الحجز.",
+    "instructor": "المحاضر",
     "needPlan": "الجلسات الخاصة تتطلّب خطة نشطة تشمل حصص الجلسات الخاصة. قم بالترقية أو الاشتراك للحجز.",
     "viewPlans": "عرض الخطط والترقية"
   },
@@ -2471,9 +2471,9 @@
       "nav": {
         "overview": "نظرة عامة",
         "users": "المستخدمون",
-        "instructors": "المدرسون",
+        "instructors": "المحاضرون",
         "instructorOverview": "نظرة عامة",
-        "instructorList": "قائمة المدرسين",
+        "instructorList": "قائمة المحاضرين",
         "payouts": "المدفوعات",
         "courses": "الدورات",
         "courseCategories": "التصنيفات",
@@ -2489,7 +2489,7 @@
       },
       "stats": {
         "totalStudents": "إجمالي الطلاب",
-        "totalInstructors": "إجمالي المدرسين",
+        "totalInstructors": "إجمالي المحاضرين",
         "activeCourses": "الدورات النشطة",
         "totalRevenue": "إجمالي الإيرادات",
         "pendingPayouts": "المدفوعات المعلقة"
@@ -2504,8 +2504,8 @@
           "subtitle": "إدارة وصول الطلاب والموظفين."
         },
         "instructors": {
-          "title": "المدرسون",
-          "subtitle": "إدارة حسابات المدرسين وحالتهم."
+          "title": "المحاضرون",
+          "subtitle": "إدارة حسابات المحاضرين وحالتهم."
         },
         "courses": {
           "title": "إدارة الدورات",
@@ -2557,7 +2557,7 @@
         }
       },
       "widgets": {
-        "topInstructors": "أفضل المدرسين",
+        "topInstructors": "أفضل المحاضرين",
         "recentEnrollments": "أحدث التسجيلات",
         "viewAll": "عرض الكل"
       },
@@ -2572,7 +2572,7 @@
       },
       "courses": {
         "titleCol": "الدورة",
-        "instructor": "المدرس",
+        "instructor": "المحاضر",
         "status": "الحالة",
         "createdAt": "تاريخ الإنشاء",
         "emptyTitle": "لا توجد دورات",
@@ -2580,8 +2580,8 @@
         "introVideo": "فيديو المقدمة",
         "introVideoUrl": "رابط فيديو المقدمة",
         "open": "فتح",
-        "assignInstructor": "تعيين مدرس",
-        "selectInstructor": "اختر مدرسًا",
+        "assignInstructor": "تعيين محاضر",
+        "selectInstructor": "اختر محاضرًا",
         "deepEdit": "تعديل متقدم (الاستوديو)",
         "deleteConfirm": "هل تريد حذف هذا الكورس؟",
         "deleted": "تم حذف الكورس.",
@@ -2594,30 +2594,30 @@
         "statusUpdateFailed": "فشل تحديث الحالة"
       },
       "instructors": {
-        "add": "إضافة مدرس",
-        "edit": "تعديل المدرس",
+        "add": "إضافة محاضر",
+        "edit": "تعديل المحاضر",
         "fullName": "الاسم الكامل",
         "email": "البريد الإلكتروني",
         "phone": "الهاتف",
         "experience": "الخبرة",
         "password": "كلمة المرور",
         "bio": "نبذة",
-        "emptyTitle": "لا يوجد مدرسون",
-        "emptyDescription": "أضف مدرساً جديداً أو عدّل الفلاتر."
+        "emptyTitle": "لا يوجد محاضرون",
+        "emptyDescription": "أضف محاضراً جديداً أو عدّل الفلاتر."
       },
       "finance": {
         "payments": "المدفوعات",
         "coupons": "الكوبونات",
         "payouts": "طلبات السحب",
         "student": "الطالب",
-        "instructor": "المدرس",
+        "instructor": "المحاضر",
         "amount": "المبلغ",
         "status": "الحالة",
         "date": "التاريخ"
       }
     },
     "instructor": {
-      "title": "لوحة المدرس",
+      "title": "لوحة المحاضر",
       "nav": {
         "overview": "نظرة عامة",
         "classes": "حصصي",
@@ -2707,10 +2707,10 @@
         },
         "settings": {
           "title": "الإعدادات",
-          "subtitle": "إدارة إعدادات حساب المدرس.",
+          "subtitle": "إدارة إعدادات حساب المحاضر.",
           "subtitleLive": "حدّث ظهورك للطلاب وأمّن كلمة المرور.",
           "sectionProfile": "الملف الشخصي",
-          "sectionProfileHint": "الاسم والنبذة تظهر في صفحة المدرس.",
+          "sectionProfileHint": "الاسم والنبذة تظهر في صفحة المحاضر.",
           "sectionSecurity": "الأمان",
           "sectionSecurityHint": "بعد تغيير كلمة المرور ستُخرج من كل الجلسات.",
           "email": "البريد الإلكتروني",
@@ -2902,7 +2902,7 @@
           "correctRequired": "حدد الإجابة الصحيحة.",
           "modelAnswer": "الإجابة النموذجية",
           "modelAnswerPlaceholder": "الإجابة المتوقعة للمرجعية عند التصحيح",
-          "modelAnswerOptional": "اختياري — يُستخدم كمرجع للمدرس عند التصحيح.",
+          "modelAnswerOptional": "اختياري — يُستخدم كمرجع للمحاضر عند التصحيح.",
           "rubricHint": "معايير التصحيح / ملاحظات",
           "essayPlaceholder": "النقاط الأساسية أو معايير تصحيح المقال…",
           "pointsUsed": "الدرجات الموزعة",
@@ -2945,7 +2945,7 @@
           "resetNew": "تعليم كغير مفتوح",
           "courseLine": "{{course}}",
           "emptyFilter": "لا توجد تسليمات في هذا الفلتر.",
-          "emptyAll": "عندما يسلّم الطلاب الواجبات ستظهر هنا. أنشئ الواجبات من محرر الكورس (تاب الواجبات).",
+          "emptyAll": "عندما يسلّم الطلاب الاسايمينت ستظهر هنا. أنشئ الاسايمينت من محرر الكورس (تاب الاسايمينت).",
           "goToCourses": "الذهاب إلى كورساتي",
           "emptyTitle": "لا توجد تسليمات بعد",
           "stateUpdated": "تم تحديث حالة المراجعة."

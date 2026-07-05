@@ -119,6 +119,12 @@ export function getAdminNavigation(openTicketsCount = 0): NavSection[] {
           permission: "coupon:manage",
         },
         {
+          labelKey: "sidebarNav.items.packages",
+          path: "/admin/packages",
+          icon: Ticket,
+          permission: "course:manage",
+        },
+        {
           labelKey: "sidebarNav.items.certificates",
           path: "/admin/certificates",
           icon: Award,
@@ -199,11 +205,17 @@ export function getAdminNavigation(openTicketsCount = 0): NavSection[] {
               icon: ClipboardCheck,
               permission: "course:review",
             },
-            {
+             {
               labelKey: "sidebarNav.items.categories",
               path: "/admin/courses/categories",
               icon: BookOpen,
               permission: "category:manage",
+            },
+            {
+              labelKey: "sidebarNav.items.liveSessions",
+              path: "/admin/live-sessions",
+              icon: Video,
+              permission: "course:manage",
             },
           ],
         },
@@ -342,6 +354,7 @@ export function getStudentNavigation(): NavSection[] {
         { labelKey: "sidebarNav.items.recordings", path: "/student/recordings", icon: Headphones },
         { labelKey: "sidebarNav.items.studentHomework", path: "/student/homework", icon: ClipboardCheck },
         { labelKey: "sidebarNav.items.exams", path: "/student/exams", icon: ClipboardList },
+        { labelKey: "sidebarNav.items.qna", path: "/student/qna", icon: MessageSquare },
         { labelKey: "sidebarNav.items.attendance", path: "/student/attendance", icon: UserCheck },
         { labelKey: "sidebarNav.items.progress", path: "/student/progress", icon: BarChart2 },
       ],
@@ -391,6 +404,7 @@ export function getInstructorNavigation(): NavSection[] {
       labelKey: "sidebarNav.sections.liveOps",
       items: [
         { labelKey: "sidebarNav.items.students", path: "/instructor/students", icon: Users },
+        { labelKey: "sidebarNav.items.liveSessions", path: "/instructor/live-sessions", icon: Video },
         { labelKey: "sidebarNav.items.attendance", path: "/instructor/attendance", icon: UserCheck },
         { labelKey: "sidebarNav.items.availability", path: "/instructor/availability", icon: CalendarClock },
       ],

@@ -8,8 +8,10 @@ import { getErrorMessage } from "../../api/error";
 
 export default function LiveSessions() {
   const { t, i18n } = useTranslation();
+  const isRtl = i18n.language?.startsWith("ar");
   const [search, setSearch] = useState("");
   const [courseFilter, setCourseFilter] = useState("");
+  const [levelFilter, setLevelFilter] = useState("");
 
   const { data: classes = [], isLoading, isError, error, refetch } = useStudentClasses(true);
 
@@ -33,9 +35,10 @@ export default function LiveSessions() {
         courseTitle.toLowerCase().includes(q) ||
         instructorName.toLowerCase().includes(q);
       const matchCourse = !courseFilter || courseTitle === courseFilter;
-      return matchSearch && matchCourse;
+      const matchLevel = !levelFilter || (c.targetLevels && Array.isArray(c.targetLevels) && c.targetLevels.includes(levelFilter));
+      return matchSearch && matchCourse && matchLevel;
     });
-  }, [classes, search, courseFilter]);
+  }, [classes, search, courseFilter, levelFilter]);
 
   return (
     <div className="space-y-6">
@@ -66,6 +69,23 @@ export default function LiveSessions() {
                 {c || t("recordings.filter.all")}
               </option>
             ))}
+          </select>
+          <ChevronDown className="pointer-events-none absolute end-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+        </div>
+        <div className="relative w-full sm:w-52">
+          <select
+            value={levelFilter}
+            onChange={(e) => setLevelFilter(e.target.value)}
+            className="w-full appearance-none rounded-xl border border-slate-200 bg-white py-3 pe-10 ps-4 text-sm dark:border-slate-600 dark:bg-[#1E293B] dark:text-white"
+          >
+            <option value="">{isRtl ? "كل السنوات الدراسية" : "All Academic Levels"}</option>
+            <option value="GENERAL">{isRtl ? "عام / عمومي" : "General"}</option>
+            <option value="PREPARATORY">{isRtl ? "إعدادي هندسة" : "Preparatory Year"}</option>
+            <option value="FIRST_YEAR">{isRtl ? "الفرقة الأولى" : "First Year"}</option>
+            <option value="SECOND_YEAR">{isRtl ? "الفرقة الثانية" : "Second Year"}</option>
+            <option value="THIRD_YEAR">{isRtl ? "الفرقة الثالثة" : "Third Year"}</option>
+            <option value="FOURTH_YEAR">{isRtl ? "الفرقة الرابعة" : "Fourth Year"}</option>
+            <option value="GRADUATE">{isRtl ? "خريج" : "Graduate"}</option>
           </select>
           <ChevronDown className="pointer-events-none absolute end-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
         </div>

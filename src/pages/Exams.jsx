@@ -93,8 +93,16 @@ export default function Exams() {
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <h3 className="text-base font-bold text-slate-900 dark:text-white">{exam.title}</h3>
-                        <p className="mt-0.5 text-xs font-medium text-pioneer-orange-normal">{courseLabel(exam)}</p>
-                        <p className="mt-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t(typeKey)}</p>
+                        <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                          {courseLabel(exam) !== "—" ? (
+                            <p className="text-xs font-medium text-pioneer-orange-normal">{courseLabel(exam)}</p>
+                          ) : (
+                            <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-black text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
+                              {t("explore.free", { defaultValue: "FREE / مجاني" })}
+                            </span>
+                          )}
+                        </div>
+                        <p className="mt-1 text-[11px] font-semibold uppercase tracking-wide text-slate-550 dark:text-slate-400">{t(typeKey)}</p>
                       </div>
                       <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${st.style}`}>{t(st.label)}</span>
                     </div>

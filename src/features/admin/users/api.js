@@ -47,6 +47,7 @@ export async function createStudentByAdmin(body) {
     password: body.password,
     confirmPassword: body.confirmPassword || body.password,
     phone: body.phone || undefined,
+    academicLevel: body.academicLevel || undefined,
   };
   const response = await client.post("/auth/register", payload);
   return response?.data?.data || null;

@@ -34,6 +34,7 @@ function CmsPosts() {
 
   const [title, setTitle] = useState("");
   const [thumbNew, setThumbNew] = useState("");
+  const [categoryNew, setCategoryNew] = useState("BLOG");
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({
     title: "",
@@ -41,6 +42,7 @@ function CmsPosts() {
     slug: "",
     thumbnail: "",
     published: false,
+    category: "BLOG",
     bodyMd: "",
     bodyMdAr: "",
   });
@@ -55,6 +57,7 @@ function CmsPosts() {
       slug: editing.slug || "",
       thumbnail: editing.thumbnail || "",
       published: Boolean(editing.published),
+      category: editing.category || "BLOG",
       bodyMd: markdownBodyFromContent(editing.content),
       bodyMdAr: markdownBodyFromContent(editing.contentAr),
     });
@@ -83,6 +86,15 @@ function CmsPosts() {
             placeholder={t("adminPages.cmsPosts.thumbnailUrl")}
             className="h-10 flex-1 rounded-lg border border-slate-200 px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white sm:max-w-md"
           />
+          <select
+            value={categoryNew}
+            onChange={(e) => setCategoryNew(e.target.value)}
+            className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white outline-none"
+          >
+            <option value="BLOG">✍️ {t("adminPages.cmsPosts.catBlog", { defaultValue: "Blog" })}</option>
+            <option value="NEWS">📰 {t("adminPages.cmsPosts.catNews", { defaultValue: "News" })}</option>
+            <option value="INVESTIGATION">🔍 {t("adminPages.cmsPosts.catInvestigation", { defaultValue: "Investigation" })}</option>
+          </select>
           <button
             type="button"
             disabled={!title.trim() || createMutation.isPending}
@@ -94,12 +106,14 @@ function CmsPosts() {
                   slug,
                   content: { format: "markdown", body: "" },
                   published: false,
+                  category: categoryNew,
                   ...(thumbNew.trim() ? { thumbnail: thumbNew.trim() } : {}),
                 },
                 {
                   onSuccess: () => {
                     setTitle("");
                     setThumbNew("");
+                    setCategoryNew("BLOG");
                   },
                 }
               );
@@ -152,8 +166,17 @@ function CmsPosts() {
               <p className="mt-1 text-xs text-slate-500">
                 {p?.author?.fullName || "—"} • {p.createdAt ? new Date(p.createdAt).toLocaleDateString() : "—"}
               </p>
-              <div className="mt-2">
+              <div className="mt-2 flex flex-wrap items-center gap-2">
                 <StatusBadge label={p.published ? "Published" : "Draft"} tone={p.published ? "success" : "warning"} />
+                <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-bold ${
+                  p.category === "NEWS"
+                    ? "bg-blue-50 text-blue-700 dark:bg-blue-955/40 dark:text-blue-300"
+                    : p.category === "INVESTIGATION"
+                    ? "bg-purple-50 text-purple-700 dark:bg-purple-955/40 dark:text-purple-300"
+                    : "bg-amber-50 text-amber-700 dark:bg-amber-955/40 dark:text-amber-300"
+                }`}>
+                  {p.category === "NEWS" ? "📰 أخبار" : p.category === "INVESTIGATION" ? "🔍 تحقيق" : "✍️ مدونة"}
+                </span>
               </div>
               <p className="mt-2 truncate text-xs text-slate-500">{p.slug}</p>
               <div className="mt-4 flex flex-wrap gap-2">
@@ -236,14 +259,29 @@ function CmsPosts() {
                 className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
               />
             </div>
-            <label className="flex items-center gap-2 text-sm text-slate-800 dark:text-slate-200">
-              <input
-                type="checkbox"
-                checked={form.published}
-                onChange={(e) => setForm((f) => ({ ...f, published: e.target.checked }))}
-              />
-              {t("adminPages.cmsPosts.publishedLabel")}
-            </label>
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+              <label className="flex items-center gap-2 text-sm text-slate-800 dark:text-slate-200">
+                <input
+                  type="checkbox"
+                  checked={form.published}
+                  onChange={(e) => setForm((f) => ({ ...f, published: e.target.checked }))}
+                />
+                {t("adminPages.cmsPosts.publishedLabel")}
+              </label>
+
+              <div className="flex-1 w-full">
+                <label className="mb-1 block text-xs font-bold uppercase text-slate-500">{t("adminPages.cmsPosts.category", { defaultValue: "Category" })}</label>
+                <select
+                  value={form.category}
+                  onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
+                  className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white outline-none"
+                >
+                  <option value="BLOG">✍️ {t("adminPages.cmsPosts.catBlog", { defaultValue: "Blog" })}</option>
+                  <option value="NEWS">📰 {t("adminPages.cmsPosts.catNews", { defaultValue: "News" })}</option>
+                  <option value="INVESTIGATION">🔍 {t("adminPages.cmsPosts.catInvestigation", { defaultValue: "Investigation" })}</option>
+                </select>
+              </div>
+            </div>
             <div>
               <label className="mb-1 block text-xs font-bold uppercase text-slate-500">{t("adminPages.cmsPosts.body")} (EN)</label>
               <textarea
@@ -278,6 +316,7 @@ function CmsPosts() {
                         titleAr: form.titleAr.trim() || null,
                         slug,
                         published: form.published,
+                        category: form.category,
                         content: { format: "markdown", body: form.bodyMd },
                         contentAr: form.bodyMdAr.trim()
                           ? { format: "markdown", body: form.bodyMdAr }

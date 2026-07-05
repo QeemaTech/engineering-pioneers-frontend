@@ -17,6 +17,7 @@ import InstructorHomework from "../pages/instructor/Homework";
 import InstructorAvailability from "../pages/instructor/Availability";
 import InstructorAttendance from "../pages/instructor/Attendance";
 import InstructorSettings from "../pages/instructor/Settings";
+import InstructorLiveSessions from "../pages/instructor/LiveSessions";
 
 function InstructorRoutes() {
   return (
@@ -30,6 +31,7 @@ function InstructorRoutes() {
         <Route path="courses/new" element={<InstructorCreateCourse />} />
         <Route path="courses/:id/edit" element={<InstructorEditCourse />} />
         <Route path="homework" element={<InstructorHomework />} />
+        <Route path="live-sessions" element={<InstructorLiveSessions />} />
         <Route path="availability" element={<InstructorAvailability />} />
         <Route path="attendance" element={<InstructorAttendance />} />
         <Route path="exams" element={<InstructorExams />} />

@@ -15,6 +15,7 @@ const profileSchema = z.object({
   phone: z
     .string()
     .refine((v) => v === "" || /^\+?[0-9]{7,15}$/.test(String(v)), "settings.errors.phoneMin"),
+  academicLevel: z.string().optional().nullable(),
 });
 
 const passwordSchema = z
@@ -82,7 +83,7 @@ const NAV = [
 
 /* ── Profile section ── */
 function ProfileSection() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const { data: profile, isLoading: profileLoading } = useProfileMe(Boolean(user));
   const updateProfile = useUpdateProfile();
@@ -91,12 +92,16 @@ function ProfileSection() {
 
   const { register, handleSubmit, reset, formState: { errors, isDirty, isSubmitting } } = useForm({
     resolver: zodResolver(profileSchema),
-    defaultValues: { fullName: user?.fullName ?? "", phone: user?.phone ?? "" },
+    defaultValues: { fullName: user?.fullName ?? "", phone: user?.phone ?? "", academicLevel: user?.academicLevel ?? "" },
   });
 
   useEffect(() => {
     if (profile) {
-      reset({ fullName: profile.fullName ?? "", phone: profile.phone ?? "" });
+      reset({ 
+        fullName: profile.fullName ?? "", 
+        phone: profile.phone ?? "", 
+        academicLevel: profile.academicLevel ?? "" 
+      });
     }
   }, [profile, reset]);
 
@@ -106,6 +111,7 @@ function ProfileSection() {
       const payload = {
         fullName: values.fullName.trim(),
         ...(values.phone && String(values.phone).trim() !== "" ? { phone: String(values.phone).trim() } : {}),
+        academicLevel: values.academicLevel || null,
       };
       await updateProfile.mutateAsync(payload);
       setSaved(true);
@@ -150,6 +156,23 @@ function ProfileSection() {
           error={errors.phone && t(errors.phone.message)}
           {...register("phone")}
         />
+        <div className="space-y-1.5">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            {i18n.language?.startsWith("ar") ? "الفرقة الدراسية" : "Academic Level"}
+          </label>
+          <select
+            className="w-full rounded-xl border bg-white py-3 pe-10 ps-4 text-sm text-slate-900 outline-none transition focus:ring-2 dark:border-slate-600 dark:bg-[#0F172A] dark:text-white border-slate-200 focus:border-pioneer-orange focus:ring-pioneer-teal/30 dark:focus:border-pioneer-orange-normal"
+            {...register("academicLevel")}
+          >
+            <option value="">{i18n.language?.startsWith("ar") ? "اختر الفرقة الدراسية..." : "Select Academic Level..."}</option>
+            <option value="PREPARATORY">{i18n.language?.startsWith("ar") ? "إعدادي هندسة" : "Preparatory Year"}</option>
+            <option value="FIRST_YEAR">{i18n.language?.startsWith("ar") ? "الفرقة الأولى" : "First Year"}</option>
+            <option value="SECOND_YEAR">{i18n.language?.startsWith("ar") ? "الفرقة الثانية" : "Second Year"}</option>
+            <option value="THIRD_YEAR">{i18n.language?.startsWith("ar") ? "الفرقة الثالثة" : "Third Year"}</option>
+            <option value="FOURTH_YEAR">{i18n.language?.startsWith("ar") ? "الفرقة الرابعة / التخرج" : "Fourth Year / Graduation"}</option>
+            <option value="GRADUATE">{i18n.language?.startsWith("ar") ? "خريج / محترف" : "Graduate / Professional"}</option>
+          </select>
+        </div>
       </div>
 
       {apiErr ? <p className="text-sm text-red-600">{apiErr}</p> : null}

@@ -82,6 +82,7 @@ function StudentDetail() {
       status: user.isActive ? "Active" : "Inactive",
       lastLogin: user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : "-",
       avatar: user.avatar,
+      academicLevel: user.academicLevel,
     };
   }, [user]);
 
@@ -383,13 +384,23 @@ function StudentDetail() {
               {student.name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()}
             </div>
             <div className="space-y-1">
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2.5 flex-wrap">
                 <h1 className="text-xl font-extrabold text-slate-900 dark:text-white sm:text-2xl">{student.name}</h1>
                 <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${
                   student.status === "Active" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300" : "bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300"
                 }`}>
                   {student.status === "Active" ? t("adminPages.userDirectory.filters.active", { defaultValue: "Active" }) : t("adminPages.userDirectory.filters.suspended", { defaultValue: "Suspended" })}
                 </span>
+                {student.academicLevel && (
+                  <span className="inline-flex items-center rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-500/20 dark:text-indigo-300 px-2.5 py-0.5 text-xs font-semibold">
+                    {student.academicLevel === "PREPARATORY" ? (isRtl ? "إعدادي هندسة" : "Prep Year") :
+                     student.academicLevel === "FIRST_YEAR" ? (isRtl ? "الفرقة الأولى" : "Year 1") :
+                     student.academicLevel === "SECOND_YEAR" ? (isRtl ? "الفرقة الثانية" : "Year 2") :
+                     student.academicLevel === "THIRD_YEAR" ? (isRtl ? "الفرقة الثالثة" : "Year 3") :
+                     student.academicLevel === "FOURTH_YEAR" ? (isRtl ? "الفرقة الرابعة" : "Year 4") :
+                     student.academicLevel === "GRADUATE" ? (isRtl ? "خريج" : "Graduate") : student.academicLevel}
+                  </span>
+                )}
               </div>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-500 dark:text-slate-400">
                 <div className="flex items-center gap-1">

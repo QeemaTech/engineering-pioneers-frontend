@@ -19,6 +19,16 @@ function CreateCourse() {
 
   const categories = categoryData?.categories || [];
 
+  const LEVELS = [
+    { value: "GENERAL", labelAr: "عام / عمومي", labelEn: "General / Public" },
+    { value: "PREPARATORY", labelAr: "إعدادي هندسة", labelEn: "Preparatory Year" },
+    { value: "FIRST_YEAR", labelAr: "الفرقة الأولى", labelEn: "First Year" },
+    { value: "SECOND_YEAR", labelAr: "الفرقة الثانية", labelEn: "Second Year" },
+    { value: "THIRD_YEAR", labelAr: "الفرقة الثالثة", labelEn: "Third Year" },
+    { value: "FOURTH_YEAR", labelAr: "الفرقة الرابعة / التخرج", labelEn: "Fourth Year" },
+    { value: "GRADUATE", labelAr: "خريج / محترف", labelEn: "Graduate / Professional" },
+  ];
+
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     title: "",
@@ -29,6 +39,8 @@ function CreateCourse() {
     type: "RECORDED",
     price: 199,
     isLifetimePurchasable: true,
+    targetLevels: ["GENERAL"],
+    pricingTiers: [],
   });
 
   const [errors, setErrors] = useState({});
@@ -87,6 +99,8 @@ function CreateCourse() {
         type: form.type,
         price: Number(form.price),
         isLifetimePurchasable: form.isLifetimePurchasable,
+        targetLevels: form.targetLevels,
+        pricingTiers: form.pricingTiers,
       });
 
       if (!course?.id) throw new Error("Missing created course ID");
@@ -331,6 +345,176 @@ function CreateCourse() {
                 </p>
               </div>
             </label>
+          </div>
+
+          {/* Target Academic Years/Levels */}
+          <div className="border-t border-slate-100 dark:border-white/5 pt-4 space-y-2 font-cairo">
+            <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
+              {dir === "rtl" ? "السنوات الدراسية المستهدفة" : "Target Academic Levels"}
+            </span>
+            <div className="grid grid-cols-2 gap-2 rounded-xl bg-slate-50 dark:bg-[#0F0F13] p-4 border border-slate-100 dark:border-white/5">
+              {LEVELS.map((lvl) => (
+                <label key={lvl.value} className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={(form.targetLevels || ["GENERAL"]).includes(lvl.value)}
+                    onChange={() => {
+                      const current = form.targetLevels || ["GENERAL"];
+                      const updated = current.includes(lvl.value)
+                        ? current.filter((v) => v !== lvl.value)
+                        : [...current, lvl.value];
+                      set("targetLevels", updated.length > 0 ? updated : ["GENERAL"]);
+                    }}
+                    className="rounded text-pioneer-orange-normal focus:ring-pioneer-orange-normal/30 h-4 w-4"
+                  />
+                  <span>{dir === "rtl" ? lvl.labelAr : lvl.labelEn}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Pricing Tiers Section */}
+          <div className="border-t border-slate-100 dark:border-white/5 pt-4 space-y-4 font-cairo">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
+                {dir === "rtl" ? "خيارات التسعير ومدد الاشتراك" : "Pricing Tiers & Subscription Durations"}
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newTiers = [
+                      ...(form.pricingTiers || []),
+                      { name: "6 Months", nameAr: "٦ أشهر", price: 0, durationDays: 180, isActive: true }
+                    ];
+                    set("pricingTiers", newTiers);
+                  }}
+                  className="inline-flex items-center gap-1 rounded bg-[#EE7C11]/10 border border-[#EE7C11]/30 px-2 py-0.5 text-[10px] font-bold text-[#EE7C11] hover:bg-[#EE7C11]/20 transition"
+                >
+                  + ٦ أشهر
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newTiers = [
+                      ...(form.pricingTiers || []),
+                      { name: "1 Year", nameAr: "سنة واحدة", price: 0, durationDays: 365, isActive: true }
+                    ];
+                    set("pricingTiers", newTiers);
+                  }}
+                  className="inline-flex items-center gap-1 rounded bg-[#EE7C11]/10 border border-[#EE7C11]/30 px-2 py-0.5 text-[10px] font-bold text-[#EE7C11] hover:bg-[#EE7C11]/20 transition"
+                >
+                  + سنة
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newTiers = [
+                      ...(form.pricingTiers || []),
+                      { name: "Lifetime", nameAr: "مدى الحياة", price: 0, durationDays: null, isActive: true }
+                    ];
+                    set("pricingTiers", newTiers);
+                  }}
+                  className="inline-flex items-center gap-1 rounded bg-[#EE7C11]/10 border border-[#EE7C11]/30 px-2 py-0.5 text-[10px] font-bold text-[#EE7C11] hover:bg-[#EE7C11]/20 transition"
+                >
+                  + مدى الحياة
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newTiers = [
+                      ...(form.pricingTiers || []),
+                      { name: "Custom", nameAr: "فترة مخصصة", price: 0, durationDays: 120, isActive: true }
+                    ];
+                    set("pricingTiers", newTiers);
+                  }}
+                  className="inline-flex items-center gap-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 text-[10px] font-bold transition dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10"
+                >
+                  + تخصيص فترة
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              {(form.pricingTiers || []).map((tier, idx) => (
+                <div key={idx} className="grid grid-cols-1 md:grid-cols-5 gap-2 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 relative">
+                  <label className="block space-y-1 md:col-span-1">
+                    <span className="text-[9px] font-bold text-slate-400">{dir === "rtl" ? "الاسم (EN)" : "Name (EN)"}</span>
+                    <input
+                      type="text"
+                      value={tier.name}
+                      onChange={(e) => {
+                        const newTiers = [...form.pricingTiers];
+                        newTiers[idx].name = e.target.value;
+                        set("pricingTiers", newTiers);
+                      }}
+                      className="h-8 w-full rounded border border-slate-200 bg-white px-2 text-xs dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                    />
+                  </label>
+                  <label className="block space-y-1 md:col-span-1">
+                    <span className="text-[9px] font-bold text-slate-400">{dir === "rtl" ? "الاسم (AR)" : "Name (AR)"}</span>
+                    <input
+                      type="text"
+                      value={tier.nameAr}
+                      onChange={(e) => {
+                        const newTiers = [...form.pricingTiers];
+                        newTiers[idx].nameAr = e.target.value;
+                        set("pricingTiers", newTiers);
+                      }}
+                      className="h-8 w-full rounded border border-slate-200 bg-white px-2 text-xs dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                    />
+                  </label>
+                  <label className="block space-y-1 md:col-span-1">
+                    <span className="text-[9px] font-bold text-slate-400">{dir === "rtl" ? "السعر (جنيه)" : "Price (EGP)"}</span>
+                    <input
+                      type="number"
+                      min={0}
+                      value={tier.price}
+                      onChange={(e) => {
+                        const newTiers = [...form.pricingTiers];
+                        newTiers[idx].price = Number(e.target.value) || 0;
+                        set("pricingTiers", newTiers);
+                      }}
+                      className="h-8 w-full rounded border border-slate-200 bg-white px-2 text-xs dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                    />
+                  </label>
+                  <label className="block space-y-1 md:col-span-1">
+                    <span className="text-[9px] font-bold text-slate-400">{dir === "rtl" ? "المدة (أيام)" : "Duration (days)"}</span>
+                    <input
+                      type="number"
+                      min={1}
+                      value={tier.durationDays || ""}
+                      placeholder="مثلاً 120"
+                      onChange={(e) => {
+                        const newTiers = [...form.pricingTiers];
+                        newTiers[idx].durationDays = e.target.value ? Number(e.target.value) : null;
+                        set("pricingTiers", newTiers);
+                      }}
+                      className="h-8 w-full rounded border border-slate-200 bg-white px-2 text-xs dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                    />
+                  </label>
+                  <div className="flex items-end justify-end pb-1 md:col-span-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newTiers = (form.pricingTiers || []).filter((_, i) => i !== idx);
+                        set("pricingTiers", newTiers);
+                      }}
+                      className="rounded bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 text-[10px] font-bold transition"
+                    >
+                      {dir === "rtl" ? "حذف" : "Delete"}
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {(form.pricingTiers || []).length === 0 && (
+                <p className="text-[11px] italic text-slate-400 text-center py-2">
+                  {dir === "rtl"
+                    ? "لا يوجد خيارات تسعير إضافية محددة. سيتم اعتماد خيار الشراء مدى الحياة فقط كخيار افتراضي."
+                    : "No additional pricing tiers defined. Lifetime purchase will be the default option."}
+                </p>
+              )}
+            </div>
           </div>
         </div>
       )}

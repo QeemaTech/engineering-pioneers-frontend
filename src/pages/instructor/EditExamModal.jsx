@@ -17,8 +17,19 @@ function toLocalDatetimeValue(iso) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+const LEVELS = [
+  { value: "GENERAL", labelAr: "عام / عمومي", labelEn: "General / Public" },
+  { value: "PREPARATORY", labelAr: "إعدادي هندسة", labelEn: "Preparatory Year" },
+  { value: "FIRST_YEAR", labelAr: "الفرقة الأولى", labelEn: "First Year" },
+  { value: "SECOND_YEAR", labelAr: "الفرقة الثانية", labelEn: "Second Year" },
+  { value: "THIRD_YEAR", labelAr: "الفرقة الثالثة", labelEn: "Third Year" },
+  { value: "FOURTH_YEAR", labelAr: "الفرقة الرابعة / التخرج", labelEn: "Fourth Year" },
+  { value: "GRADUATE", labelAr: "خريج / محترف", labelEn: "Graduate / Professional" },
+];
+
 export default function EditExamModal({ exam, onClose, onSaved }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.language?.startsWith("ar");
   const updateMutation = useUpdateInstructorExam();
 
   const [title, setTitle] = useState("");
@@ -28,6 +39,7 @@ export default function EditExamModal({ exam, onClose, onSaved }) {
   const [passingScore, setPassingScore] = useState("60");
   const [scheduledAt, setScheduledAt] = useState("");
   const [status, setStatus] = useState("AVAILABLE");
+  const [selectedLevels, setSelectedLevels] = useState([]);
   const [formError, setFormError] = useState("");
 
   useEffect(() => {
@@ -39,6 +51,7 @@ export default function EditExamModal({ exam, onClose, onSaved }) {
     setPassingScore(String(exam.passingScore ?? 60));
     setScheduledAt(toLocalDatetimeValue(exam.scheduledAt));
     setStatus(exam.status || "AVAILABLE");
+    setSelectedLevels(exam.targetLevels || []);
   }, [exam]);
 
   const submit = async (e) => {
@@ -60,6 +73,7 @@ export default function EditExamModal({ exam, onClose, onSaved }) {
         passingScore: ps,
         status,
         scheduledAt: scheduledAt ? new Date(scheduledAt).toISOString() : undefined,
+        targetLevels: selectedLevels,
       };
       const updated = await updateMutation.mutateAsync({ examId: exam.id, body });
       onSaved?.(updated);
@@ -151,6 +165,32 @@ export default function EditExamModal({ exam, onClose, onSaved }) {
             </span>
             <input type="datetime-local" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)} className={INPUT} />
           </label>
+
+          {/* Target Academic Years/Levels */}
+          <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-white/5 font-cairo">
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+              {isRtl ? "السنوات الدراسية المستهدفة" : "Target Academic Levels"}
+            </span>
+            <div className="grid grid-cols-2 gap-2 rounded-xl bg-slate-50 dark:bg-[#0F0F13] p-4 border border-slate-100 dark:border-white/5">
+              {LEVELS.map((lvl) => (
+                <label key={lvl.value} className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={(selectedLevels || []).includes(lvl.value)}
+                    onChange={() => {
+                      const current = selectedLevels || [];
+                      const updated = current.includes(lvl.value)
+                        ? current.filter((v) => v !== lvl.value)
+                        : [...current, lvl.value];
+                      setSelectedLevels(updated);
+                    }}
+                    className="rounded text-pioneer-orange-normal focus:ring-pioneer-orange-normal/30 h-4 w-4"
+                  />
+                  <span>{isRtl ? lvl.labelAr : lvl.labelEn}</span>
+                </label>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="flex justify-end gap-2 border-t border-slate-200 px-5 py-4 dark:border-white/10">

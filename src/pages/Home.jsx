@@ -6,6 +6,7 @@ import HowItWorks from "../components/HowItWorks";
 import RecommendedCourses from "../components/RecommendedCourses";
 import Testimonials from "../components/Testimonials";
 import FaqSection from "../components/FaqSection";
+import HomeNewsBoard from "../components/HomeNewsBoard";
 import client from "../api/client";
 
 function Home() {
@@ -27,12 +28,13 @@ function Home() {
 
   return (
     <div className="overflow-hidden">
-      {showHero ? <Hero cmsContent={heroSection?.content} /> : null}
+      {showHero ? <Hero cmsContent={heroSection?.content} stats={data?.stats} /> : null}
       <Features />
-      <HowItWorks />
-      {isVisible("FAQ") ? <FaqSection rawContent={faqSection?.content} /> : null}
       <RecommendedCourses />
+      <HowItWorks />
+      <HomeNewsBoard />
       {isVisible("TESTIMONIALS") ? <Testimonials /> : null}
+      {isVisible("FAQ") ? <FaqSection rawContent={faqSection?.content} /> : null}
       <CTA />
     </div>
   );

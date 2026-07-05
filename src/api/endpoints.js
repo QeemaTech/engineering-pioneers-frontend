@@ -98,6 +98,7 @@ const endpoints = {
     ticketReply: (id) => `/student/tickets/${id}/message`,
     wishlist: "/student/wishlist",
     wishlistItem: (courseId) => `/student/wishlist/${courseId}`,
+    myQuestions: "/student/questions",
     lessonQuestions: (lessonId) => `/student/lessons/${lessonId}/questions`,
     questionAnswers: (questionId) => `/student/questions/${questionId}/answers`,
     courseReviews: (courseId) => `/courses/${courseId}/reviews`,

@@ -1,7 +1,11 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+import { getErrorMessage } from "../api/error";
+import { postStudentCourseCheckout } from "../features/student/financials/api";
+import SocialShare from "../components/SocialShare";
 import {
   BookOpen,
   Headphones,
@@ -78,6 +82,10 @@ export default function CourseDetails() {
   const role = normalizeRole(user?.role);
   const isStudent = role === APP_ROLES.STUDENT;
 
+  const [selectedTierId, setSelectedTierId] = useState("");
+  const [enrollingFree, setEnrollingFree] = useState(false);
+  const queryClient = useQueryClient();
+
   const { data: course, isLoading, isError, refetch } = usePublicCourse(id);
 
   const { data: reviewsData } = useQuery({
@@ -116,10 +124,57 @@ export default function CourseDetails() {
     return `/login?redirect=${redirect}`;
   }, [coursePath]);
 
-  const checkoutHref = course?.id ? `/student/checkout?courseId=${encodeURIComponent(course.id)}` : "/student/checkout";
+  const pricingTiers = course?.pricingTiers || [];
+
+  useEffect(() => {
+    if (pricingTiers.length > 0 && !selectedTierId) {
+      setSelectedTierId(pricingTiers[0].id);
+    }
+  }, [pricingTiers, selectedTierId]);
+
+  const selectedTier = useMemo(() => {
+    return pricingTiers.find((t) => t.id === selectedTierId);
+  }, [pricingTiers, selectedTierId]);
+
+  const displayPrice = useMemo(() => {
+    if (selectedTier) return Number(selectedTier.price);
+    return course?.isLifetimePurchasable ? Number(course.price) : null;
+  }, [course, selectedTier]);
+
+  const checkoutHref = useMemo(() => {
+    if (!course?.id) return "/student/checkout";
+    let url = `/student/checkout?courseId=${encodeURIComponent(course.id)}`;
+    if (selectedTierId) {
+      url += `&pricingTierId=${encodeURIComponent(selectedTierId)}`;
+    }
+    return url;
+  }, [course, selectedTierId]);
+
   const continueLearningHref = course?.id ? `/student/courses/${course.id}/learn` : "/student/classes";
 
-  const displayPrice = course?.isLifetimePurchasable ? Number(course.price) : null;
+  const handleFreeEnroll = async () => {
+    if (!course?.id) return;
+    setEnrollingFree(true);
+    try {
+      const payload = {
+        paymentMethod: "FREE",
+        receiptUrl: "INSTANT_FREE_ENROLLMENT",
+        amount: 0,
+      };
+      if (selectedTierId) {
+        payload.pricingTierId = selectedTierId;
+      }
+      await postStudentCourseCheckout(course.id, payload);
+      toast.success(isRtl ? "تم الاشتراك في الكورس بنجاح!" : "Enrolled in course successfully!");
+      void queryClient.invalidateQueries({ queryKey: ["student", "courses"] });
+      window.location.href = continueLearningHref;
+    } catch (e) {
+      toast.error(getErrorMessage(e, isRtl ? "فشل التسجيل في الكورس" : "Failed to enroll in course."));
+    } finally {
+      setEnrollingFree(false);
+    }
+  };
+
   const liveSessions = course?.type === "HYBRID" ? course.liveSessions ?? [] : [];
   const instructorForCard = course?.instructor;
   const displayRating = reviewStats.count > 0 ? Math.round(reviewStats.average * 10) / 10 : 0;
@@ -317,6 +372,43 @@ export default function CourseDetails() {
                   </p>
                 ) : null}
 
+                {pricingTiers.length > 0 && (
+                  <div className="mb-4 space-y-2">
+                    <p className="text-xs font-bold uppercase tracking-wide text-slate-550 dark:text-slate-400">
+                      {isRtl ? "خيارات مدة العضوية والاشتراك" : "Membership Duration Options"}
+                    </p>
+                    <div className="space-y-1.5">
+                      {pricingTiers.map((tier) => (
+                        <label
+                          key={tier.id}
+                          className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${
+                            selectedTierId === tier.id
+                              ? "border-[#EE7C11] bg-orange-50/10 dark:bg-orange-500/5"
+                              : "border-slate-200 dark:border-slate-700 hover:border-slate-300"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="radio"
+                              name="pricing-tier"
+                              value={tier.id}
+                              checked={selectedTierId === tier.id}
+                              onChange={() => setSelectedTierId(tier.id)}
+                              className="text-[#EE7C11] focus:ring-[#EE7C11] h-3.5 w-3.5"
+                            />
+                            <span className="text-xs font-bold text-slate-800 dark:text-white">
+                              {isRtl ? (tier.nameAr || tier.name) : tier.name}
+                            </span>
+                          </div>
+                          <span className="text-xs font-extrabold text-[#EE7C11]">
+                            {tier.price === 0 ? (isRtl ? "مجاني" : "Free") : formatPrice(tier.price, isRtl)}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {showAuthHydrating ? (
                   <div className="mb-3 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-200 py-3 text-sm font-semibold text-slate-600 dark:bg-white/10 dark:text-slate-300">
                     {t("courseDetails.card.loadingSession", { defaultValue: "Loading…" })}
@@ -350,7 +442,17 @@ export default function CourseDetails() {
                     <BookOpen className="h-4 w-4" />
                     {t("courseDetails.card.continueLearning")}
                   </Link>
-                ) : course.isLifetimePurchasable ? (
+                ) : displayPrice === 0 ? (
+                  <button
+                    type="button"
+                    disabled={enrollingFree}
+                    onClick={handleFreeEnroll}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 py-3 text-sm font-bold text-white transition hover:bg-emerald-700 disabled:opacity-50"
+                  >
+                    <BookOpen className="h-4 w-4" />
+                    {enrollingFree ? t("dashboard.common.loading") : (isRtl ? "سجل مجاناً الآن" : "Enroll Instantly for Free")}
+                  </button>
+                ) : course.isLifetimePurchasable || selectedTierId ? (
                   <Link
                     to={checkoutHref}
                     className="flex w-full items-center justify-center gap-2 rounded-xl bg-pioneer-orange-normal py-3 text-sm font-bold text-white transition hover:bg-pioneer-orange-hover"
@@ -375,6 +477,9 @@ export default function CourseDetails() {
                     </li>
                   ))}
                 </ul>
+
+                <div className="my-4 border-t border-slate-150 dark:border-slate-800" />
+                <SocialShare url={window.location.href} title={course.title} />
               </div>
             </div>
           </aside>

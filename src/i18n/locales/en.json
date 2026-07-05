@@ -78,7 +78,7 @@
       "myCourses": "My Courses",
       "qna": "Course Q&A",
       "performance": "Performance Analytics",
-      "homework": "Homework Grading",
+      "assignment": "Assignment Grading",
       "availability": "Scheduling Availability",
       "exams": "Exams",
       "wallet": "My Wallet",
@@ -95,7 +95,7 @@
       "payments": "Payments",
       "wishlist": "Wishlist",
       "progress": "Progress",
-      "studentHomework": "Homework",
+      "studentAssignment": "Assignment",
       "websiteHome": "Homepage",
       "websiteExplore": "Browse courses",
       "websiteInstructors": "Find instructors",
@@ -109,7 +109,7 @@
       "subtitle": "Your learning dashboard at a glance.",
       "stats": {
         "courses": "Enrolled courses",
-        "homework": "Pending homework",
+        "assignment": "Pending assignment",
         "exams": "Upcoming exams",
         "live": "Next live session"
       },
@@ -623,7 +623,7 @@
       "tabPerformance": "Academic Performance",
       "tabAttendance": "Attendance",
       "tabExams": "Exam Results",
-      "tabHomework": "Homework Submissions",
+      "tabAssignment": "Assignment Submissions",
       "tabCourses": "Enrolled Courses",
       "loading": "Loading student profile...",
       "loadError": "Failed to load student details.",
@@ -640,10 +640,10 @@
         "failed": "Failed",
         "pending": "Pending"
       },
-      "homeworks": {
-        "title": "Homework Submissions",
-        "empty": "No homework submissions found.",
-        "colTitle": "Homework Title",
+      "assignments": {
+        "title": "Assignment Submissions",
+        "empty": "No assignment submissions found.",
+        "colTitle": "Assignment Title",
         "colCourse": "Course",
         "colSubmitted": "Submitted Date",
         "colGrade": "Grade",
@@ -656,7 +656,7 @@
         "loadError": "Could not load performance data for this student.",
         "avgExam": "Average exam score",
         "examsTaken": "{{count}} exams taken",
-        "hwCompletion": "Homework completion",
+        "hwCompletion": "Assignment completion",
         "hwAvg": "Avg grade: {{score}}",
         "overallProgress": "Overall progress",
         "lessonsDone": "{{done}} / {{total}} lessons completed",
@@ -667,7 +667,7 @@
         "noExams": "No submitted exams yet.",
         "passRate": "Pass rate (graded)",
         "ungradedExam": "Ungraded / unknown",
-        "homeworkPipeline": "Homework pipeline",
+        "assignmentPipeline": "Assignment pipeline",
         "graded": "Graded",
         "pendingGrade": "Pending grading",
         "notSubmitted": "Not submitted",
@@ -682,7 +682,7 @@
         "colScore": "Score",
         "colDate": "Date",
         "exam": "Exam",
-        "homework": "Homework",
+        "assignment": "Assignment",
         "noGrades": "No recent grades yet.",
         "inProgress": "In progress"
       }
@@ -1231,7 +1231,7 @@
       "open": "Open user menu",
       "myClasses": "My Cohorts",
       "recordings": "Recordings",
-      "homework": "Homework",
+      "assignment": "Assignment",
       "exams": "Exams",
       "progress": "Progress",
       "settings": "Settings",
@@ -1288,7 +1288,7 @@
         "title": "1-on-1 & Group Sessions",
         "description": "Access private mentoring or study with high-caliber peers. Solve complex computational problems together in dedicated workspace channels."
       },
-      "homeworkAndPractice": {
+      "assignmentAndPractice": {
         "title": "Practical Projects & Code Challenges",
         "description": "Test your learning by building functional code repositories and drawing stress vector charts, graded weekly by active senior engineers."
       },
@@ -1738,11 +1738,11 @@
     "features": {
       "feature1": "Up to 5 group class seats per month",
       "feature2": "Access to recorded sessions library",
-      "feature3": "Structured homework assignments",
+      "feature3": "Structured assignment assignments",
       "feature4": "Progress tracking dashboard",
       "feature5": "24 / 7 community support",
       "feature6": "Unlimited session replays",
-      "feature7": "Structured homework & progress"
+      "feature7": "Structured assignment & progress"
     }
   },
   "myClasses": {
@@ -1824,17 +1824,17 @@
       "objectives": "Objectives",
       "lessons": "Lessons",
       "liveSessions": "Live sessions",
-      "homework": "Homework"
+      "assignment": "Assignment"
     },
     "liveSessions": {
       "empty": "No live sessions scheduled for this course yet.",
       "hint": "Join from here when the countdown reaches zero.",
       "viewAll": "View all live sessions"
     },
-    "homework": {
-      "empty": "No homework assigned for this course yet.",
+    "assignment": {
+      "empty": "No assignment assigned for this course yet.",
       "hint": "Open an assignment to read instructions and submit your work.",
-      "viewAll": "View all homework"
+      "viewAll": "View all assignment"
     },
     "certificate": {
       "completeTitle": "Course completed!",
@@ -1845,22 +1845,22 @@
       "viewAll": "View all certificates"
     }
   },
-  "homework": {
-    "hubTitle": "Homework by cohort",
+  "assignment": {
+    "hubTitle": "Assignment by cohort",
     "hubSubtitle": "Choose a cohort to see assignments.",
     "openCohort": "View assignments",
     "loadError": "Could not load assignments.",
     "emptyCohort": "No assignments for this cohort.",
-    "hubLoadError": "Could not load homework.",
-    "hubEmpty": "No homework yet for your classes.",
+    "hubLoadError": "Could not load assignment.",
+    "hubEmpty": "No assignment yet for your classes.",
     "emptyFilter": "No assignments match your search or class filter.",
     "showingNone": "No assignments to show",
     "showingRange": "Showing {{from}}–{{to}} of {{total}} results",
     "searchAria": "Search",
     "titlePrefix": "My",
-    "titleAccent": "Homework",
-    "subtitle": "Track and submit your homework assignments",
-    "viewCourse": "All course homework",
+    "titleAccent": "Assignment",
+    "subtitle": "Track and submit your assignment assignments",
+    "viewCourse": "All course assignment",
     "courseListSubtitle": "Assignments for this course",
     "due": "Due:",
     "submitted": "Submitted:",
@@ -1888,7 +1888,7 @@
       "allClasses": "All classes"
     },
     "actions": {
-      "submit": "Submit Homework",
+      "submit": "Submit Assignment",
       "viewDetails": "View Details",
       "viewResults": "View Results"
     },
@@ -1992,7 +1992,7 @@
     "stats": {
       "coursesEnrolled": "Courses Enrolled",
       "lessonsCompleted": "Lessons Completed",
-      "homeworkDone": "Homework Graded",
+      "assignmentDone": "Assignment Graded",
       "avgScore": "Average Progress"
     }
   },
@@ -2046,8 +2046,8 @@
         "title": "Class Reminders",
         "desc": "Get notified 30 minutes before your class starts."
       },
-      "homeworkDeadlines": {
-        "title": "Homework Deadlines",
+      "assignmentDeadlines": {
+        "title": "Assignment Deadlines",
         "desc": "Reminders when an assignment is due soon."
       },
       "examAlerts": {
@@ -2125,11 +2125,11 @@
       "showAll": "Show {{n}} more sections",
       "showLess": "Show less",
       "empty": "Curriculum outline will be published soon.",
-      "homework": "Assignment",
+      "assignment": "Assignment",
       "exam": "Exam",
-      "homeworkCount": "assignments",
+      "assignmentCount": "assignments",
       "examCount": "exams",
-      "homeworkSection": "Course assignments",
+      "assignmentSection": "Course assignments",
       "examSection": "Course assessments",
       "liveLesson": "Live session",
       "enrollHint": "Lesson videos, files, and assessments unlock after you enroll.",
@@ -2233,7 +2233,7 @@
       "sections": "Sections"
     }
   },
-  "homeworkDetail": {
+  "assignmentDetail": {
     "typeLabel": "Submission type",
     "submitError": "Submission failed.",
     "validation": {
@@ -2247,7 +2247,7 @@
     "fileTooBig": "File is too large (max 8MB).",
     "fileReadError": "Could not read file.",
     "notFound": "Assignment not found.",
-    "back": "Back to Homework",
+    "back": "Back to Assignment",
     "due": "Due:",
     "instructions": {
       "title": "Instructions"
@@ -2263,11 +2263,11 @@
     },
     "contextSubtitle": "{{courseTitle}} · {{cohortName}}",
     "submitCard": {
-      "title": "Submit Your Homework",
+      "title": "Submit Your Assignment",
       "answerLabel": "Your Answer",
       "answerPlaceholder": "Type your written responses here...",
       "uploadLabel": "Upload Files",
-      "submitBtn": "Submit Homework",
+      "submitBtn": "Submit Assignment",
       "submitting": "Submitting…"
     },
     "upload": {
@@ -2283,13 +2283,13 @@
       "tip3": "Use the file types and size limits shown above.",
       "tip4": "Submit before the due date to avoid a late status."
     },
-    "successTitle": "Homework Submitted!",
+    "successTitle": "Assignment Submitted!",
     "gradedTitle": "Graded submission",
     "downloadSubmission": "Download submitted file",
     "resubmitTitle": "Update your submission",
     "resubmitBtn": "Update submission",
     "successMsg": "Your submission has been received. Your teacher will review it soon.",
-    "backBtn": "Back to Homework"
+    "backBtn": "Back to Assignment"
   },
   "takeExam": {
     "strip": {
@@ -2374,7 +2374,7 @@
     "empty": "You are not enrolled in any cohort yet. Explore courses to enroll.",
     "progress": "complete",
     "continue": "Continue learning",
-    "homework": "Homework"
+    "assignment": "Assignment"
   },
   "quotaModal": {
     "title": "Upgrade your plan",
@@ -2650,8 +2650,8 @@
           "title": "My Courses",
           "subtitle": "Courses you teach and enrolled learners."
         },
-        "homework": {
-          "title": "Homework queue",
+        "assignment": {
+          "title": "Assignment queue",
           "subtitle": "Review pending submissions and leave grades."
         },
         "availability": {
@@ -2954,7 +2954,7 @@
           "no": "No"
         }
       },
-      "homework": {
+      "assignment": {
         "queue": {
           "notOpened": "Not opened",
           "opened": "Opened",
@@ -2966,7 +2966,7 @@
           "resetNew": "Mark not opened",
           "courseLine": "{{course}}",
           "emptyFilter": "No submissions in this filter.",
-          "emptyAll": "When students submit homework, they will appear here. Create assignments from a course editor (Homework tab).",
+          "emptyAll": "When students submit assignment, they will appear here. Create assignments from a course editor (Assignment tab).",
           "goToCourses": "Go to My Courses",
           "emptyTitle": "No submissions yet",
           "stateUpdated": "Review state updated."

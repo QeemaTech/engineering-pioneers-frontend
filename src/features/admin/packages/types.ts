@@ -1,22 +1,44 @@
+export type AdminPackagePricingTier = {
+  id?: string;
+  name: string;
+  nameAr: string;
+  price: number;
+  durationDays: number | null;
+  isActive?: boolean;
+};
+
 export type AdminPackage = {
   id: string;
-  name: string;
+  title: string;
+  titleAr?: string | null;
   description?: string | null;
-  durationMonths: number;
+  descriptionAr?: string | null;
   price: number;
   isActive: boolean;
   isRecommended: boolean;
+  courses?: Array<{
+    id: string;
+    courseId: string;
+    course?: {
+      id: string;
+      title: string;
+      price: number;
+    };
+  }>;
+  pricingTiers?: AdminPackagePricingTier[];
   createdAt?: string;
   updatedAt?: string;
 };
 
 export type CreatePackageInput = {
-  name: string;
+  title: string;
+  titleAr?: string;
   description?: string;
+  descriptionAr?: string;
   price: number;
-  durationMonths: number;
   isActive?: boolean;
-  isRecommended?: boolean;
+  courseIds?: string[];
+  pricingTiers?: AdminPackagePricingTier[];
 };
 
 export type UpdatePackageInput = Partial<CreatePackageInput>;

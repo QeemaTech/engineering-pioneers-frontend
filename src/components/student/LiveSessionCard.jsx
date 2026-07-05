@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { CalendarDays, Clock3, ExternalLink, Radio, Video } from "lucide-react";
 import { formatSessionWhen, pad2, splitCountdown, useSessionTiming } from "./liveSessionTiming";
 
@@ -69,17 +70,40 @@ export default function LiveSessionCard({ session, locale, compact = false, show
       ? t("recordings.durationMinutes", { n: session.durationMinutes })
       : null;
 
+  const hasAccess = session.isFreeForAll || session.joinedAt !== null || session.price === null || session.price <= 0;
+
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-sm dark:border-slate-700/40 dark:bg-[#1E293B]">
-      <div className="relative overflow-hidden bg-gradient-to-br from-pioneer-orange-dark to-pioneer-orange-normal p-5">
+      <div className="relative overflow-hidden bg-pioneer-orange-normal p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            {showCourse && courseTitle ? (
-              <span className="mb-2 inline-block rounded-full bg-white/20 px-2.5 py-0.5 text-[11px] font-semibold text-white">
-                {courseTitle}
-              </span>
-            ) : null}
-            <h3 className="text-base font-bold leading-snug text-white">{session.title}</h3>
+            <div className="flex flex-wrap items-center gap-1.5 mb-2">
+              {showCourse && courseTitle ? (
+                <span className="inline-block rounded-full bg-white/20 px-2.5 py-0.5 text-[11px] font-semibold text-white">
+                  {courseTitle}
+                </span>
+              ) : null}
+              {session.isFreeForAll ? (
+                <span className="inline-block rounded-full bg-emerald-600 px-2.5 py-0.5 text-[11px] font-extrabold text-white shadow-sm">
+                  {t("explore.free", { defaultValue: "FREE" })}
+                </span>
+              ) : null}
+              {session.targetLevels && Array.isArray(session.targetLevels) && session.targetLevels.map((lvl) => (
+                <span key={lvl} className="inline-block rounded-full bg-white/10 px-2 py-0.5 text-[10px] text-white">
+                  {lvl === "PREPARATORY" ? (locale?.startsWith("ar") ? "إعدادي" : "Prep") : 
+                   lvl === "FIRST_YEAR" ? (locale?.startsWith("ar") ? "فرقة 1" : "Year 1") :
+                   lvl === "SECOND_YEAR" ? (locale?.startsWith("ar") ? "فرقة 2" : "Year 2") :
+                   lvl === "THIRD_YEAR" ? (locale?.startsWith("ar") ? "فرقة 3" : "Year 3") :
+                   lvl === "FOURTH_YEAR" ? (locale?.startsWith("ar") ? "فرقة 4" : "Year 4") :
+                   lvl === "GRADUATE" ? (locale?.startsWith("ar") ? "خريج" : "Graduate") : lvl}
+                </span>
+              ))}
+            </div>
+            <h3 className="text-base font-bold leading-snug text-white">
+              <Link to={`/student/live-sessions/${session.id}`} className="hover:underline">
+                {session.title}
+              </Link>
+            </h3>
             <p className="mt-1 text-sm text-white/85">{instructorName}</p>
           </div>
           <Video className="h-8 w-8 shrink-0 text-white/80" />
@@ -102,17 +126,47 @@ export default function LiveSessionCard({ session, locale, compact = false, show
 
         <LiveSessionCountdown scheduledAt={session.scheduledAt} durationMinutes={session.durationMinutes} compact={compact} />
 
-        {session.meetingUrl ? (
-          <a
-            href={session.meetingUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-auto flex w-full items-center justify-center gap-2 rounded-xl bg-pioneer-orange-normal py-2.5 text-sm font-semibold text-white transition hover:bg-pioneer-orange-hover"
+        {!hasAccess ? (
+          <Link
+            to={`/student/checkout?liveSessionId=${session.id}`}
+            className="mt-auto flex w-full items-center justify-center gap-2 rounded-xl bg-pioneer-orange-normal hover:bg-pioneer-orange-hover py-2.5 text-sm font-semibold text-white transition shadow-sm"
           >
-            <ExternalLink className="h-4 w-4" />
-            {t("recordings.joinLive")}
-          </a>
-        ) : (
+            <span>🎟️</span>
+            <span>
+              {locale?.startsWith("ar") 
+                ? `احجز مقعدك (${Math.round(session.price || 0)} ج.م)` 
+                : `Book Seat (${Math.round(session.price || 0)} EGP)`}
+            </span>
+          </Link>
+        ) : session.meetingUrl ? (() => {
+          const lower = session.meetingUrl.toLowerCase();
+          let btnClass = "bg-pioneer-orange-normal hover:bg-pioneer-orange-hover";
+          let platformName = "";
+          let emoji = "🎥";
+
+          if (lower.includes("zoom")) {
+            btnClass = "bg-blue-600 hover:bg-blue-700";
+            platformName = " (Zoom)";
+            emoji = "📹";
+          } else if (lower.includes("meet.google") || lower.includes("google")) {
+            btnClass = "bg-emerald-600 hover:bg-emerald-700";
+            platformName = " (Google Meet)";
+            emoji = "💬";
+          }
+
+          return (
+            <a
+              href={session.meetingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`mt-auto flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold text-white transition ${btnClass}`}
+            >
+              <span className="text-base">{emoji}</span>
+              <span>{t("recordings.joinLive")}{platformName}</span>
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          );
+        })() : (
           <p className="rounded-xl border border-slate-200 bg-slate-50 py-2.5 text-center text-xs text-slate-500 dark:border-slate-600 dark:bg-slate-800/50">
             {t("recordings.noMeetingLink")}
           </p>

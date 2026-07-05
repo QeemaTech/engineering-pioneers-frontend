@@ -39,8 +39,10 @@ const AdminExamSubmissions = lazy(() => import("../pages/admin/ExamSubmissions")
 const AdminPerformance = lazy(() => import("../pages/admin/Performance"));
 const AdminCoupons = lazy(() => import("../pages/admin/Coupons"));
 const AdminCertificates = lazy(() => import("../pages/admin/Certificates"));
+const AdminPackages = lazy(() => import("../pages/admin/Packages"));
 const AdminReviewQueue = lazy(() => import("../pages/admin/ReviewQueue"));
 const AdminAuditLogs = lazy(() => import("../pages/admin/AuditLogs"));
+const AdminLiveSessions = lazy(() => import("../pages/admin/LiveSessions"));
 
 function AdminCourseIdRedirect() {
   const { id } = useParams();
@@ -60,7 +62,11 @@ function AdminRoutes() {
         <Route path="finance" element={wrap(<AdminFinance />)} />
         <Route path="performance" element={wrap(<AdminPerformance />)} />
         <Route path="coupons" element={wrap(<AdminCoupons />)} />
+        <Route path="packages" element={wrap(<AdminPackages />)} />
         <Route path="certificates" element={wrap(<AdminCertificates />)} />
+
+        {/* Live sessions */}
+        <Route path="live-sessions" element={wrap(<AdminLiveSessions />)} />
 
         <Route path="students" element={wrap(<AdminStudents />)} />
         <Route path="students/:id" element={wrap(<AdminStudentDetail />)} />

@@ -389,7 +389,7 @@ export default function Header() {
           {/* Desktop Nav */}
           <nav className="hidden items-center gap-8 lg:flex">
             {navItems.map((item) => (
-              <NavLink key={item.to} to={item.to} className={navLinkClass} end={item.to === "/"}>
+              <NavLink key={`${item.to}-${item.label}`} to={item.to} className={navLinkClass} end={item.to === "/"}>
                 {item.label}
               </NavLink>
             ))}
@@ -447,7 +447,7 @@ export default function Header() {
             <div className="mx-auto max-w-7xl space-y-1 px-4 py-3 md:px-6">
               {navItems.map((item) => (
                 <NavLink
-                  key={item.to}
+                  key={`${item.to}-${item.label}`}
                   to={item.to}
                   end={item.to === "/"}
                   className={({ isActive }) =>

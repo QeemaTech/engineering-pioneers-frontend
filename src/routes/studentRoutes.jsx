@@ -5,6 +5,7 @@ import StudentLayout from "../layouts/StudentLayout";
 import StudentOverview from "../pages/student/Overview";
 import MyClasses from "../pages/MyClasses";
 import LiveSessions from "../pages/student/LiveSessions";
+import LiveSessionDetails from "../pages/student/LiveSessionDetails";
 import RecordingsLibrary from "../pages/student/RecordingsLibrary";
 import RecordingPlayer from "../pages/student/RecordingPlayer";
 import Homework from "../pages/Homework";
@@ -25,6 +26,7 @@ import Checkout from "../pages/Checkout";
 import Settings from "../pages/Settings";
 import Wishlist from "../pages/student/Wishlist";
 import CourseView from "../pages/CourseView";
+import StudentQna from "../pages/student/Qna";
 
 function RedirectCourseLearn() {
   const { id } = useParams();
@@ -58,6 +60,7 @@ function StudentRoutes() {
           <Route index element={<StudentOverview />} />
           <Route path="classes" element={<MyClasses />} />
           <Route path="live-sessions" element={<LiveSessions />} />
+          <Route path="live-sessions/:id" element={<LiveSessionDetails />} />
           <Route path="recordings" element={<RecordingsLibrary />} />
           <Route path="recordings/:sourceType/:id" element={<RecordingPlayer />} />
           <Route path="homework" element={<Homework />} />
@@ -76,6 +79,7 @@ function StudentRoutes() {
           <Route path="checkout" element={<Checkout />} />
           <Route path="settings" element={<Settings />} />
           <Route path="wishlist" element={<Wishlist />} />
+          <Route path="qna" element={<StudentQna />} />
         </Route>
       </Route>
 

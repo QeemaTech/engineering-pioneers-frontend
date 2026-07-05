@@ -3,15 +3,17 @@ import endpoints from "../../../api/endpoints";
 import type { AdminPackage, CreatePackageInput, UpdatePackageInput } from "./types";
 
 function normalizePackage(raw: any): AdminPackage {
-  const durationMonths = Number(raw?.durationMonths ?? 1);
   return {
     id: String(raw?.id || ""),
-    name: String(raw?.name || ""),
+    title: String(raw?.title || ""),
+    titleAr: raw?.titleAr ?? null,
     description: raw?.description ?? null,
-    durationMonths: Number(raw?.durationMonths ?? 1),
+    descriptionAr: raw?.descriptionAr ?? null,
     price: Number(raw?.price ?? 0),
     isActive: raw?.isActive !== false,
     isRecommended: raw?.isRecommended === true,
+    courses: raw?.courses || [],
+    pricingTiers: raw?.pricingTiers || [],
     createdAt: raw?.createdAt,
     updatedAt: raw?.updatedAt,
   };
@@ -19,12 +21,14 @@ function normalizePackage(raw: any): AdminPackage {
 
 function toBackendPayload(body: any) {
   return {
-    name: body.name,
+    title: body.title,
+    titleAr: body.titleAr ?? "",
     description: body.description ?? "",
+    descriptionAr: body.descriptionAr ?? "",
     price: Number(body.price),
-    durationMonths: Number(body.durationMonths),
     isActive: body.isActive !== false,
-    isRecommended: body.isRecommended === true,
+    courseIds: body.courseIds || [],
+    pricingTiers: body.pricingTiers || [],
   };
 }
 
