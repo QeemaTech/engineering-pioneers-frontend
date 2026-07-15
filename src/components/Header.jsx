@@ -309,10 +309,13 @@ export default function Header() {
   const toggleLanguage  = () =>
     i18n.changeLanguage(currentLanguage === "ar" ? "en" : "ar");
 
+  const isRtl = i18n.language?.startsWith("ar");
+
   const navItems = [
     { to: "/", label: t("header.nav.home") },
     { to: "/explore", label: t("header.nav.explore") },
     { to: "/instructors", label: t("header.nav.instructors", { defaultValue: "Instructors" }) },
+    { to: "/events", label: isRtl ? "الفعاليات والأخبار" : "Events & News" },
     ...(isAuthenticated && isStudent
       ? [{ to: "/student", label: t("header.nav.myDashboard", { defaultValue: "My dashboard" }) }]
       : []),

@@ -50,6 +50,8 @@ const endpoints = {
     instructorCommission: (instructorId) => `/admin/instructors/${instructorId}/commission`,
     surveysQuestions: "/admin/surveys/questions",
     surveysQuestionDetail: (id) => `/admin/surveys/questions/${id}`,
+    events: "/admin/events",
+    eventDetail: (id) => `/admin/events/${id}`,
   },
   instructorDashboard: {
     overview: "/instructor/dashboard/overview",
@@ -137,6 +139,8 @@ const endpoints = {
     siteSettings: "/public/settings",
     verifyCertificate: (serial) => `/certificates/verify/${encodeURIComponent(serial)}`,
     downloadCertificateBySerial: (serial) => `/certificates/verify/${encodeURIComponent(serial)}/download`,
+    events: "/public/events",
+    eventDetail: (id) => `/public/events/${id}`,
   },
 };
 

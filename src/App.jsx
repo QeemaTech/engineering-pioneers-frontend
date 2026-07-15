@@ -19,6 +19,7 @@ import BlogPostPage from "./pages/BlogPostPage";
 import StaticContentPage from "./pages/StaticContentPage";
 import VerifyCertificate from "./pages/VerifyCertificate";
 import AccessDenied from "./pages/AccessDenied";
+import EventsPage from "./pages/public/Events";
 import AdminRoutes from "./routes/adminRoutes";
 import InstructorRoutes from "./routes/instructorRoutes";
 import StudentRoutes from "./routes/studentRoutes";
@@ -60,6 +61,7 @@ function App() {
           <Route path="/courses" element={<Explore />} />
           <Route path="/subscription" element={<Navigate to="/explore" replace />} />
           <Route path="/faq" element={<FaqPage />} />
+          <Route path="/events" element={<EventsPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<StaticContentPage slug="contact" showContactInfo />} />
           <Route path="/community" element={<StaticContentPage slug="community" />} />
