@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Calendar, Clock, Edit2, Plus, Search, Trash2, Video } from "lucide-react";
+import { Calendar, Clock, ClipboardList, Edit2, Plus, Search, Trash2, Video } from "lucide-react";
 import toast from "react-hot-toast";
 import client from "../../api/client";
 import PageHeader from "../../components/ui/PageHeader";
 import DataTable from "../../components/ui/DataTable";
 import StatusBadge from "../../components/ui/StatusBadge";
 import { getErrorMessage } from "../../api/error";
+import InstructorSessionReportModal from "../../components/student/InstructorSessionReportModal";
 
 const LEVELS = [
   { value: "GENERAL", labelAr: "عام / عمومي", labelEn: "General / Public" },
@@ -31,6 +32,9 @@ export default function InstructorLiveSessions() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingSession, setEditingSession] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  // Report modal state
+  const [reportSession, setReportSession] = useState(null);
 
   // Form states
   const [title, setTitle] = useState("");
@@ -274,15 +278,26 @@ export default function InstructorLiveSessions() {
                   <button
                     onClick={() => openEditModal(r)}
                     className="p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg text-blue-600"
+                    title={isRtl ? "تعديل" : "Edit"}
                   >
                     <Edit2 className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(r.id)}
                     className="p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg text-red-500"
+                    title={isRtl ? "حذف" : "Delete"}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
+                  {(r.status === "COMPLETED" || r.status === "ONGOING") && (
+                    <button
+                      onClick={() => setReportSession(r)}
+                      className="p-2 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg text-[#EE7C11]"
+                      title={isRtl ? "تقرير ما بعد الجلسة" : "Post-session report"}
+                    >
+                      <ClipboardList className="h-4 w-4" />
+                    </button>
+                  )}
                 </div>
               ),
             },
@@ -458,6 +473,15 @@ export default function InstructorLiveSessions() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Instructor Post-Session Report Modal */}
+      {reportSession && (
+        <InstructorSessionReportModal
+          sessionId={reportSession.id}
+          sessionTitle={reportSession.title}
+          onClose={() => setReportSession(null)}
+        />
       )}
     </div>
   );

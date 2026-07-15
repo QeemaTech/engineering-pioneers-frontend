@@ -62,6 +62,9 @@ const endpoints = {
     wallet: "/instructor/wallet",
     attendance: "/instructor/attendance",
     qna: "/instructor",
+    // Survey
+    surveyPending: (sessionId) => `/instructor/surveys/pending/${sessionId}`,
+    surveySubmit: "/instructor/surveys/submit",
   },
   student: {
     qna: "/student",
@@ -102,6 +105,9 @@ const endpoints = {
     lessonQuestions: (lessonId) => `/student/lessons/${lessonId}/questions`,
     questionAnswers: (questionId) => `/student/questions/${questionId}/answers`,
     courseReviews: (courseId) => `/courses/${courseId}/reviews`,
+    // Survey
+    surveyPending: (sessionId) => `/student/surveys/pending/${sessionId}`,
+    surveySubmit: "/student/surveys/submit",
   },
   homework: {
     mine: "/homework/student/mine",

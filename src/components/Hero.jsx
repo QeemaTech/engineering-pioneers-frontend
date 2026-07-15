@@ -249,17 +249,17 @@ export default function Hero({ cmsContent, stats }) {
                 </div>
               ) : (
                 <div className="relative z-10 flex h-full w-full items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200/50 dark:from-[#1E293B]/20 dark:to-transparent">
-                  <img
+                  {/* <img
                     src="/assets/hero_student.png"
                     alt="Student Fallback"
                     className="mx-auto h-[90%] w-auto object-contain"
-                  />
+                  /> */}
                 </div>
               )}
             </div>
 
             {/* Absolute Floaters */}
-            <motion.div
+            {/* <motion.div
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
               className="absolute start-[-16px] top-[12%] z-20 hidden w-44 rounded-xl border border-slate-200/80 bg-white/95 p-3 shadow-lg backdrop-blur-sm sm:block lg:w-48"
@@ -295,7 +295,7 @@ export default function Hero({ cmsContent, stats }) {
                 <span>X: 142.8 kN</span>
                 <span>Y: 89.2 kN</span>
               </div>
-            </motion.div>
+            </motion.div> */}
           </div>
         </div>
 

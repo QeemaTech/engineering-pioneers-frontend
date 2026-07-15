@@ -7,6 +7,7 @@ import { fetchLiveSessionDetails } from "../../features/student/financials/api";
 import { formatSessionWhen, useSessionTiming, splitCountdown, pad2 } from "../../components/student/liveSessionTiming";
 import { getErrorMessage } from "../../api/error";
 import useAuthStore from "../../store/authStore";
+import StudentSessionSurveyModal from "../../components/student/StudentSessionSurveyModal";
 
 export default function LiveSessionDetails() {
   const { id } = useParams();
@@ -17,6 +18,8 @@ export default function LiveSessionDetails() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [surveyOpen, setSurveyOpen] = useState(false);
+  const [surveyFired, setSurveyFired] = useState(false);
 
   const loadDetails = async () => {
     try {
@@ -34,6 +37,22 @@ export default function LiveSessionDetails() {
   useEffect(() => {
     loadDetails();
   }, [id]);
+
+  // Auto-fire survey modal when the session ends and student had access
+  useEffect(() => {
+    if (phase === "ended" && session && !surveyFired) {
+      const hasAccess =
+        session.isFreeForAll ||
+        session.joinedAt !== null ||
+        session.price === null ||
+        session.price <= 0;
+      if (hasAccess) {
+        setSurveyFired(true);
+        // Small delay to let the page settle
+        setTimeout(() => setSurveyOpen(true), 800);
+      }
+    }
+  }, [phase, session, surveyFired]);
 
   // Timing hooks
   const scheduledAt = session?.startTime;
@@ -71,6 +90,7 @@ export default function LiveSessionDetails() {
   const whenLabel = session.startTime ? formatSessionWhen(session.startTime, i18n.language) : "";
 
   return (
+    <>
     <div className="mx-auto max-w-4xl space-y-6">
       <nav className="text-sm text-slate-500">
         <Link to="/student/live-sessions" className="font-medium text-pioneer-orange-normal hover:underline">
@@ -274,5 +294,15 @@ export default function LiveSessionDetails() {
         </div>
       </div>
     </div>
+
+    {/* Post-session survey modal */}
+    {surveyOpen && session && (
+      <StudentSessionSurveyModal
+        sessionId={session.id}
+        sessionTitle={session.title}
+        onClose={() => setSurveyOpen(false)}
+      />
+    )}
+  </>
   );
 }
