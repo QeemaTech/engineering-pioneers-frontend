@@ -48,6 +48,8 @@ const endpoints = {
     forceLogout: (userId) => `/admin/users/${userId}/sessions`,
     payoutPaid: (payoutId) => `/admin/payouts/${payoutId}/paid`,
     instructorCommission: (instructorId) => `/admin/instructors/${instructorId}/commission`,
+    surveysQuestions: "/admin/surveys/questions",
+    surveysQuestionDetail: (id) => `/admin/surveys/questions/${id}`,
   },
   instructorDashboard: {
     overview: "/instructor/dashboard/overview",

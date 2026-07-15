@@ -252,6 +252,12 @@ export function getAdminNavigation(openTicketsCount = 0): NavSection[] {
           badge: openTicketsCount,
           permission: "support:manage",
         },
+        {
+          labelKey: "sidebarNav.items.surveys",
+          path: "/admin/surveys",
+          icon: HelpCircle,
+          permission: "survey:manage",
+        },
       ],
     },
     {
