@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Mail, MapPin, Phone, ChevronRight, ChevronLeft } from "lucide-react";
@@ -5,6 +6,7 @@ import { usePublicCmsPage } from "../features/public/hooks";
 import { useSiteSettings } from "../features/public/siteSettings/hooks";
 import { parseCmsSections } from "../utils/cmsLocale";
 import ContactForm from "../components/ContactForm";
+import BecomeInstructorModal from "../components/BecomeInstructorModal";
 
 function SectionBlock({ section, isRtl }) {
   const Chevron = isRtl ? ChevronLeft : ChevronRight;
@@ -35,6 +37,7 @@ function SectionBlock({ section, isRtl }) {
 export default function StaticContentPage({ slug, showContactInfo = false, extraActions = null }) {
   const { t, i18n } = useTranslation();
   const isRtl = i18n.dir() === "rtl";
+  const [instructorModalOpen, setInstructorModalOpen] = useState(false);
 
   const { data: page, isLoading, isError } = usePublicCmsPage(slug);
   const { settings: site } = useSiteSettings();
@@ -156,16 +159,21 @@ export default function StaticContentPage({ slug, showContactInfo = false, extra
           </div>
         ) : null}
 
-        {slug === "teach" && mailto ? (
+        {slug === "teach" ? (
           <div className="mt-10 text-center">
-            <a
-              href={mailto}
+            <button
+              type="button"
+              onClick={() => setInstructorModalOpen(true)}
               className="inline-flex items-center justify-center rounded-xl bg-[#EE7C11] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#d9700e]"
             >
               {t("publicTeach.applyCta", { defaultValue: isRtl ? "قدّم طلبك الآن" : "Apply now" })}
-            </a>
+            </button>
           </div>
         ) : null}
+
+        {instructorModalOpen && (
+          <BecomeInstructorModal onClose={() => setInstructorModalOpen(false)} />
+        )}
       </div>
     </div>
   );
