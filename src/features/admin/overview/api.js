@@ -7,7 +7,8 @@ export async function fetchAdminStats() {
   return unwrapResponse(response);
 }
 
-export async function fetchAdminOverview() {
-  const response = await client.get(endpoints.admin.overview);
+export async function fetchAdminOverview(range = "30d") {
+  const response = await client.get(`${endpoints.admin.overview}?range=${range}`);
   return unwrapResponse(response);
 }
+

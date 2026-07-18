@@ -50,15 +50,37 @@ function InstructorExamDetail() {
   const { examId } = useParams();
   const dir = i18n.dir();
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [exporting, setExporting] = useState(false);
+
+  const { data: exam, isLoading: loadingExam, isError: examError, error: examErr } = useInstructorExamDetail(examId);
+  const { data: submissions = [], isLoading: loadingSubs } = useInstructorExamSubmissions(examId);
+
+  const filteredSubmissions = useMemo(() => {
+    return submissions.filter((sub) => {
+      const name = (sub.student?.fullName || "").toLowerCase();
+      const email = (sub.student?.email || "").toLowerCase();
+      const matchesSearch = name.includes(searchQuery.toLowerCase()) || email.includes(searchQuery.toLowerCase());
+
+      const matchesStatus =
+        statusFilter === "all" ||
+        (statusFilter === "passed" && sub.isPassed === true) ||
+        (statusFilter === "failed" && sub.isPassed === false) ||
+        (statusFilter === "grading" && (sub.isPassed === null || sub.isPassed === undefined));
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [submissions, searchQuery, statusFilter]);
 
   const handleExportXlsx = async () => {
     if (!examId) return;
     setExporting(true);
     try {
-      const response = await client.get(`/instructor/exams/${examId}/submissions/export-xlsx`, {
-        responseType: "blob",
-      });
+      const response = await client.get(
+        `/instructor/exams/${examId}/submissions/export-xlsx?search=${encodeURIComponent(searchQuery)}&status=${statusFilter}`,
+        { responseType: "blob" }
+      );
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
@@ -73,9 +95,6 @@ function InstructorExamDetail() {
       setExporting(false);
     }
   };
-
-  const { data: exam, isLoading: loadingExam, isError: examError, error: examErr } = useInstructorExamDetail(examId);
-  const { data: submissions = [], isLoading: loadingSubs } = useInstructorExamSubmissions(examId);
 
   const addQ = useAddInstructorExamQuestion(examId);
   const updateQ = useUpdateInstructorExamQuestion(examId);
@@ -247,6 +266,38 @@ function InstructorExamDetail() {
             </button>
           )}
         </div>
+
+        {submissions.length > 0 && (
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-slate-50/50 dark:bg-white/[0.01] border-b border-slate-200 dark:border-white/5 p-4">
+            <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
+              {/* Search Input */}
+              <div className="relative flex-1 max-w-md">
+                <input
+                  type="text"
+                  placeholder={isRtl ? "البحث باسم الطالب أو البريد الإلكتروني..." : "Search by student name or email..."}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.02] px-4 py-2 text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:border-[#EE7C11] focus:ring-1 focus:ring-[#EE7C11] outline-none font-cairo"
+                />
+              </div>
+
+              {/* Status Dropdown */}
+              <div className="w-full sm:w-48">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.02] px-3 py-2 text-sm text-slate-800 dark:text-slate-200 focus:border-[#EE7C11] outline-none font-cairo"
+                >
+                  <option value="all">{isRtl ? "جميع الحالات" : "All Statuses"}</option>
+                  <option value="passed">{isRtl ? "ناجح" : "Passed"}</option>
+                  <option value="failed">{isRtl ? "راسب" : "Failed"}</option>
+                  <option value="grading">{isRtl ? "قيد التقييم" : "Pending"}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="p-2">
           {loadingSubs ? (
             <p className="p-4 text-sm text-slate-500">{t("dashboard.common.loading")}</p>
@@ -279,7 +330,7 @@ function InstructorExamDetail() {
                   render: (v) => (v ? new Date(v).toLocaleString() : t("dashboard.instructor.exams.detailPage.pending")),
                 },
               ]}
-              rows={submissions}
+              rows={filteredSubmissions}
               emptyNode={
                 <p className="p-6 text-center text-sm text-slate-500">{t("dashboard.instructor.exams.detailPage.noSubmissions")}</p>
               }

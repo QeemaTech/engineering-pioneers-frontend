@@ -7,6 +7,7 @@ import {
   Lock,
   Play,
   Video,
+  X,
 } from "lucide-react";
 
 function formatDuration(seconds) {
@@ -19,22 +20,38 @@ function formatDuration(seconds) {
   return `${mins}m`;
 }
 
-function OutlineRow({ icon: Icon, iconClass, title, meta, locked }) {
+function OutlineRow({ icon: Icon, iconClass, title, meta, locked, onClick, isPreview }) {
   return (
-    <div className="flex items-start gap-3 rounded-lg px-2 py-2.5">
+    <div 
+      onClick={onClick}
+      className={`flex items-start gap-3 rounded-lg px-2 py-2.5 transition-all ${
+        onClick ? "cursor-pointer bg-slate-50 hover:bg-pioneer-orange-light/20 dark:bg-slate-800/40 dark:hover:bg-slate-800/80" : ""
+      }`}
+    >
       <span className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${iconClass}`}>
         <Icon className="h-3.5 w-3.5" />
       </span>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-slate-800">{title}</p>
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{title}</p>
+          {isPreview && (
+            <span className="shrink-0 rounded bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 text-[9px] font-bold text-emerald-650 dark:text-emerald-400 font-cairo">
+              معاينة مجانية / Preview
+            </span>
+          )}
+        </div>
         {meta ? <p className="mt-0.5 text-xs text-slate-500">{meta}</p> : null}
       </div>
-      {locked ? <Lock className="mt-1 h-3.5 w-3.5 shrink-0 text-slate-300" aria-hidden /> : null}
+      {locked ? (
+        <Lock className="mt-1 h-3.5 w-3.5 shrink-0 text-slate-300 dark:text-slate-650" aria-hidden />
+      ) : isPreview ? (
+        <Play className="mt-1 h-3.5 w-3.5 shrink-0 text-[#EE7C11] fill-[#EE7C11]" aria-hidden />
+      ) : null}
     </div>
   );
 }
 
-function UnitBlock({ unit, exams, homeworks, defaultOpen, t }) {
+function UnitBlock({ unit, exams, homeworks, defaultOpen, t, onPreviewLesson }) {
   const sections = (unit.sections || []).filter((s) => (s.lessons || []).length > 0);
   const [open, setOpen] = useState(defaultOpen);
 
@@ -88,7 +105,9 @@ function UnitBlock({ unit, exams, homeworks, defaultOpen, t }) {
                       }
                       title={lesson.title}
                       meta={meta}
-                      locked
+                      locked={!lesson.isPreview}
+                      isPreview={lesson.isPreview}
+                      onClick={lesson.isPreview && lesson.videoUrl ? () => onPreviewLesson(lesson.videoUrl) : undefined}
                     />
                     {lessonHomeworks.map((hw) => (
                       <div key={hw.id} className="ps-9">
@@ -148,6 +167,7 @@ function UnitBlock({ unit, exams, homeworks, defaultOpen, t }) {
 export default function PublicCourseCurriculum({ units = [], homeworks = [], exams = [] }) {
   const { t } = useTranslation();
   const [showAll, setShowAll] = useState(false);
+  const [previewVideoUrl, setPreviewVideoUrl] = useState(null);
 
   const stats = useMemo(() => {
     let lessons = 0;
@@ -219,6 +239,7 @@ export default function PublicCourseCurriculum({ units = [], homeworks = [], exa
               homeworks={homeworks}
               defaultOpen={index === 0}
               t={t}
+              onPreviewLesson={setPreviewVideoUrl}
             />
           ))}
           {hiddenCount > 0 ? (
@@ -276,6 +297,66 @@ export default function PublicCourseCurriculum({ units = [], homeworks = [], exa
           defaultValue: "Lesson videos, files, and assessments unlock after you enroll.",
         })}
       </p>
+      
+      <VideoPlayerModal
+        url={previewVideoUrl}
+        isOpen={!!previewVideoUrl}
+        onClose={() => setPreviewVideoUrl(null)}
+      />
+    </div>
+  );
+}
+
+function VideoPlayerModal({ url, onClose, isOpen }) {
+  if (!isOpen || !url) return null;
+
+  // Check if YouTube
+  const isYouTube = url.includes("youtube.com") || url.includes("youtu.be");
+  // Check if Vimeo
+  const isVimeo = url.includes("vimeo.com");
+
+  let embedUrl = url;
+  if (isYouTube) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    if (match && match[2].length === 11) {
+      embedUrl = `https://www.youtube.com/embed/${match[2]}?autoplay=1`;
+    }
+  } else if (isVimeo) {
+    const regExp = /vimeo\.com\/([0-9]+)/;
+    const match = url.match(regExp);
+    if (match) {
+      embedUrl = `https://player.vimeo.com/video/${match[1]}?autoplay=1`;
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm">
+      <div className="relative w-full max-w-4xl rounded-2xl bg-[#0F0F13] border border-white/10 p-1 overflow-hidden shadow-2xl flex flex-col aspect-video animate-in fade-in zoom-in duration-200">
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 z-[210] rounded-full bg-black/60 p-2 text-white hover:bg-black/80 transition"
+        >
+          <X className="h-5 w-5" />
+        </button>
+        {isYouTube || isVimeo ? (
+          <iframe
+            src={embedUrl}
+            title="Lesson Preview"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full rounded-xl"
+          ></iframe>
+        ) : (
+          <video
+            src={url}
+            controls
+            autoPlay
+            className="w-full h-full rounded-xl object-contain bg-black"
+          ></video>
+        )}
+      </div>
     </div>
   );
 }

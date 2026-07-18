@@ -69,6 +69,7 @@ const endpoints = {
     // Survey
     surveyPending: (sessionId) => `/instructor/surveys/pending/${sessionId}`,
     surveySubmit: "/instructor/surveys/submit",
+    surveySessions: "/instructor/surveys/sessions",
   },
   student: {
     qna: "/student",
@@ -101,6 +102,7 @@ const endpoints = {
     downloadCertificate: (id) => `/student/certificates/${id}/download`,
     claimCertificate: (courseId) => `/student/courses/${courseId}/certificates/claim`,
     myPayments: "/student/financials/my-payments",
+    myPrivateSessions: "/student/financials/my-private-sessions",
     tickets: "/student/tickets",
     ticketReply: (id) => `/student/tickets/${id}/message`,
     wishlist: "/student/wishlist",
@@ -112,6 +114,7 @@ const endpoints = {
     // Survey
     surveyPending: (sessionId) => `/student/surveys/pending/${sessionId}`,
     surveySubmit: "/student/surveys/submit",
+    surveySessions: "/student/surveys/sessions",
   },
   homework: {
     mine: "/homework/student/mine",

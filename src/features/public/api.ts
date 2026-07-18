@@ -13,6 +13,10 @@ export type PublicCoursesQuery = {
   page?: number;
   limit?: number;
   search?: string;
+  category?: string;
+  type?: string;
+  level?: string;
+  price?: string;
 };
 
 export async function fetchRecommendedCourses(params: { filter?: string; limit?: number } = {}): Promise<RecommendedCoursesResult> {
@@ -36,11 +40,20 @@ export async function fetchPublicCourses(params: PublicCoursesQuery = {}): Promi
       page: params.page ?? 1,
       limit: params.limit ?? 12,
       ...(params.search?.trim() ? { search: params.search.trim() } : {}),
+      ...(params.category ? { category: params.category } : {}),
+      ...(params.type ? { type: params.type } : {}),
+      ...(params.level ? { level: params.level } : {}),
+      ...(params.price ? { price: params.price } : {}),
     },
   });
   const courses = (res?.data?.data as PublicCoursesListResult["courses"]) ?? [];
   const meta = (res?.data?.meta as PublicCoursesListResult["meta"]) ?? null;
   return { courses, meta };
+}
+
+export async function fetchPublicCategories(): Promise<any[]> {
+  const res = await client.get("/categories");
+  return res?.data?.data || res?.data || [];
 }
 
 export async function fetchPublicCourseById(id: string): Promise<PublicCourseDetail | null> {
@@ -100,4 +113,14 @@ export async function fetchPublicPosts(params: PublicPostsQuery = {}): Promise<P
 export async function fetchPublicPostBySlug(slug: string): Promise<PublicPostDetail | null> {
   const res = await client.get(endpoints.public.post(slug));
   return (res?.data?.data as PublicPostDetail) ?? null;
+}
+
+export async function fetchPublicPackages(): Promise<any[]> {
+  const res = await client.get(endpoints.public.packages);
+  return res?.data?.data || [];
+}
+
+export async function fetchPublicPackageById(id: string): Promise<any | null> {
+  const res = await client.get(`${endpoints.public.packages}/${id}`);
+  return res?.data?.data || null;
 }

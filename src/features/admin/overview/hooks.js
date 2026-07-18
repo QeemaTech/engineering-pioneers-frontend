@@ -9,10 +9,11 @@ export function useAdminStats() {
   });
 }
 
-export function useAdminOverview() {
+export function useAdminOverview(range = "30d") {
   return useQuery({
-    queryKey: ["admin", "overview"],
-    queryFn: fetchAdminOverview,
+    queryKey: ["admin", "overview", range],
+    queryFn: () => fetchAdminOverview(range),
     retry: false,
   });
 }
+

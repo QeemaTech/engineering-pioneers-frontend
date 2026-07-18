@@ -6,9 +6,15 @@ import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import PageHeader from "../components/dashboard/PageHeader";
 import useAuthStore from "../store/authStore";
 import { APP_ROLES, normalizeRole } from "../config/permissions";
-import { usePublicCourse } from "../features/public/hooks";
+import { usePublicCourse, usePublicPackage } from "../features/public/hooks";
 import { getErrorMessage } from "../api/error";
-import { postStudentCourseCheckout, validateStudentCoupon, fetchLiveSessionDetails, postStudentLiveSessionCheckout } from "../features/student/financials/api";
+import { 
+  postStudentCourseCheckout, 
+  validateStudentCoupon, 
+  fetchLiveSessionDetails, 
+  postStudentLiveSessionCheckout,
+  postStudentPackageCheckout
+} from "../features/student/financials/api";
 import { applyCouponDiscount, couponDiscountLabel } from "../features/student/financials/coupon";
 
 function formatPrice(price, isRtl) {
@@ -28,6 +34,8 @@ export default function Checkout() {
   const courseId = (searchParams.get("courseId") || "").trim();
   const pricingTierId = (searchParams.get("pricingTierId") || "").trim();
   const liveSessionId = (searchParams.get("liveSessionId") || "").trim();
+  const packageId = (searchParams.get("packageId") || "").trim();
+  const tierId = (searchParams.get("tierId") || "").trim();
 
   const [localError, setLocalError] = useState("");
   const [flow, setFlow] = useState("form");
@@ -53,6 +61,13 @@ export default function Checkout() {
     isFetched: courseFetched,
   } = usePublicCourse(courseId || undefined);
 
+  const {
+    data: packageData,
+    isLoading: packageLoading,
+    isError: packageError,
+    isFetched: packageFetched,
+  } = usePublicPackage(packageId || undefined);
+
   useEffect(() => {
     if (courseId) {
       setFlow("form");
@@ -63,6 +78,17 @@ export default function Checkout() {
       setAppliedCoupon(null);
     }
   }, [courseId]);
+
+  useEffect(() => {
+    if (packageId) {
+      setFlow("form");
+      setOrderMeta({ reusedPending: false });
+      setLocalError("");
+      setCouponCode("");
+      setCouponMessage("");
+      setAppliedCoupon(null);
+    }
+  }, [packageId]);
 
   useEffect(() => {
     if (liveSessionId) {
@@ -86,18 +112,27 @@ export default function Checkout() {
     return course.pricingTiers.find((t) => t.id === pricingTierId);
   }, [course, pricingTierId]);
 
+  const selectedPackageTier = useMemo(() => {
+    if (!tierId || !packageData?.pricingTiers) return null;
+    return packageData.pricingTiers.find((t) => t.id === tierId);
+  }, [packageData, tierId]);
+
   const courseAmount = useMemo(() => {
+    if (packageId) {
+      if (selectedPackageTier) return Number(selectedPackageTier.price);
+      return Number(packageData?.price || 0);
+    }
     if (liveSessionId) return Number(liveSession?.price || 0);
     if (selectedTier) return Number(selectedTier.price);
     if (!course?.isLifetimePurchasable) return 0;
     return Number(course.price);
-  }, [course, selectedTier, liveSession, liveSessionId]);
+  }, [course, selectedTier, liveSession, liveSessionId, packageId, packageData, selectedPackageTier]);
 
   const finalAmount = useMemo(() => {
     if (!courseAmount) return 0;
-    if (liveSessionId) return courseAmount;
+    if (liveSessionId || packageId) return courseAmount; // No coupons for live sessions or packages yet
     return appliedCoupon ? applyCouponDiscount(courseAmount, appliedCoupon) : courseAmount;
-  }, [courseAmount, appliedCoupon, liveSessionId]);
+  }, [courseAmount, appliedCoupon, liveSessionId, packageId]);
 
   const discountAmount = useMemo(() => Math.max(0, courseAmount - finalAmount), [courseAmount, finalAmount]);
 
@@ -119,13 +154,13 @@ export default function Checkout() {
   if (role === APP_ROLES.INSTRUCTOR) return <Navigate to="/instructor" replace />;
   if (role !== APP_ROLES.STUDENT) return <Navigate to="/" replace />;
 
-  if (!courseId && !liveSessionId) {
+  if (!courseId && !liveSessionId && !packageId) {
     return (
       <div className="mx-auto max-w-lg py-16 text-center">
         <AlertCircle className="mx-auto h-12 w-12 text-amber-500" />
         <h1 className="mt-4 text-xl font-bold text-slate-900 dark:text-white">{t("checkout.invalid.title")}</h1>
         <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{t("checkout.invalid.body")}</p>
-        <Link to="/explore" className="mt-6 inline-block font-semibold text-pioneer-orange-normal hover:underline">
+        <Link to="/explore" className="mt-6 inline-block font-semibold text-[#EE7C11] hover:underline">
           {t("checkout.backExplore")}
         </Link>
       </div>
@@ -134,6 +169,8 @@ export default function Checkout() {
 
   const courseMissing = courseId && courseFetched && !courseError && !course;
   const liveSessionMissing = liveSessionId && !liveSessionLoading && !liveSessionError && !liveSession;
+  const packageMissing = packageId && packageFetched && !packageError && !packageData;
+
   const priceLabel = formatPrice(finalAmount, isRtl);
   const originalPriceLabel = formatPrice(courseAmount, isRtl);
   const discountLabel = formatPrice(discountAmount, isRtl);
@@ -173,7 +210,7 @@ export default function Checkout() {
   };
 
   const handlePurchase = async () => {
-    if (!courseId && !liveSessionId) return;
+    if (!courseId && !liveSessionId && !packageId) return;
     setLocalError("");
     const url = receiptUrl.trim();
     if (!url) {
@@ -197,7 +234,16 @@ export default function Checkout() {
         receiptUrl: url,
         amount: finalAmount,
       };
-      if (liveSessionId) {
+
+      if (packageId) {
+        if (tierId) {
+          payload.pricingTierId = tierId;
+        }
+        const data = await postStudentPackageCheckout(packageId, payload);
+        setOrderMeta({ reusedPending: Boolean(data?.reusedPending) });
+        setFlow("success");
+        toast.success(isRtl ? "تم إرسال طلب الدفع للباقة بنجاح." : "Package purchase request submitted.");
+      } else if (liveSessionId) {
         const data = await postStudentLiveSessionCheckout(liveSessionId, payload);
         setOrderMeta({ reusedPending: Boolean(data?.reusedPending) });
         setFlow("success");
@@ -231,7 +277,7 @@ export default function Checkout() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <nav className="text-sm text-slate-500">
-        <Link to="/explore" className="font-medium text-pioneer-orange-normal hover:underline">
+        <Link to="/explore" className="font-medium text-[#EE7C11] hover:underline">
           {t("checkout.breadcrumbExplore")}
         </Link>
         <span className="mx-2">/</span>
@@ -259,7 +305,7 @@ export default function Checkout() {
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
                 <Link
                   to="/student/classes"
-                  className="inline-flex items-center justify-center rounded-xl bg-pioneer-orange-normal px-5 py-3 text-sm font-bold text-white transition hover:bg-pioneer-orange-hover"
+                  className="inline-flex items-center justify-center rounded-xl bg-[#EE7C11] px-5 py-3 text-sm font-bold text-white transition hover:bg-orange-600"
                 >
                   {t("checkout.goToClasses")}
                 </Link>
@@ -273,7 +319,7 @@ export default function Checkout() {
             </>
           ) : null}
 
-          {flow !== "success" && (courseLoading || liveSessionLoading) ? (
+          {flow !== "success" && (courseLoading || liveSessionLoading || packageLoading) ? (
             <div className="flex items-center gap-2 text-slate-500">
               <Loader2 className="h-5 w-5 animate-spin" />
               {t("checkout.loading")}
@@ -281,8 +327,11 @@ export default function Checkout() {
           ) : null}
 
           {flow !== "success" && courseError ? <p className="text-sm text-red-600">{t("checkout.courseLoadError")}</p> : null}
+          {flow !== "success" && packageError ? <p className="text-sm text-red-600">{isRtl ? "فشل تحميل تفاصيل الباقة." : "Error loading package details."}</p> : null}
           {flow !== "success" && liveSessionError ? <p className="text-sm text-red-600">{isRtl ? "عذراً، فشل تحميل تفاصيل الحصة المباشرة." : "Error loading live session details."}</p> : null}
+          
           {flow !== "success" && courseMissing ? <p className="text-sm text-red-600">{t("checkout.courseNotFound")}</p> : null}
+          {flow !== "success" && packageMissing ? <p className="text-sm text-red-600">{isRtl ? "الباقة المطلوبة غير موجودة." : "Package not found."}</p> : null}
           {flow !== "success" && liveSessionMissing ? <p className="text-sm text-red-600">{isRtl ? "لم يتم العثور على الحصة المباشرة المطلوبة." : "Live session not found."}</p> : null}
 
           {flow !== "success" && course && !courseLoading ? (
@@ -295,7 +344,7 @@ export default function Checkout() {
                   : t("courseDetails.type.recorded", { defaultValue: "Recorded" })}
                 {selectedTier ? ` · ${isRtl ? (selectedTier.nameAr || selectedTier.name) : selectedTier.name}` : ""}
               </p>
-              <p className="mt-2 text-lg font-extrabold text-pioneer-orange-normal">{priceLabel}</p>
+              <p className="mt-2 text-lg font-extrabold text-[#EE7C11]">{priceLabel}</p>
               {appliedCoupon && discountAmount > 0 ? (
                 <div className="mt-2 space-y-1 text-sm">
                   <p className="text-slate-500 line-through dark:text-slate-400">
@@ -309,6 +358,20 @@ export default function Checkout() {
             </div>
           ) : null}
 
+          {flow !== "success" && packageData && !packageLoading ? (
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-600 dark:bg-slate-800/50">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{isRtl ? "الباقة التعليمية" : "Learning Package"}</p>
+              <p className="mt-1 text-lg font-bold text-slate-900 dark:text-white">
+                {isRtl ? (packageData.titleAr || packageData.title) : (packageData.title || packageData.titleAr)}
+              </p>
+              <p className="mt-1 text-xs text-slate-500">
+                {isRtl ? `${packageData.courses?.length || 0} دورات متضمنة` : `${packageData.courses?.length || 0} courses included`}
+                {selectedPackageTier ? ` · ${isRtl ? (selectedPackageTier.nameAr || selectedPackageTier.name) : selectedPackageTier.name}` : ""}
+              </p>
+              <p className="mt-2 text-lg font-extrabold text-[#EE7C11]">{priceLabel}</p>
+            </div>
+          ) : null}
+
           {flow !== "success" && liveSession && !liveSessionLoading ? (
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-600 dark:bg-slate-800/50">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{isRtl ? "الحصة المباشرة" : "Live Session"}</p>
@@ -316,7 +379,7 @@ export default function Checkout() {
               <p className="mt-1 text-xs text-slate-500">
                 {isRtl ? "المحاضر: " : "Instructor: "} {liveSession.instructor?.fullName || "—"}
               </p>
-              <p className="mt-2 text-lg font-extrabold text-pioneer-orange-normal">{priceLabel}</p>
+              <p className="mt-2 text-lg font-extrabold text-[#EE7C11]">{priceLabel}</p>
             </div>
           ) : null}
 
@@ -326,7 +389,7 @@ export default function Checkout() {
             </div>
           ) : null}
 
-          {flow !== "success" && ((course && course.isLifetimePurchasable) || liveSession) ? (
+          {flow !== "success" && ((course && course.isLifetimePurchasable) || liveSession || packageData) ? (
             <>
               {courseId ? (
                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-600 dark:bg-slate-800/50">
@@ -356,7 +419,7 @@ export default function Checkout() {
                       <button
                         type="button"
                         onClick={handleRemoveCoupon}
-                        className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+                        className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-650 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-350 dark:hover:bg-slate-800"
                       >
                         {t("checkout.coupon.remove", { defaultValue: "Remove" })}
                       </button>
@@ -410,10 +473,10 @@ export default function Checkout() {
             </div>
           ) : null}
 
-          {flow !== "success" && ((course && course.isLifetimePurchasable) || liveSession) ? (
+          {flow !== "success" && ((course && course.isLifetimePurchasable) || liveSession || packageData) ? (
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
               <Link
-                to={liveSessionId ? "/student/live-sessions" : `/courses/${courseId}`}
+                to={packageId ? "/packages" : (liveSessionId ? "/student/live-sessions" : `/courses/${courseId}`)}
                 className="inline-flex items-center justify-center rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
               >
                 {t("checkout.cancel")}
@@ -422,7 +485,7 @@ export default function Checkout() {
                 type="button"
                 disabled={submitting}
                 onClick={() => void handlePurchase()}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-pioneer-orange-normal px-5 py-3 text-sm font-bold text-white transition hover:bg-pioneer-orange-hover disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#EE7C11] px-5 py-3 text-sm font-bold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
                 {liveSessionId 

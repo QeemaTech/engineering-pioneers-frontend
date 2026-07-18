@@ -511,12 +511,15 @@ function Wallet() {
                   <th className="px-6 py-4 text-start text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-450">
                     {isRtl ? "تاريخ المعالجة" : "Processed Date"}
                   </th>
+                  <th className="px-6 py-4 text-start text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-450">
+                    {isRtl ? "الملاحظات والإيصال" : "Admin Notes & Receipt"}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40 bg-transparent">
                 {(!payouts || payouts.length === 0) ? (
                   <tr>
-                    <td colSpan="5" className="px-6 py-10 text-center text-slate-400 dark:text-slate-500">
+                    <td colSpan="6" className="px-6 py-10 text-center text-slate-400 dark:text-slate-500">
                       {isRtl ? "لا توجد طلبات سحب بعد." : "No payout requests found."}
                     </td>
                   </tr>
@@ -539,6 +542,28 @@ function Wallet() {
                         {payout.processedAt ? formatDate(payout.processedAt, isRtl) : (
                           <span className="text-slate-400 dark:text-slate-600">—</span>
                         )}
+                      </td>
+                      <td className="px-6 py-4 text-slate-700 dark:text-slate-350 max-w-[200px] truncate">
+                        <div className="flex flex-col gap-1">
+                          {payout.adminNotes && (
+                            <span className="text-xs text-slate-700 dark:text-slate-300 block truncate" title={payout.adminNotes}>
+                              {payout.adminNotes}
+                            </span>
+                          )}
+                          {payout.receiptUrl && (
+                            <a
+                              href={`${import.meta.env.VITE_API_URL || ""}${payout.receiptUrl}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[11px] font-bold text-[#EE7C11] hover:underline inline-flex items-center gap-1 mt-1"
+                            >
+                              📄 {isRtl ? "عرض الإيصال" : "View Receipt"}
+                            </a>
+                          )}
+                          {!payout.adminNotes && !payout.receiptUrl && (
+                            <span className="text-slate-300 dark:text-slate-600">—</span>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))

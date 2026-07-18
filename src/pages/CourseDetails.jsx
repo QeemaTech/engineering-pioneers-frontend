@@ -18,6 +18,7 @@ import {
   Star,
   Users,
   Video,
+  X,
 } from "lucide-react";
 import useAuthStore from "../store/authStore";
 import { APP_ROLES, normalizeRole } from "../config/permissions";
@@ -83,6 +84,7 @@ export default function CourseDetails() {
   const isStudent = role === APP_ROLES.STUDENT;
 
   const [selectedTierId, setSelectedTierId] = useState("");
+  const [introVideoOpen, setIntroVideoOpen] = useState(false);
   const [enrollingFree, setEnrollingFree] = useState(false);
   const queryClient = useQueryClient();
 
@@ -341,11 +343,17 @@ export default function CourseDetails() {
                     <div className="absolute -bottom-6 -start-6 h-20 w-20 rounded-full bg-white/10" />
                   </>
                 )}
-                <button type="button" className="absolute inset-0 flex items-center justify-center">
-                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-lg transition hover:scale-105">
-                    <Play className="ms-1 h-6 w-6 fill-pioneer-orange-normal text-pioneer-orange-normal" />
-                  </span>
-                </button>
+                {course.introVideoUrl && (
+                  <button
+                    type="button"
+                    onClick={() => setIntroVideoOpen(true)}
+                    className="absolute inset-0 flex items-center justify-center"
+                  >
+                    <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-lg transition hover:scale-105">
+                      <Play className="ms-1 h-6 w-6 fill-pioneer-orange-normal text-pioneer-orange-normal" />
+                    </span>
+                  </button>
+                )}
                 <span className="absolute bottom-2.5 start-2.5 rounded-lg bg-black/50 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur">
                   {t("courseDetails.card.previewVideo")}
                 </span>
@@ -484,6 +492,67 @@ export default function CourseDetails() {
             </div>
           </aside>
         </div>
+      </div>
+      
+      {/* Intro Video Player Modal */}
+      <VideoPlayerModal
+        url={course.introVideoUrl}
+        isOpen={introVideoOpen}
+        onClose={() => setIntroVideoOpen(false)}
+      />
+    </div>
+  );
+}
+
+function VideoPlayerModal({ url, onClose, isOpen }) {
+  if (!isOpen || !url) return null;
+
+  // Check if YouTube
+  const isYouTube = url.includes("youtube.com") || url.includes("youtu.be");
+  // Check if Vimeo
+  const isVimeo = url.includes("vimeo.com");
+
+  let embedUrl = url;
+  if (isYouTube) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    if (match && match[2].length === 11) {
+      embedUrl = `https://www.youtube.com/embed/${match[2]}?autoplay=1`;
+    }
+  } else if (isVimeo) {
+    const regExp = /vimeo\.com\/([0-9]+)/;
+    const match = url.match(regExp);
+    if (match) {
+      embedUrl = `https://player.vimeo.com/video/${match[1]}?autoplay=1`;
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm">
+      <div className="relative w-full max-w-4xl rounded-2xl bg-[#0F0F13] border border-white/10 p-1 overflow-hidden shadow-2xl flex flex-col aspect-video animate-in fade-in zoom-in duration-200">
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 z-[210] rounded-full bg-black/60 p-2 text-white hover:bg-black/80 transition"
+        >
+          <X className="h-5 w-5" />
+        </button>
+        {isYouTube || isVimeo ? (
+          <iframe
+            src={embedUrl}
+            title="Video Preview"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full rounded-xl"
+          ></iframe>
+        ) : (
+          <video
+            src={url}
+            controls
+            autoPlay
+            className="w-full h-full rounded-xl object-contain bg-black"
+          ></video>
+        )}
       </div>
     </div>
   );

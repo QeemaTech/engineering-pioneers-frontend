@@ -314,6 +314,7 @@ export default function Header() {
   const navItems = [
     { to: "/", label: t("header.nav.home") },
     { to: "/explore", label: t("header.nav.explore") },
+    { to: "/packages", label: isRtl ? "الباقات" : "Packages" },
     { to: "/instructors", label: t("header.nav.instructors", { defaultValue: "Instructors" }) },
     { to: "/events", label: isRtl ? "الفعاليات والأخبار" : "Events & News" },
     ...(isAuthenticated && isStudent

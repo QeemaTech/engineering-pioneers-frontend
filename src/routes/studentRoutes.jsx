@@ -27,6 +27,8 @@ import Settings from "../pages/Settings";
 import Wishlist from "../pages/student/Wishlist";
 import CourseView from "../pages/CourseView";
 import StudentQna from "../pages/student/Qna";
+import StudentSurveys from "../pages/student/Surveys";
+import StudentMyPrivateSessions from "../pages/student/MyPrivateSessions";
 
 function RedirectCourseLearn() {
   const { id } = useParams();
@@ -80,6 +82,8 @@ function StudentRoutes() {
           <Route path="settings" element={<Settings />} />
           <Route path="wishlist" element={<Wishlist />} />
           <Route path="qna" element={<StudentQna />} />
+          <Route path="surveys" element={<StudentSurveys />} />
+          <Route path="my-private-sessions" element={<StudentMyPrivateSessions />} />
         </Route>
       </Route>
 
@@ -94,10 +98,15 @@ function StudentRoutes() {
       <Route path="/progress" element={<Navigate to="/student/progress" replace />} />
       <Route path="/settings" element={<Navigate to="/student/settings" replace />} />
       <Route path="/recordings" element={<Navigate to="/student/recordings" replace />} />
-      <Route path="/checkout" element={<Navigate to="/student/checkout" replace />} />
+      <Route path="/checkout" element={<RedirectToCheckout />} />
       <Route path="/book-session" element={<Navigate to="/instructors" replace />} />
     </>
   );
+}
+
+function RedirectToCheckout() {
+  const location = useLocation();
+  return <Navigate to={`/student/checkout${location.search}`} replace />;
 }
 
 export default StudentRoutes;

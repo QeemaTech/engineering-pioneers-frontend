@@ -956,6 +956,7 @@ function LessonRow({ lesson, lessonExams, onAddQuiz, onEditExam, onDeleteExam, o
   
   // Local state for specs editing
   const [localIsLive, setLocalIsLive] = useState(lesson.isLive === true);
+  const [localIsPreview, setLocalIsPreview] = useState(lesson.isPreview === true);
   const [localVideoUrl, setLocalVideoUrl] = useState(lesson.videoUrl || "");
   const [localMeetingUrl, setLocalMeetingUrl] = useState(lesson.meetingUrl || "");
   const [localDurationMins, setLocalDurationMins] = useState(
@@ -978,6 +979,7 @@ function LessonRow({ lesson, lessonExams, onAddQuiz, onEditExam, onDeleteExam, o
   // Sync state if lesson changes
   useEffect(() => {
     setLocalIsLive(lesson.isLive === true);
+    setLocalIsPreview(lesson.isPreview === true);
     setLocalVideoUrl(lesson.videoUrl || "");
     setLocalMeetingUrl(lesson.meetingUrl || "");
     setLocalDurationMins(lesson.durationSeconds ? Math.round(lesson.durationSeconds / 60) : 30);
@@ -987,6 +989,7 @@ function LessonRow({ lesson, lessonExams, onAddQuiz, onEditExam, onDeleteExam, o
   const handleSave = () => {
     const specs = {
       isLive: localIsLive,
+      isPreview: localIsPreview,
       videoUrl: localIsLive ? null : (localVideoUrl || null),
       meetingUrl: localIsLive ? (localMeetingUrl || null) : null,
       availableAt: localIsLive && localAvailableAt ? new Date(localAvailableAt).toISOString() : null,
@@ -1013,6 +1016,11 @@ function LessonRow({ lesson, lessonExams, onAddQuiz, onEditExam, onDeleteExam, o
             onBlur={(e) => onBlurTitle(e.target.value)}
             className="bg-transparent text-xs font-semibold text-slate-600 dark:text-slate-300 w-full outline-none focus:bg-slate-200/50 dark:focus:bg-slate-800 px-2 rounded py-0.5"
           />
+          {lesson.isPreview && (
+            <span className="shrink-0 rounded bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 text-[9px] font-bold text-emerald-600 dark:text-emerald-400">
+              {dir === "rtl" ? "معاينة مجانية" : "Free Preview"}
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
@@ -1112,6 +1120,24 @@ function LessonRow({ lesson, lessonExams, onAddQuiz, onEditExam, onDeleteExam, o
                 {dir === "rtl" ? "Live Session" : "Live Session"}
               </button>
             </div>
+          </div>
+
+          {/* Free Preview Toggle */}
+          <div className="flex items-center justify-between gap-4 border-t border-slate-100 dark:border-white/5 pt-2">
+            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wider font-cairo">
+              {dir === "rtl" ? "إتاحة كمعاينة مجانية" : "Free Preview Access"}
+            </span>
+            <label className="flex items-center gap-2 cursor-pointer font-cairo">
+              <input
+                type="checkbox"
+                checked={localIsPreview}
+                onChange={(e) => setLocalIsPreview(e.target.checked)}
+                className="h-3.5 w-3.5 rounded border-slate-300 text-[#EE7C11] focus:ring-[#EE7C11]"
+              />
+              <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                {dir === "rtl" ? "تفعيل المعاينة المجانية للدرس" : "Allow students to view without enrolling"}
+              </span>
+            </label>
           </div>
 
           {!localIsLive ? (

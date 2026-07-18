@@ -7,6 +7,9 @@ import {
   fetchPublicPosts,
   fetchPublicCmsPage,
   fetchRecommendedCourses,
+  fetchPublicCategories,
+  fetchPublicPackages,
+  fetchPublicPackageById,
   type PublicCoursesQuery,
   type PublicPostsQuery,
 } from "./api";
@@ -69,5 +72,30 @@ export function usePublicCmsPage(slug: string | undefined) {
     enabled: !!slug,
     retry: false,
     staleTime: 60_000,
+  });
+}
+
+export function usePublicCategories() {
+  return useQuery({
+    queryKey: ["public", "categories"],
+    queryFn: () => fetchPublicCategories(),
+    retry: false,
+  });
+}
+
+export function usePublicPackages() {
+  return useQuery({
+    queryKey: ["public", "packages"],
+    queryFn: () => fetchPublicPackages(),
+    retry: false,
+  });
+}
+
+export function usePublicPackage(id: string | undefined) {
+  return useQuery({
+    queryKey: ["public", "package", id],
+    queryFn: () => fetchPublicPackageById(id as string),
+    enabled: !!id,
+    retry: false,
   });
 }

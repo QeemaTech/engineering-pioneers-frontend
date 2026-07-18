@@ -18,6 +18,7 @@ import InstructorAvailability from "../pages/instructor/Availability";
 import InstructorAttendance from "../pages/instructor/Attendance";
 import InstructorSettings from "../pages/instructor/Settings";
 import InstructorLiveSessions from "../pages/instructor/LiveSessions";
+import InstructorSurveys from "../pages/instructor/Surveys";
 
 function InstructorRoutes() {
   return (
@@ -42,6 +43,7 @@ function InstructorRoutes() {
         <Route path="wallet" element={<InstructorWallet />} />
         <Route path="performance" element={<InstructorPerformance />} />
         <Route path="settings" element={<InstructorSettings />} />
+        <Route path="surveys" element={<InstructorSurveys />} />
       </Route>
     </Route>
   );

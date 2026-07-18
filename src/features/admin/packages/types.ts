@@ -14,6 +14,7 @@ export type AdminPackage = {
   description?: string | null;
   descriptionAr?: string | null;
   price: number;
+  image?: string | null;
   isActive: boolean;
   isRecommended: boolean;
   courses?: Array<{
@@ -36,6 +37,7 @@ export type CreatePackageInput = {
   description?: string;
   descriptionAr?: string;
   price: number;
+  image?: string | null;
   isActive?: boolean;
   courseIds?: string[];
   pricingTiers?: AdminPackagePricingTier[];

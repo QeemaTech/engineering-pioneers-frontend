@@ -63,53 +63,54 @@ export default function Overview() {
   const isRtl = i18n.dir() === "rtl";
   const user = useAuthStore((s) => s.user);
   const canReadDashboard = hasPermission(user, "dashboard:read");
-  const { data, isLoading, isError, error } = useAdminOverview();
-  const { data: statsData, isLoading: isLoadingStats } = useAdminStats();
-
   const [currency, setCurrency] = useState("USD");
   const [timeFilter, setTimeFilter] = useState("30d");
+
+  const { data, isLoading, isError, error } = useAdminOverview(timeFilter);
+  const { data: statsData, isLoading: isLoadingStats } = useAdminStats();
 
   const summary = data?.summary;
   const revenueTrend = data?.revenueTrend ?? [];
   const topCourses = data?.topCoursesByEnrollments ?? [];
   const recentActivityRaw = data?.recentActivity ?? [];
 
-  const enrollmentChartData = useMemo(
-    () => buildFallbackTopCourses(topCourses, summary?.totalStudents, isRtl),
-    [topCourses, summary?.totalStudents, isRtl]
-  );
+  const enrollmentChartData = useMemo(() => {
+    return (topCourses ?? []).map((c) => ({
+      name: c.title.length > 24 ? `${c.title.slice(0, 22)}…` : c.title,
+      fullTitle: c.title,
+      enrollments: c.enrollmentCount,
+    }));
+  }, [topCourses]);
 
-  const currentChartData = useMemo(
-    () =>
-      buildOverviewRevenueSeries(
-        timeFilter,
-        revenueTrend,
-        summary?.totalRevenue,
-        isRtl
-      ),
-    [timeFilter, revenueTrend, summary?.totalRevenue, isRtl]
-  );
+  const currentChartData = useMemo(() => {
+    return (revenueTrend ?? []).map((r) => ({
+      label: r.label,
+      total: Number(r.total) || 0,
+    }));
+  }, [revenueTrend]);
 
-  const recentActivity = useMemo(() => {
-    if (recentActivityRaw.length > 0) return recentActivityRaw;
-    return buildFallbackRecentActivity(isRtl);
-  }, [recentActivityRaw, isRtl]);
+  const recentActivity = recentActivityRaw;
 
   const securitySignals = useMemo(() => {
-    const openTickets = statsData?.openTickets ?? 0;
     return {
-      concurrentSessions: Math.max(1, Math.min(12, openTickets + seededInt("sessions", 2, 5))),
-      forceLogouts: seededInt("logouts", 0, 3),
+      concurrentSessions: summary?.concurrentSessions ?? 0,
+      forceLogouts: summary?.forceLogouts ?? 0,
     };
-  }, [statsData?.openTickets]);
+  }, [summary]);
 
-  const baseRevenue = summary?.totalRevenue || 120000;
-  const streamData = [
-    { name: t("overview.recordedCourses"), value: Math.round(baseRevenue * 0.45), color: "#EE7C11" },
-    { name: t("overview.packages"), value: Math.round(baseRevenue * 0.30), color: "#3B82F6" },
-    { name: t("overview.liveCohorts"), value: Math.round(baseRevenue * 0.25), color: "#10B981" },
-  ];
-  const totalSales = streamData.reduce((sum, item) => sum + item.value, 0);
+  const streamData = useMemo(() => {
+    const rs = data?.revenueStreams;
+    return [
+      { name: t("overview.recordedCourses"), value: rs?.recordedCourses ?? 0, color: "#EE7C11" },
+      { name: t("overview.packages"), value: rs?.packages ?? 0, color: "#3B82F6" },
+      { name: t("overview.liveCohorts"), value: rs?.liveCohorts ?? 0, color: "#10B981" },
+    ];
+  }, [data?.revenueStreams, t]);
+
+  const totalSales = useMemo(() => {
+    return streamData.reduce((sum, item) => sum + item.value, 0);
+  }, [streamData]);
+
   const formattedTotalSales = currency === "USD"
     ? `$${totalSales.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
     : `EGP ${(totalSales * 50).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;

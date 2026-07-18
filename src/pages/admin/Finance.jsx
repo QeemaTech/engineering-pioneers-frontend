@@ -57,6 +57,150 @@ function Finance() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
 
+  const handlePrintReceipt = (payment) => {
+    const isRtl = document.documentElement.dir === "rtl" || document.documentElement.lang?.startsWith("ar");
+    const idText = String(payment.id || "").toUpperCase();
+    const studentName = payment.student?.fullName || "-";
+    const studentEmail = payment.student?.email || "-";
+    const itemTitle = payment.course?.title || payment.liveSession?.title || (payment.availabilityId ? "Private Session" : "Payment Item");
+    const amount = `${payment.amount} EGP`;
+    const dateStr = payment.createdAt ? new Date(payment.createdAt).toLocaleString(isRtl ? "ar-EG" : "en-US") : "-";
+    const payMethod = payment.paymentMethod || "N/A";
+
+    const printWindow = window.open("", "_blank", "width=400,height=600");
+    if (!printWindow) {
+      toast.error(isRtl ? "يرجى السماح بالنوافذ المنبثقة للطباعة" : "Please allow popups to print receipt.");
+      return;
+    }
+
+    const htmlContent = `
+      <html>
+        <head>
+          <title>Receipt #${idText.slice(0, 8)}</title>
+          <style>
+            @page {
+              size: 80mm auto;
+              margin: 0;
+            }
+            body {
+              font-family: 'Courier New', Courier, monospace;
+              width: 74mm;
+              margin: 0 auto;
+              padding: 10px 5px;
+              color: #000;
+              background: #fff;
+              font-size: 12px;
+              line-height: 1.4;
+            }
+            .text-center { text-align: center; }
+            .bold { font-weight: bold; }
+            .header {
+              margin-bottom: 15px;
+              border-bottom: 1px dashed #000;
+              padding-bottom: 10px;
+            }
+            .logo {
+              font-size: 16px;
+              font-weight: bold;
+              letter-spacing: 1px;
+            }
+            .info-table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 15px;
+            }
+            .info-table td {
+              padding: 3px 0;
+              vertical-align: top;
+            }
+            .info-table td.label {
+              width: 35%;
+              font-weight: bold;
+            }
+            .divider {
+              border-top: 1px dashed #000;
+              margin: 10px 0;
+            }
+            .item-row {
+              display: flex;
+              justify-content: space-between;
+              font-weight: bold;
+              margin: 10px 0;
+            }
+            .footer {
+              margin-top: 20px;
+              border-top: 1px dashed #000;
+              padding-top: 10px;
+              font-size: 10px;
+            }
+            @media print {
+              body {
+                width: 100%;
+                margin: 0;
+                padding: 10px;
+              }
+            }
+          </style>
+        </head>
+        <body onload="window.print(); window.close();">
+          <div class="text-center header">
+            <div class="logo">ENGINEERING PIONEERS</div>
+            <div style="font-size: 10px; margin-top: 3px;">Pioneering Engineering Education</div>
+          </div>
+          
+          <table class="info-table">
+            <tr>
+              <td class="label">${isRtl ? "الفاتورة:" : "Receipt:"}</td>
+              <td>#${idText.slice(0, 8)}</td>
+            </tr>
+            <tr>
+              <td class="label">${isRtl ? "التاريخ:" : "Date:"}</td>
+              <td>${dateStr}</td>
+            </tr>
+            <tr>
+              <td class="label">${isRtl ? "الطالب:" : "Student:"}</td>
+              <td>${studentName}</td>
+            </tr>
+            <tr>
+              <td class="label">${isRtl ? "الإيميل:" : "Email:"}</td>
+              <td style="word-break: break-all;">${studentEmail}</td>
+            </tr>
+            <tr>
+              <td class="label">${isRtl ? "الدفع:" : "Payment:"}</td>
+              <td>${payMethod}</td>
+            </tr>
+          </table>
+
+          <div class="divider"></div>
+
+          <div class="bold" style="font-size: 11px; text-transform: uppercase;">
+            ${isRtl ? "تفاصيل المعاملة" : "Transaction Details"}
+          </div>
+          
+          <div class="item-row">
+            <span style="max-width: 70%;">${itemTitle}</span>
+            <span>${amount}</span>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="item-row" style="font-size: 14px;">
+            <span>${isRtl ? "الإجمالي:" : "TOTAL:"}</span>
+            <span>${amount}</span>
+          </div>
+
+          <div class="text-center footer">
+            <p>${isRtl ? "شكراً لاختياركم رواد الهندسة!" : "Thank you for choosing Engineering Pioneers!"}</p>
+            <p style="margin-top: 5px;">support@engineering-pioneers.com</p>
+          </div>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+  };
+
   const {
     data: payments = [],
     isLoading: loadingPayments,
@@ -721,23 +865,9 @@ function Finance() {
               title: isRtl ? "الإجراء" : "Action",
               render: (_, row) => (
                 <button
-                  onClick={() => {
-                    const idText = String(row.id || "").slice(0, 8);
-                    toast.promise(
-                      new Promise((resolve) => setTimeout(resolve, 1500)),
-                      {
-                        loading: isRtl
-                          ? `جاري إصدار فاتورة #${idText}...`
-                          : `Generating invoice PDF for #${idText}...`,
-                        success: isRtl
-                          ? `تم تحميل فاتورة #${idText} بنجاح!`
-                          : `Invoice PDF #${idText} downloaded successfully!`,
-                        error: isRtl ? "فشل التحميل" : "Failed to load",
-                      }
-                    );
-                  }}
+                  onClick={() => handlePrintReceipt(row)}
                   className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white p-1.5 text-slate-650 hover:border-[#EE7C11] hover:text-[#EE7C11] dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400 dark:hover:text-white transition-all"
-                  title={isRtl ? "تحميل الفاتورة PDF" : "Download PDF Invoice"}
+                  title={isRtl ? "طباعة إيصال الدفع" : "Print Receipt"}
                 >
                   <Download className="h-3.5 w-3.5" />
                 </button>

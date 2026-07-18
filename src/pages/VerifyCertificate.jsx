@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { Award, Download, Loader2, ShieldCheck } from "lucide-react";
@@ -17,6 +17,16 @@ export default function VerifyCertificate() {
   const { serial } = useParams();
   const decodedSerial = useMemo(() => decodeURIComponent(serial || ""), [serial]);
   const { t, i18n } = useTranslation();
+  const isRtl = i18n.dir() === "rtl";
+  const navigate = useNavigate();
+  const [searchInput, setSearchInput] = useState("");
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchInput.trim()) {
+      navigate(`/verify-certificate/${encodeURIComponent(searchInput.trim())}`);
+    }
+  };
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["public", "certificate-verify", decodedSerial],
@@ -42,22 +52,52 @@ export default function VerifyCertificate() {
           </div>
         </div>
 
-        {isLoading ? (
+        {/* Search input form when no serial is present */}
+        {!decodedSerial ? (
+          <form onSubmit={handleSearchSubmit} className="mt-8 space-y-4 font-cairo">
+            <p className="text-sm text-slate-650 dark:text-slate-450 leading-relaxed">
+              {isRtl
+                ? "يرجى إدخال الرقم التسلسلي المدون على الشهادة للتحقق من مصداقيتها وصلاحيتها."
+                : "Please enter the certificate serial number to verify its authenticity."}
+            </p>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <input
+                type="text"
+                required
+                placeholder={isRtl ? "مثال: CERT-123456" : "e.g., CERT-123456"}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="h-11 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-900 outline-none focus:border-[#EE7C11] focus:bg-white dark:border-white/10 dark:bg-[#0F0F13] dark:text-white dark:focus:border-[#EE7C11]"
+              />
+              <button
+                type="submit"
+                className="h-11 rounded-xl bg-pioneer-orange-normal hover:bg-pioneer-orange-hover px-6 text-sm font-bold text-white transition shadow-sm font-cairo"
+              >
+                {isRtl ? "تحقق الآن" : "Verify Now"}
+              </button>
+            </div>
+          </form>
+        ) : null}
+
+        {/* Loading status */}
+        {decodedSerial && isLoading ? (
           <p className="mt-8 flex items-center gap-2 text-sm text-slate-500">
             <Loader2 className="h-4 w-4 animate-spin" />
             {t("verifyCertificate.loading", { defaultValue: "Verifying..." })}
           </p>
         ) : null}
 
-        {isError ? (
-          <p className="mt-8 text-sm text-red-600">
+        {/* Error result */}
+        {decodedSerial && isError ? (
+          <p className="mt-8 text-sm text-red-650">
             {getErrorMessage(error, t("verifyCertificate.notFound", { defaultValue: "Certificate not found or invalid." }))}
           </p>
         ) : null}
 
-        {data ? (
+        {/* Success result */}
+        {decodedSerial && data ? (
           <div className="mt-8 space-y-4">
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-300">
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-300 font-cairo">
               {t("verifyCertificate.verified", { defaultValue: "This certificate is authentic." })}
             </div>
             <dl className="grid gap-3 text-sm sm:grid-cols-2">
@@ -105,12 +145,22 @@ export default function VerifyCertificate() {
           </div>
         ) : null}
 
-        {!isLoading && !isError && !data ? (
-          <div className="mt-8 flex flex-col items-center gap-2 text-center text-slate-500">
-            <Award className="h-10 w-10 text-slate-300" />
-            <p>{t("verifyCertificate.empty", { defaultValue: "Enter a valid certificate serial to verify." })}</p>
+        {/* Verify another option */}
+        {decodedSerial && (
+          <div className="mt-8 border-t border-slate-100 pt-6 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={() => {
+                setSearchInput("");
+                navigate("/verify-certificate");
+              }}
+              className="text-xs font-bold text-pioneer-orange-normal hover:underline font-cairo flex items-center gap-1.5"
+            >
+              <span>🔍</span>
+              <span>{isRtl ? "التحقق من شهادة أخرى" : "Verify another certificate"}</span>
+            </button>
           </div>
-        ) : null}
+        )}
       </div>
     </div>
   );

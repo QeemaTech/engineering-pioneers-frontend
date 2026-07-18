@@ -4,6 +4,7 @@ import Features from "../components/Features";
 import Hero from "../components/Hero";
 import HowItWorks from "../components/HowItWorks";
 import RecommendedCourses from "../components/RecommendedCourses";
+import HomePackagesSection from "../components/HomePackagesSection";
 import Testimonials from "../components/Testimonials";
 import FaqSection from "../components/FaqSection";
 import HomeNewsBoard from "../components/HomeNewsBoard";
@@ -31,6 +32,7 @@ function Home() {
       {showHero ? <Hero cmsContent={heroSection?.content} stats={data?.stats} /> : null}
       <Features />
       <RecommendedCourses />
+      <HomePackagesSection />
       <HowItWorks />
       <HomeNewsBoard />
       {isVisible("TESTIMONIALS") ? <Testimonials /> : null}

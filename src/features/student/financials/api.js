@@ -37,3 +37,8 @@ export async function postStudentLiveSessionCheckout(liveSessionId, body) {
   const res = await client.post(`/student/financials/checkout/live-session/${liveSessionId}`, body);
   return res?.data?.data ?? res?.data;
 }
+
+export async function postStudentPackageCheckout(packageId, body) {
+  const res = await client.post(`/student/financials/checkout/package/${packageId}`, body);
+  return res?.data?.data ?? res?.data;
+}

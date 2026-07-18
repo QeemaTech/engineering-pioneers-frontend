@@ -2,10 +2,12 @@ import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { 
   X, Check, ChevronRight, ChevronLeft, Search, 
-  BookOpen, Layers, DollarSign, Percent, Sparkles, Folder 
+  BookOpen, Layers, DollarSign, Percent, Sparkles, Folder,
+  Upload, ImageIcon
 } from "lucide-react";
 import { useAdminCourses } from "../../features/admin/courses/hooks";
 import { useAdminCategories } from "../../features/admin/categories/hooks";
+import client from "../../api/client";
 
 function PackageStepperModal({ open, packageData, onClose, onSave, isSaving }) {
   const { t, i18n } = useTranslation();
@@ -17,7 +19,9 @@ function PackageStepperModal({ open, packageData, onClose, onSave, isSaving }) {
   const [description, setDescription] = useState("");
   const [descriptionAr, setDescriptionAr] = useState("");
   const [price, setPrice] = useState(0);
+  const [image, setImage] = useState("");
   const [isActive, setIsActive] = useState(true);
+  const [uploading, setUploading] = useState(false);
   
   // Step 2 Course Selection
   const [selectionMode, setSelectionMode] = useState("manual"); // manual | category
@@ -49,6 +53,7 @@ function PackageStepperModal({ open, packageData, onClose, onSave, isSaving }) {
         setDescription(packageData.description || "");
         setDescriptionAr(packageData.descriptionAr || "");
         setPrice(packageData.price || 0);
+        setImage(packageData.image || "");
         setIsActive(packageData.isActive !== false);
         
         // Populate selected course IDs
@@ -79,6 +84,7 @@ function PackageStepperModal({ open, packageData, onClose, onSave, isSaving }) {
         setDescription("");
         setDescriptionAr("");
         setPrice(0);
+        setImage("");
         setIsActive(true);
         setSelectedCourseIds([]);
         setPricingTiers([
@@ -137,6 +143,7 @@ function PackageStepperModal({ open, packageData, onClose, onSave, isSaving }) {
       description,
       descriptionAr,
       price: Number(basePrice),
+      image,
       isActive,
       courseIds: selectedCourseIds,
       pricingTiers: pricingTiers.map(t => ({
@@ -148,6 +155,31 @@ function PackageStepperModal({ open, packageData, onClose, onSave, isSaving }) {
         isActive: t.isActive
       }))
     });
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    setUploading(true);
+    try {
+      const response = await client.post("/admin/financials/packages/upload-image", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const url = response.data?.data?.imageUrl;
+      if (url) {
+        setImage(url);
+      }
+    } catch (err) {
+      console.error("Image upload failed", err);
+    } finally {
+      setUploading(false);
+    }
   };
 
   if (!open) return null;
@@ -266,6 +298,56 @@ function PackageStepperModal({ open, packageData, onClose, onSave, isSaving }) {
                 <label htmlFor="isActivePkg" className="text-sm font-bold text-slate-700 dark:text-slate-300">
                   {isRtl ? "الباقة نشطة وتظهر للطلاب" : "Package is active and visible to students"}
                 </label>
+              </div>
+
+              {/* Cover Image Upload */}
+              <div className="space-y-2 pt-2">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                  {isRtl ? "صورة غلاف الباقة / Package Cover Image" : "Package Cover Image"}
+                </span>
+                
+                {image ? (
+                  <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 max-w-md">
+                    <img 
+                      src={image.startsWith("http") ? image : `${import.meta.env.VITE_API_URL || ""}${image}`} 
+                      alt="Cover Preview" 
+                      className="h-48 w-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setImage("")}
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition shadow-md"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 dark:border-white/15 rounded-2xl p-6 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02] transition max-w-md">
+                    {uploading ? (
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#EE7C11] border-t-transparent" />
+                        <span className="text-xs text-slate-500">{isRtl ? "جاري الرفع..." : "Uploading..."}</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center text-center">
+                        <Upload className="h-8 w-8 text-slate-400 mb-2" />
+                        <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                          {isRtl ? "اضغط لرفع صورة الغلاف" : "Click to upload cover image"}
+                        </span>
+                        <span className="text-xs text-slate-400 mt-1">
+                          PNG, JPG, WEBP (Max 5MB)
+                        </span>
+                      </div>
+                    )}
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={handleImageUpload} 
+                      className="hidden" 
+                      disabled={uploading}
+                    />
+                  </label>
+                )}
               </div>
             </div>
           )}

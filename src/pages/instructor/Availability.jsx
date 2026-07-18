@@ -40,6 +40,7 @@ function formatTimeRange(startIso, endIso, locale) {
 function Availability() {
   const { t, i18n } = useTranslation();
   const locale = i18n.language || "en";
+  const isRtl = locale.startsWith("ar");
   const { data: slots = [], isLoading } = useInstructorAvailability();
   const createMut = useCreateAvailabilitySlot();
   const deleteMut = useDeleteAvailabilitySlot();
@@ -246,9 +247,19 @@ function Availability() {
                               </p>
                               <p className="mt-0.5 text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
                                 {slot.status === "AVAILABLE" ? (
-                                  <span className="text-emerald-600 dark:text-emerald-400">{t("dashboard.instructor.pages.availability.openStatus")}</span>
+                                  <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                    {t("dashboard.instructor.pages.availability.openStatus")}
+                                  </span>
+                                ) : slot.status === "BOOKED" ? (
+                                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                                    {isRtl ? "محجوز — بانتظار الموافقة" : "Booked — Pending Approval"}
+                                  </span>
                                 ) : (
-                                  slot.status
+                                  <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-slate-500 dark:bg-slate-700 dark:text-slate-400">
+                                    {slot.status}
+                                  </span>
                                 )}
                               </p>
                               {slot.price > 0 ? (
@@ -289,6 +300,14 @@ function Availability() {
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
+                          )}
+                          {slot.status === "BOOKED" && (
+                            <span
+                              title={isRtl ? "لا يمكن حذف الـ slot المحجوز" : "Slot is booked — cannot delete"}
+                              className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-amber-200 text-amber-400 dark:border-amber-700/40"
+                            >
+                              <Clock className="h-4 w-4" />
+                            </span>
                           )}
                         </div>
                       </li>
