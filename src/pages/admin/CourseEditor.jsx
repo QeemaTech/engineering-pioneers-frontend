@@ -9,7 +9,7 @@ import {
 import { useTranslation } from "react-i18next";
 import {
   useAdminCourse, useUpdateAdminCourse,
-  useAddCourseStaff, useCourseStaff, useCreateAdminUnit, useRemoveCourseStaff, useUpdateAdminUnit, useDeleteAdminUnit,
+  useCreateAdminUnit, useUpdateAdminUnit, useDeleteAdminUnit,
   useCreateAdminLesson, useUpdateAdminLesson, useDeleteAdminLesson,
   useCourseSessions, useCreateCourseSession, useDeleteCourseSession,
 } from "../../features/admin/courses/hooks";
@@ -21,12 +21,11 @@ import {
 import { useAdminCategories } from "../../features/admin/categories/hooks";
 import { useAdminInstructors } from "../../features/admin/instructors/hooks";
 import { getErrorMessage } from "../../api/error";
+import toast from "react-hot-toast";
 import { 
   useAdminExams, useUpdateAdminExam, useCreateAdminExam, 
   useAdminExamById, useAddAdminExamQuestion, useUpdateAdminExamQuestion, useDeleteAdminExamQuestion 
 } from "../../features/admin/exams/hooks";
-import { useAdminUsers } from "../../features/admin/users/hooks";
-import toast from "react-hot-toast";
 import { ExamQuestionBankDrawer } from "../../components/exams/ExamQuestionBank";
 import ImageUploader from "../../components/ui/ImageUploader";
 
@@ -638,17 +637,10 @@ function DetailEditor({ node, onClose }) {
   const updateCourseMutation = useUpdateAdminCourse();
   const updateUnitMutation = useUpdateAdminUnit();
   const updateLessonMutation = useUpdateAdminLesson();
-  const { data: staff = [] } = useCourseStaff(node?.type === "course" ? node?.id : null);
-  const addStaffMutation = useAddCourseStaff();
-  const removeStaffMutation = useRemoveCourseStaff();
-  const { data: usersData } = useAdminUsers({ page: 1, limit: 200 });
   const { data: categoriesData } = useAdminCategories({ page: 1, limit: 100 });
   const { data: instructorsData } = useAdminInstructors({ page: 1, limit: 100 });
   const categories = categoriesData?.categories || [];
   const instructors = instructorsData?.instructors || [];
-  const [staffUserId, setStaffUserId] = useState("");
-  const [staffRole, setStaffRole] = useState("TEACHING_ASSISTANT");
-  
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -1081,76 +1073,6 @@ function DetailEditor({ node, onClose }) {
                 {t("adminPages.addCourse.publishNow", { defaultValue: "Published (active)" })}
               </label>
 
-              <div className="rounded-xl border border-slate-200 p-3 dark:border-white/10">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                  {t("adminPages.courseEditor.staff.title", { defaultValue: "Course staff" })}
-                </p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  <select
-                    value={staffUserId}
-                    onChange={(e) => setStaffUserId(e.target.value)}
-                    className="h-10 min-w-[180px] rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
-                  >
-                    <option value="">{t("adminPages.courseEditor.staff.selectUser", { defaultValue: "Select user" })}</option>
-                    {(usersData?.users || [])
-                      .filter((u) => ["TEACHING_ASSISTANT", "CONTENT_REVIEWER"].includes(String(u?.role?.name || u?.role || "").toUpperCase()))
-                      .map((u) => (
-                        <option key={u.id} value={u.id}>
-                          {u.fullName || u.email}
-                        </option>
-                      ))}
-                  </select>
-                  <select
-                    value={staffRole}
-                    onChange={(e) => setStaffRole(e.target.value)}
-                    className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
-                  >
-                    <option value="TEACHING_ASSISTANT">TEACHING_ASSISTANT</option>
-                    <option value="CONTENT_REVIEWER">CONTENT_REVIEWER</option>
-                  </select>
-                  <button
-                    type="button"
-                    disabled={!staffUserId || addStaffMutation.isPending}
-                    onClick={async () => {
-                      try {
-                        await addStaffMutation.mutateAsync({ courseId: node.id, userId: staffUserId, role: staffRole });
-                        setStaffUserId("");
-                        toast.success(t("adminPages.courseEditor.staff.added", { defaultValue: "Staff added" }));
-                      } catch (err) {
-                        toast.error(getErrorMessage(err, t("adminPages.courseEditor.staff.addFailed", { defaultValue: "Failed to add staff" })));
-                      }
-                    }}
-                    className="rounded-lg bg-[#EE7C11] px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
-                  >
-                    {t("adminPages.courseEditor.staff.add", { defaultValue: "Add" })}
-                  </button>
-                </div>
-                <div className="mt-3 space-y-1">
-                  {(staff || []).map((s) => (
-                    <div key={s.id} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-xs dark:bg-white/5">
-                      <span>{s?.user?.fullName || s?.user?.email} Â· {s.role}</span>
-                      <button
-                        type="button"
-                        disabled={removeStaffMutation.isPending}
-                        onClick={async () => {
-                          try {
-                            await removeStaffMutation.mutateAsync({ courseId: node.id, staffId: s.id });
-                            toast.success(t("adminPages.courseEditor.staff.removed", { defaultValue: "Staff removed" }));
-                          } catch (err) {
-                            toast.error(getErrorMessage(err, t("adminPages.courseEditor.staff.removeFailed", { defaultValue: "Failed to remove staff" })));
-                          }
-                        }}
-                        className="text-red-600 hover:underline"
-                      >
-                        {t("common.remove", { defaultValue: "Remove" })}
-                      </button>
-                    </div>
-                  ))}
-                  {!staff?.length ? (
-                    <p className="text-xs text-slate-500">{t("adminPages.courseEditor.staff.empty", { defaultValue: "No staff assigned" })}</p>
-                  ) : null}
-                </div>
-              </div>
             </>
           )}
 

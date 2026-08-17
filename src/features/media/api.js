@@ -16,18 +16,19 @@ export function validateImageFile(file) {
   return null;
 }
 
-export async function uploadImageFile(file, { onProgress } = {}) {
+export async function uploadImageFile(file, { onProgress, kind = "image" } = {}) {
   const formData = new FormData();
   formData.append("image", file);
 
-  const response = await client.post(endpoints.media.uploadImage, formData, {
+  const endpoint = kind === "receipt" ? endpoints.media.uploadReceipt : endpoints.media.uploadImage;
+  const response = await client.post(endpoint, formData, {
     onUploadProgress: (event) => {
       if (!onProgress || !event.total) return;
       onProgress(Math.round((event.loaded / event.total) * 100));
     },
   });
 
-  const imageUrl = response?.data?.data?.imageUrl || response?.data?.data?.path;
+  const imageUrl = response?.data?.data?.path || response?.data?.data?.imageUrl;
   if (!imageUrl) {
     throw new Error("Upload succeeded but no image URL was returned.");
   }

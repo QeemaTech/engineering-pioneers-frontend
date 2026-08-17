@@ -7,6 +7,7 @@ import PageHeader from "../../components/ui/PageHeader";
 import DataTable from "../../components/ui/DataTable";
 import StatusBadge from "../../components/ui/StatusBadge";
 import { getErrorMessage } from "../../api/error";
+import { deriveLiveAccessModel, payloadFromAccessModel } from "../../utils/liveAccessModel";
 
 const LEVELS = [
   { value: "GENERAL", labelAr: "عام / عمومي", labelEn: "General / Public" },
@@ -44,6 +45,7 @@ export default function LiveSessions() {
   const [isFreeForAll, setIsFreeForAll] = useState(false);
   const [price, setPrice] = useState("0");
   const [selectedLevels, setSelectedLevels] = useState([]);
+  const [accessModel, setAccessModel] = useState("PUBLIC_FREE");
 
   const loadData = async () => {
     try {
@@ -78,7 +80,8 @@ export default function LiveSessions() {
     setMeetingUrl("");
     setIsFreeForAll(true);
     setPrice("0");
-    setSelectedLevels(["GENERAL"]);
+    setSelectedLevels([]);
+    setAccessModel("PUBLIC_FREE");
     setModalOpen(true);
   };
 
@@ -93,7 +96,8 @@ export default function LiveSessions() {
     setMeetingUrl(sess.meetingUrl || "");
     setIsFreeForAll(sess.isFreeForAll);
     setPrice(String(sess.price || 0));
-    setSelectedLevels(sess.targetLevels || ["GENERAL"]);
+    setSelectedLevels(sess.targetLevels || []);
+    setAccessModel(deriveLiveAccessModel(sess));
     setModalOpen(true);
   };
 
@@ -121,9 +125,7 @@ export default function LiveSessions() {
       startTime: new Date(startTime).toISOString(),
       endTime: new Date(endTime).toISOString(),
       meetingUrl: meetingUrl || null,
-      isFreeForAll,
-      price: isFreeForAll ? 0 : Number(price || 0),
-      targetLevels: selectedLevels.length > 0 ? selectedLevels : ["GENERAL"],
+      ...payloadFromAccessModel(accessModel, { price, selectedLevels }),
     };
 
     try {
@@ -414,7 +416,36 @@ export default function LiveSessions() {
                 />
               </div>
 
+              {/* Access model */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  {isRtl ? "نموذج الوصول" : "Access model"}
+                </label>
+                <div className="grid gap-2 sm:grid-cols-3">
+                  {[
+                    { id: "PUBLIC_FREE", ar: "مجاني للجميع", en: "Public free" },
+                    { id: "TARGETED_FREE", ar: "مجاني لسنة دراسية", en: "Targeted free" },
+                    { id: "PAID", ar: "مدفوع", en: "Paid" },
+                  ].map((opt) => (
+                    <label key={opt.id} className="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-xs dark:border-white/10">
+                      <input
+                        type="radio"
+                        name="adminAccessModel"
+                        checked={accessModel === opt.id}
+                        onChange={() => {
+                          setAccessModel(opt.id);
+                          setIsFreeForAll(opt.id === "PUBLIC_FREE");
+                          if (opt.id !== "PAID") setPrice("0");
+                        }}
+                      />
+                      <span>{isRtl ? opt.ar : opt.en}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
               {/* Target Academic Levels */}
+              {accessModel !== "PUBLIC_FREE" ? (
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   {isRtl ? "السنوات الدراسية المستهدفة" : "Target Academic Levels"}
@@ -433,41 +464,23 @@ export default function LiveSessions() {
                   ))}
                 </div>
               </div>
+              ) : null}
 
-              {/* Pricing details */}
-              <div className="flex items-center justify-between gap-4 border-t border-slate-100 pt-4 dark:border-slate-800">
-                <div className="flex items-center gap-2">
-                  <input
-                    id="isFree"
-                    type="checkbox"
-                    checked={isFreeForAll}
-                    onChange={(e) => {
-                      setIsFreeForAll(e.target.checked);
-                      if (e.target.checked) setPrice("0");
-                    }}
-                    className="rounded text-pioneer-orange-normal focus:ring-pioneer-orange-normal/30 h-4 w-4"
-                  />
-                  <label htmlFor="isFree" className="text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer">
-                    {isRtl ? "مفتوحة مجاناً لجميع الطلاب" : "Make Free for All Students"}
+              {accessModel === "PAID" ? (
+              <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-4 dark:border-slate-800">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300 shrink-0">
+                    {isRtl ? "السعر (EGP)" : "Price"}
                   </label>
-                </div>
-
-                {!isFreeForAll && (
-                  <div className="flex items-center gap-2 max-w-[180px]">
-                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300 shrink-0">
-                      {isRtl ? "السعر (EGP)" : "Price"}
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      required
-                      value={price}
-                      onChange={(e) => setPrice(e.target.value)}
-                      className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm outline-none focus:border-pioneer-orange-normal dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
-                    />
-                  </div>
-                )}
+                  <input
+                    type="number"
+                    min="1"
+                    required
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    className="w-40 rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm outline-none focus:border-pioneer-orange-normal dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                  />
               </div>
+              ) : null}
 
               {/* Footer buttons */}
               <div className="flex justify-end gap-3 border-t border-slate-100 pt-4 dark:border-slate-800">

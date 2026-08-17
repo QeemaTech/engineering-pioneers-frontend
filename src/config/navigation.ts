@@ -371,6 +371,7 @@ export function getStudentNavigation(): NavSection[] {
       labelKey: "sidebarNav.sections.studentLearning",
       items: [
         { labelKey: "sidebarNav.items.liveSessions", path: "/student/live-sessions", icon: Video },
+        { labelKey: "sidebarNav.items.wishlist", path: "/student/wishlist", icon: Star },
         { labelKey: "sidebarNav.items.recordings", path: "/student/recordings", icon: Headphones },
         { labelKey: "sidebarNav.items.studentHomework", path: "/student/homework", icon: ClipboardCheck },
         { labelKey: "sidebarNav.items.exams", path: "/student/exams", icon: ClipboardList },
@@ -383,7 +384,7 @@ export function getStudentNavigation(): NavSection[] {
     {
       labelKey: "sidebarNav.sections.studentServices",
       items: [
-        { labelKey: "sidebarNav.items.bookSession", path: "/instructors", icon: CalendarClock },
+        { labelKey: "sidebarNav.items.bookSession", path: "/student/book-session", icon: CalendarClock },
         { labelKey: "sidebarNav.items.myPrivateSessions", path: "/student/my-private-sessions", icon: Calendar },
         { labelKey: "sidebarNav.items.payments", path: "/student/payments", icon: DollarSign },
         { labelKey: "sidebarNav.items.certificates", path: "/student/certificates", icon: Award },

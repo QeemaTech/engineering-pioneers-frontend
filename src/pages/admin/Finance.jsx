@@ -29,6 +29,7 @@ import {
 } from "recharts";
 import DataTable from "../../components/ui/DataTable";
 import PageHeader from "../../components/ui/PageHeader";
+import ProofLink from "../../components/ui/ProofLink";
 import {
   useAdminPayments,
   useUpdateAdminPaymentStatus,
@@ -280,7 +281,7 @@ function Finance() {
     });
 
     // Fallback if 0: 5.5% of total revenue managed, rounded
-    return dailySum > 0 ? dailySum : Math.round(metrics.paidSumEgp * 0.055);
+    return dailySum;
   }, [payments, metrics.paidSumEgp]);
 
   // 2. High-Fidelity Charts Data
@@ -292,12 +293,12 @@ function Finance() {
     payments.forEach((p) => {
       if (p.status === "PAID") {
         const amt = Number(p.amount || 0) * (String(p.currency).toUpperCase() === "USD" ? 50 : 1);
-        const method = String(p.paymentMethod || p.gateway || "").toUpperCase();
-        if (method.includes("VODA") || method.includes("CASH") || method.includes("VF")) {
+        const method = String(p.paymentMethod || "").toUpperCase();
+        if (method.includes("VODA") || method === "VODAFONE_CASH") {
           vodafone += amt;
-        } else if (method.includes("INSTA") || method.includes("PAY") || method.includes("BANK")) {
+        } else if (method.includes("INSTA")) {
           instapay += amt;
-        } else {
+        } else if (method.includes("BANK")) {
           creditcard += amt;
         }
       }
@@ -305,15 +306,13 @@ function Finance() {
 
     // Dynamic realistic fallback
     if (vodafone === 0 && instapay === 0 && creditcard === 0) {
-      vodafone = Math.round(metrics.paidSumEgp * 0.45);
-      instapay = Math.round(metrics.paidSumEgp * 0.35);
-      creditcard = Math.round(metrics.paidSumEgp * 0.20);
+      return [];
     }
 
     return [
       { name: isRtl ? "فودافون كاش" : "Vodafone Cash", value: vodafone, color: "#EE7C11" },
-      { name: isRtl ? "إنستا باي" : "InstaPay", value: instapay, color: "#3B82F6" },
-      { name: isRtl ? "بطاقة ائتمان" : "Credit Cards", value: creditcard, color: "#10B981" },
+      { name: isRtl ? "إنستا باي" : "Instapay", value: instapay, color: "#3B82F6" },
+      { name: isRtl ? "تحويل بنكي" : "Bank transfer", value: creditcard, color: "#10B981" },
     ];
   }, [payments, metrics.paidSumEgp, isRtl]);
 
@@ -586,6 +585,9 @@ function Finance() {
             </p>
           </div>
           <div className="relative flex flex-col items-center justify-center mt-5">
+            {paymentMethodsData.length === 0 ? (
+              <p className="py-16 text-sm text-slate-500">{isRtl ? "لا توجد بيانات طرق دفع بعد." : "No payment method totals yet."}</p>
+            ) : (
             <div className="relative h-[220px] w-full" dir="ltr">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -626,6 +628,7 @@ function Finance() {
                 </span>
               </div>
             </div>
+            )}
 
             {/* Custom legends alignment */}
             <div className="mt-4 w-full space-y-2 text-xs">
@@ -795,7 +798,10 @@ function Finance() {
               title: isRtl ? "الكورس" : "Course",
               render: (_, row) => (
                 <span className="font-semibold text-slate-800 dark:text-slate-200">
-                  {row?.course?.title || row?.liveSession?.title || "-"}
+                  {row?.course?.title ||
+                    row?.liveSession?.title ||
+                    row?.coursePackage?.title ||
+                    (row?.availabilityId ? (isRtl ? "جلسة خاصة" : "Private session") : "-")}
                 </span>
               ),
             },
@@ -804,8 +810,24 @@ function Finance() {
               title: isRtl ? "المبلغ" : "Amount",
               render: (v, row) => (
                 <span className="font-extrabold text-slate-900 dark:text-white">
-                  {v} {row?.currency || "USD"}
+                  {v} {row?.currency || "EGP"}
                 </span>
+              ),
+            },
+            {
+              key: "paymentMethod",
+              title: isRtl ? "الطريقة" : "Method",
+              render: (v) => <span className="text-xs font-semibold text-slate-600">{v || "—"}</span>,
+            },
+            {
+              key: "receiptUrl",
+              title: isRtl ? "الإثبات" : "Proof",
+              render: (_, row) => (
+                <ProofLink
+                  proofPath={`/admin/financials/payments/${row.id}/proof`}
+                  storedUrl={row.receiptUrl}
+                  label={isRtl ? "عرض" : "View"}
+                />
               ),
             },
             {

@@ -17,7 +17,7 @@ import {
   Clock 
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import Notice from "../../components/dashboard/Notice";
+import ProofLink from "../../components/ui/ProofLink";
 import PageHeader from "../../components/dashboard/PageHeader";
 import { getErrorMessage } from "../../api/error";
 import { 
@@ -551,14 +551,11 @@ function Wallet() {
                             </span>
                           )}
                           {payout.receiptUrl && (
-                            <a
-                              href={`${import.meta.env.VITE_API_URL || ""}${payout.receiptUrl}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-[11px] font-bold text-[#EE7C11] hover:underline inline-flex items-center gap-1 mt-1"
-                            >
-                              📄 {isRtl ? "عرض الإيصال" : "View Receipt"}
-                            </a>
+                            <ProofLink
+                              proofPath={`/instructor/wallet/payouts/${payout.id}/proof`}
+                              storedUrl={payout.receiptUrl}
+                              label={isRtl ? "عرض الإيصال" : "View Receipt"}
+                            />
                           )}
                           {!payout.adminNotes && !payout.receiptUrl && (
                             <span className="text-slate-300 dark:text-slate-600">—</span>

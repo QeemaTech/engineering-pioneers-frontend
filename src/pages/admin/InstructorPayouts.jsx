@@ -4,6 +4,7 @@ import PageHeader from "../../components/ui/PageHeader";
 import { useAdminPayouts, useProcessPayout } from "../../features/admin/finance/hooks";
 import { getErrorMessage } from "../../api/error";
 import toast from "react-hot-toast";
+import ProofLink from "../../components/ui/ProofLink";
 import {
   Check,
   X,
@@ -215,13 +216,15 @@ function InstructorPayouts() {
 
   const handleConfirmPaid = async () => {
     if (!payPayoutId) return;
+    if (!payReceiptFile) {
+      toast.error(isRtl ? "ارفع إثبات التحويل قبل التحديد كمدفوع." : "Upload payout proof before marking PAID.");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("status", "PAID");
     formData.append("adminNotes", payNotes.trim());
-    if (payReceiptFile) {
-      formData.append("receipt", payReceiptFile);
-    }
+    formData.append("receipt", payReceiptFile);
 
     const id = payPayoutId;
     setPayPayoutId(null);
@@ -470,14 +473,11 @@ function InstructorPayouts() {
                                   {isRtl ? "تم الدفع بنجاح" : "Paid"}
                                 </span>
                                 {r.receiptUrl && (
-                                  <a
-                                    href={`${import.meta.env.VITE_API_URL || ""}${r.receiptUrl}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-[11px] font-bold text-[#EE7C11] hover:underline"
-                                  >
-                                    {isRtl ? "عرض الإيصال 📄" : "View Receipt 📄"}
-                                  </a>
+                                  <ProofLink
+                                    proofPath={`/admin/payouts/${r.id}/proof`}
+                                    storedUrl={r.receiptUrl}
+                                    label={isRtl ? "عرض الإيصال" : "View Receipt"}
+                                  />
                                 )}
                               </div>
                             );

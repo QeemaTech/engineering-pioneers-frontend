@@ -44,7 +44,7 @@ export default function LiveSessions() {
     <div className="space-y-6">
       <PageHeader
         title={t("student.liveSessions.title", { defaultValue: "Live Sessions" })}
-        subtitle={t("student.liveSessions.subtitle", { defaultValue: "Join scheduled live classes for your enrolled courses." })}
+        subtitle={t("student.liveSessions.subtitle", { defaultValue: "Free public sessions, sessions for your academic year, and paid events you can preview before paying." })}
       />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">

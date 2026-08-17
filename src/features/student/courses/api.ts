@@ -16,6 +16,7 @@ function normalizeMyCourseRow(row: Record<string, unknown>) {
       completedLessonsCount: row.completedLessonsCount,
       isCompleted: row.isCompleted,
       purchasedAt: row.purchasedAt,
+      expiresAt: row.expiresAt,
     };
   }
   return row;

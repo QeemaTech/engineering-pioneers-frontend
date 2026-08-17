@@ -321,7 +321,8 @@ export default function Header() {
     ...(isAuthenticated && isStudent
       ? [{ to: "/student", label: t("header.nav.myDashboard", { defaultValue: "My dashboard" }) }]
       : []),
-    ...(isAuthenticated && isStudent ? [{ to: "/instructors", label: t("header.nav.bookPrivate") }] : []),
+    ...(isAuthenticated && isStudent ? [{ to: "/student/book-session", label: t("header.nav.bookPrivate") }] : []),
+    ...(isAuthenticated && isStudent ? [{ to: "/student/wishlist", label: t("header.nav.wishlist", { defaultValue: "Wishlist" }) }] : []),
   ];
 
   return (

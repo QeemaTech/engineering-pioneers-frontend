@@ -70,7 +70,9 @@ export default function LiveSessionCard({ session, locale, compact = false, show
       ? t("recordings.durationMinutes", { n: session.durationMinutes })
       : null;
 
-  const hasAccess = session.isFreeForAll || session.joinedAt !== null || session.price === null || session.price <= 0;
+  const canJoin = Boolean(session.canJoin);
+  const canCheckout = Boolean(session.canCheckout);
+  const pending = session.paymentStatus === "PENDING";
 
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-sm dark:border-slate-700/40 dark:bg-[#1E293B]">
@@ -83,9 +85,17 @@ export default function LiveSessionCard({ session, locale, compact = false, show
                   {courseTitle}
                 </span>
               ) : null}
-              {session.isFreeForAll ? (
+              {session.accessModel === "PUBLIC_FREE" ? (
                 <span className="inline-block rounded-full bg-emerald-600 px-2.5 py-0.5 text-[11px] font-extrabold text-white shadow-sm">
                   {t("explore.free", { defaultValue: "FREE" })}
+                </span>
+              ) : session.accessModel === "TARGETED_FREE" ? (
+                <span className="inline-block rounded-full bg-sky-700 px-2.5 py-0.5 text-[11px] font-extrabold text-white shadow-sm">
+                  {locale?.startsWith("ar") ? "مجاني لسنتك" : "Your year"}
+                </span>
+              ) : session.accessModel === "PAID" ? (
+                <span className="inline-block rounded-full bg-blue-700 px-2.5 py-0.5 text-[11px] font-extrabold text-white shadow-sm">
+                  {locale?.startsWith("ar") ? "مدفوع" : "Paid"}
                 </span>
               ) : null}
               {session.targetLevels && Array.isArray(session.targetLevels) && session.targetLevels.map((lvl) => (
@@ -126,19 +136,23 @@ export default function LiveSessionCard({ session, locale, compact = false, show
 
         <LiveSessionCountdown scheduledAt={session.scheduledAt} durationMinutes={session.durationMinutes} compact={compact} />
 
-        {!hasAccess ? (
+        {pending ? (
+          <p className="mt-auto rounded-xl border border-amber-200 bg-amber-50 py-2.5 text-center text-xs font-semibold text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200">
+            {locale?.startsWith("ar") ? "بانتظار مراجعة الأدمن" : "Waiting for Super Admin review"}
+          </p>
+        ) : canCheckout ? (
           <Link
             to={`/student/checkout?liveSessionId=${session.id}`}
             className="mt-auto flex w-full items-center justify-center gap-2 rounded-xl bg-pioneer-orange-normal hover:bg-pioneer-orange-hover py-2.5 text-sm font-semibold text-white transition shadow-sm"
           >
             <span>🎟️</span>
             <span>
-              {locale?.startsWith("ar") 
-                ? `احجز مقعدك (${Math.round(session.price || 0)} ج.م)` 
+              {locale?.startsWith("ar")
+                ? `احجز مقعدك (${Math.round(session.price || 0)} ج.م)`
                 : `Book Seat (${Math.round(session.price || 0)} EGP)`}
             </span>
           </Link>
-        ) : session.meetingUrl ? (() => {
+        ) : canJoin && session.meetingUrl ? (() => {
           const lower = session.meetingUrl.toLowerCase();
           let btnClass = "bg-pioneer-orange-normal hover:bg-pioneer-orange-hover";
           let platformName = "";

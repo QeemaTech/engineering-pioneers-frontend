@@ -40,17 +40,9 @@ export default function LiveSessionDetails() {
 
   // Auto-fire survey modal when the session ends and student had access
   useEffect(() => {
-    if (phase === "ended" && session && !surveyFired) {
-      const hasAccess =
-        session.isFreeForAll ||
-        session.joinedAt !== null ||
-        session.price === null ||
-        session.price <= 0;
-      if (hasAccess) {
-        setSurveyFired(true);
-        // Small delay to let the page settle
-        setTimeout(() => setSurveyOpen(true), 800);
-      }
+    if (phase === "ended" && session?.canJoin && !surveyFired) {
+      setSurveyFired(true);
+      setTimeout(() => setSurveyOpen(true), 800);
     }
   }, [phase, session, surveyFired]);
 
@@ -86,7 +78,9 @@ export default function LiveSessionDetails() {
     );
   }
 
-  const hasAccess = session.isFreeForAll || session.joinedAt !== null || session.price === null || session.price <= 0;
+  const canJoin = Boolean(session.canJoin);
+  const canCheckout = Boolean(session.canCheckout);
+  const pending = session.paymentStatus === "PENDING";
   const whenLabel = session.startTime ? formatSessionWhen(session.startTime, i18n.language) : "";
 
   return (
@@ -110,9 +104,13 @@ export default function LiveSessionDetails() {
                   {session.course.title}
                 </span>
               )}
-              {session.isFreeForAll ? (
+              {session.accessModel === "PUBLIC_FREE" || session.isFreeForAll ? (
                 <span className="rounded-full bg-emerald-600 px-3 py-1 text-xs font-extrabold text-white shadow-sm">
-                  {isRtl ? "مفتوح مجاني" : "FREE ACCESS"}
+                  {isRtl ? "مفتوح مجاني" : "Public free"}
+                </span>
+              ) : session.accessModel === "TARGETED_FREE" ? (
+                <span className="rounded-full bg-sky-700 px-3 py-1 text-xs font-extrabold text-white shadow-sm">
+                  {isRtl ? "مجاني لسنتك الدراسية" : "Free for your year"}
                 </span>
               ) : (
                 <span className="rounded-full bg-blue-600 px-3 py-1 text-xs font-bold text-white shadow-sm">
@@ -249,11 +247,20 @@ export default function LiveSessionDetails() {
             </div>
 
             {/* Action booking vs joining */}
-            {!hasAccess ? (
+            {pending ? (
+              <div className="rounded-xl bg-amber-50 border border-amber-200/50 p-4 text-center">
+                <p className="text-sm font-semibold text-amber-800">
+                  {isRtl ? "تم إرسال إثبات الدفع. بانتظار مراجعة الأدمن قبل الانضمام." : "Proof submitted. Wait for Super Admin review before you can join."}
+                </p>
+                <Link to="/student/payments" className="mt-3 inline-block text-sm font-bold text-pioneer-orange-normal hover:underline">
+                  {isRtl ? "متابعة المدفوعات" : "Track payment"}
+                </Link>
+              </div>
+            ) : canCheckout ? (
               <div className="space-y-4">
                 <div className="rounded-xl bg-amber-50 dark:bg-amber-955/20 border border-amber-200/50 p-4 text-center">
                   <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
-                    {isRtl ? "لم تقم بحجز مقعدك في هذا البث بعد." : "You have not reserved a seat yet."}
+                    {isRtl ? "يمكنك معاينة هذه الحصة. الانضمام بعد تأكيد الدفع." : "Preview this session. Join after payment is approved."}
                   </p>
                 </div>
                 <Link
@@ -264,7 +271,7 @@ export default function LiveSessionDetails() {
                   <span>{isRtl ? `احجز مقعدك (${Math.round(session.price || 0)} ج.م)` : `Book Seat (${Math.round(session.price || 0)} EGP)`}</span>
                 </Link>
               </div>
-            ) : (
+            ) : canJoin ? (
               <div className="space-y-4">
                 <div className="rounded-xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200/50 p-4 text-center">
                   <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">

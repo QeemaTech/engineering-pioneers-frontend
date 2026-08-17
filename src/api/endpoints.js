@@ -83,6 +83,7 @@ const endpoints = {
     financialsCheckoutCourse: (courseId) => `/student/financials/checkout/course/${courseId}`,
     financialsCheckoutPrivate: (availabilityId) => `/student/financials/checkout/private/${availabilityId}`,
     courseUnits: (courseId) => `/student/courses/${courseId}/units`,
+    courseExams: (courseId) => `/student/courses/${courseId}/exams`,
     exams: "/student/exams",
     exam: (examId) => `/student/exams/${examId}`,
     examStart: (examId) => `/student/exams/${examId}/start`,
@@ -155,6 +156,8 @@ const endpoints = {
   },
   media: {
     uploadImage: "/media/images",
+    uploadReceipt: "/media/receipts",
+    receiptFile: (filename) => `/media/receipts/${encodeURIComponent(filename)}`,
   },
 };
 

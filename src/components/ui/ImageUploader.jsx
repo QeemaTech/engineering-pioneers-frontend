@@ -1,17 +1,20 @@
-import { useCallback, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ImagePlus, Link2, Loader2, Trash2, Upload } from "lucide-react";
 import { IMAGE_MAX_BYTES, getUploadErrorMessage, uploadImageFile, validateImageFile } from "../../features/media/api";
 import { resolveMediaUrl } from "../../utils/mediaUrl";
+import client from "../../api/client";
+import endpoints from "../../api/endpoints";
 
 export default function ImageUploader({
   value = "",
   onChange,
   required = false,
   allowRemove = true,
-  allowExternalUrl = true,
+  allowExternalUrl,
   disabled = false,
   variant = "default",
+  kind = "image",
   label,
   helperText,
   className = "",
@@ -24,8 +27,11 @@ export default function ImageUploader({
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
   const [urlDraft, setUrlDraft] = useState("");
+  const [protectedPreview, setProtectedPreview] = useState("");
+  const showExternalUrl = allowExternalUrl ?? kind !== "receipt";
 
-  const preview = resolveMediaUrl(value);
+  const publicPreview = kind === "receipt" ? "" : resolveMediaUrl(value);
+  const preview = protectedPreview || publicPreview;
   const isAvatar = variant === "avatar";
   const isCompact = variant === "compact";
 
@@ -48,9 +54,12 @@ export default function ImageUploader({
       setUploading(true);
       setProgress(0);
       try {
-        const imageUrl = await uploadImageFile(file, { onProgress: setProgress });
+        const imageUrl = await uploadImageFile(file, { onProgress: setProgress, kind });
         emit(imageUrl);
         setUrlDraft("");
+        if (kind === "receipt") {
+          setProtectedPreview(URL.createObjectURL(file));
+        }
       } catch (err) {
         setError(getUploadErrorMessage(err, tx("failed", "Image upload failed.")));
       } finally {
@@ -59,8 +68,28 @@ export default function ImageUploader({
         if (fileRef.current) fileRef.current.value = "";
       }
     },
-    [disabled, onChange, t]
+    [disabled, onChange, t, kind]
   );
+
+  useEffect(() => {
+    if (kind !== "receipt" || !value || protectedPreview) return;
+    const filename = String(value).split("/").pop();
+    if (!filename) return;
+    let active = true;
+    let objectUrl = "";
+    client
+      .get(endpoints.media.receiptFile(filename), { responseType: "blob" })
+      .then((res) => {
+        if (!active) return;
+        objectUrl = URL.createObjectURL(res.data);
+        setProtectedPreview(objectUrl);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [kind, value, protectedPreview]);
 
   const onInputChange = (e) => {
     const file = e.target.files?.[0];
@@ -106,6 +135,7 @@ export default function ImageUploader({
 
   const removeImage = () => {
     setError("");
+    setProtectedPreview("");
     emit("");
   };
 
@@ -208,7 +238,7 @@ export default function ImageUploader({
       {helperText ? <p className="text-[11px] text-slate-500">{helperText}</p> : null}
       {error ? <p className="text-xs text-red-600 dark:text-red-400">{error}</p> : null}
 
-      {allowExternalUrl ? (
+      {showExternalUrl ? (
         <div className="flex flex-wrap gap-2">
           <input
             type="url"

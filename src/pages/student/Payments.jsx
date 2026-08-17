@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
-import { ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageHeader from "../../components/dashboard/PageHeader";
+import ProofLink from "../../components/ui/ProofLink";
 import { useMyPayments } from "../../features/student/financials/hooks";
 import { getErrorMessage } from "../../api/error";
 
@@ -27,7 +27,7 @@ export default function Payments() {
     <div className="space-y-6">
       <PageHeader
         title={t("student.payments.title", { defaultValue: "Payments" })}
-        subtitle={t("student.payments.subtitle", { defaultValue: "Track your course purchase requests and receipts." })}
+        subtitle={t("student.payments.subtitle", { defaultValue: "Track proof submissions. Access starts only after Super Admin marks the payment paid." })}
       />
 
       {isLoading ? <p className="text-sm text-slate-500">{t("dashboard.common.loading")}</p> : null}
@@ -56,6 +56,7 @@ export default function Payments() {
               <tr className="border-b border-slate-100 text-start text-xs uppercase tracking-wide text-slate-500 dark:border-slate-700">
                 <th className="px-4 py-3">{t("student.payments.colCourse", { defaultValue: "Course / item" })}</th>
                 <th className="px-4 py-3">{t("student.payments.colAmount", { defaultValue: "Amount" })}</th>
+                <th className="px-4 py-3">{t("student.payments.colMethod", { defaultValue: "Method" })}</th>
                 <th className="px-4 py-3">{t("student.payments.colStatus", { defaultValue: "Status" })}</th>
                 <th className="px-4 py-3">{t("student.payments.colDate", { defaultValue: "Date" })}</th>
                 <th className="px-4 py-3">{t("student.payments.colReceipt", { defaultValue: "Receipt" })}</th>
@@ -63,12 +64,29 @@ export default function Payments() {
             </thead>
             <tbody>
               {payments.map((p) => {
-                const label = p.course?.title || p.liveSession?.title || t("student.payments.unknownItem", { defaultValue: "Payment" });
+                const label =
+                  p.course?.title ||
+                  p.liveSession?.title ||
+                  p.coursePackage?.title ||
+                  (p.availabilityId ? t("student.payments.privateSession", { defaultValue: "Private session" }) : t("student.payments.unknownItem", { defaultValue: "Payment" }));
                 const status = String(p.status || "PENDING").toUpperCase();
                 return (
                   <tr key={p.id} className="border-b border-slate-50 last:border-0 dark:border-slate-700/50">
-                    <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">{label}</td>
+                    <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">
+                      {label}
+                      {status === "PENDING" ? (
+                        <p className="mt-1 text-xs font-normal text-amber-700">
+                          {t("student.payments.waitingAdmin", { defaultValue: "Waiting for Super Admin. You do not have access yet." })}
+                        </p>
+                      ) : null}
+                      {status === "FAILED" ? (
+                        <p className="mt-1 text-xs font-normal text-red-600">
+                          {t("student.payments.rejectedHint", { defaultValue: "Rejected. Retry checkout with a new proof or open a ticket." })}
+                        </p>
+                      ) : null}
+                    </td>
                     <td className="px-4 py-3" dir="ltr">{formatAmount(p.amount, p.currency || "EGP")}</td>
+                    <td className="px-4 py-3 text-xs font-semibold text-slate-600">{p.paymentMethod || "—"}</td>
                     <td className="px-4 py-3">
                       <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_CLASS[status] || "bg-slate-100 text-slate-700"}`}>
                         {status}
@@ -78,13 +96,16 @@ export default function Payments() {
                       {p.createdAt ? new Date(p.createdAt).toLocaleDateString(isRtl ? "ar" : undefined) : "—"}
                     </td>
                     <td className="px-4 py-3">
-                      {p.receiptUrl ? (
-                        <a href={p.receiptUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-semibold text-pioneer-orange-normal hover:underline">
-                          {t("student.payments.viewReceipt", { defaultValue: "View" })} <ExternalLink className="h-3.5 w-3.5" />
-                        </a>
-                      ) : (
-                        "—"
-                      )}
+                      <ProofLink
+                        proofPath={`/student/financials/payments/${p.id}/proof`}
+                        storedUrl={p.receiptUrl}
+                        label={t("student.payments.viewReceipt", { defaultValue: "View" })}
+                      />
+                      {status === "FAILED" ? (
+                        <Link to="/explore" className="mt-1 block text-xs font-bold text-pioneer-orange-normal hover:underline">
+                          {t("student.payments.retry", { defaultValue: "Retry checkout" })}
+                        </Link>
+                      ) : null}
                     </td>
                   </tr>
                 );

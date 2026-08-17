@@ -15,6 +15,7 @@ import { useLessonResources } from "../features/student/resources/hooks";
 import LessonQna from "../components/student/LessonQna";
 import CourseLiveSessionsPanel from "../components/student/CourseLiveSessionsPanel";
 import CourseHomeworkPanel from "../components/student/CourseHomeworkPanel";
+import CourseExamsPanel from "../components/student/CourseExamsPanel";
 import { useMyCourses } from "../features/student/courses/hooks";
 import { useClaimCertificate, useDownloadStudentCertificate, useMyCertificates } from "../features/student/certificates/hooks";
 import { getErrorMessage } from "../api/error";
@@ -176,6 +177,7 @@ export default function CourseView() {
   const pct = stats?.percentage != null ? Math.round(Number(stats.percentage)) : 0;
   const completedCount = stats?.completedLessons ?? doneSet.size;
   const isCourseComplete = Boolean(stats?.isCourseCompleted) || pct >= 100;
+  const accessExpired = Boolean(courseMeta?.expiresAt && new Date(courseMeta.expiresAt) < new Date());
   const hasCertificate = certificates.some((c) => c.courseId === courseId);
   const existingCert = certificates.find((c) => c.courseId === courseId);
 
@@ -316,11 +318,15 @@ export default function CourseView() {
                         {t("courseView.certificate.issued", { defaultValue: "Certificate issued" })}
                         {existingCert?.issuedAt ? ` · ${new Date(existingCert.issuedAt).toLocaleDateString()}` : ""}
                       </p>
+                    ) : accessExpired ? (
+                      <p className="mt-1 text-[11px] text-amber-800">
+                        {t("courseView.certificate.expired", { defaultValue: "Your course access has expired, so a certificate cannot be claimed." })}
+                      </p>
                     ) : (
                       <p className="mt-1 text-[11px] text-slate-600">{t("courseView.certificate.ready", { defaultValue: "Claim your certificate of completion." })}</p>
                     )}
                     {certClaimErr ? <p className="mt-1 text-[11px] text-red-600">{certClaimErr}</p> : null}
-                    {!hasCertificate ? (
+                    {!hasCertificate && !accessExpired ? (
                       <button
                         type="button"
                         disabled={claimingCert}
@@ -438,10 +444,24 @@ export default function CourseView() {
               <ClipboardList className="h-4 w-4" />
               {t("courseView.tabs.homework", { defaultValue: "Homework" })}
             </button>
+            <button
+              type="button"
+              onClick={() => setMainTab("exams")}
+              className={`flex min-w-[7rem] flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition ${
+                mainTab === "exams"
+                  ? "bg-white text-pioneer-orange-normal shadow-sm"
+                  : "text-slate-600 hover:bg-white/80 hover:text-slate-900"
+              }`}
+            >
+              <ClipboardCheck className="h-4 w-4" />
+              {t("courseView.tabs.exams", { defaultValue: "Exams" })}
+            </button>
           </div>
 
           {mainTab === "homework" ? (
             <CourseHomeworkPanel courseId={courseId} />
+          ) : mainTab === "exams" ? (
+            <CourseExamsPanel courseId={courseId} />
           ) : mainTab === "live" && showLiveTab ? (
             <CourseLiveSessionsPanel courseId={courseId} locale={i18n.language} />
           ) : activeLesson ? (
@@ -529,7 +549,7 @@ export default function CourseView() {
 
               {activeLesson?.id ? <LessonQna lessonId={activeLesson.id} /> : null}
             </motion.div>
-          ) : mainTab === "live" || mainTab === "homework" ? null : (
+          ) : mainTab === "live" || mainTab === "homework" || mainTab === "exams" ? null : (
             <p className="text-slate-500">{t("courseView.pickLesson")}</p>
           )}
         </main>

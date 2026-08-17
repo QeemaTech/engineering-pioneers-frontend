@@ -4,6 +4,8 @@ import toast from "react-hot-toast";
 import { Loader2, X } from "lucide-react";
 import { postStudentPrivateCheckout } from "../../features/student/financials/api";
 import { getErrorMessage } from "../../api/error";
+import ImageUploader from "../ui/ImageUploader";
+import { MANUAL_PAYMENT_METHODS, PAYMENT_INSTRUCTIONS, isReceiptPath } from "../../utils/manualPayments";
 
 export function formatSessionPrice(price, isRtl) {
   const value = Math.round(Number(price) || 0);
@@ -27,20 +29,14 @@ export default function PrivateSessionPayModal({ slot, instructorName, onClose, 
       return;
     }
     const url = receiptUrl.trim();
-    if (!url) {
+    if (!url || !isReceiptPath(url)) {
       setErr(t("checkout.package.receiptRequired"));
-      return;
-    }
-    try {
-      new URL(url);
-    } catch {
-      setErr(t("checkout.package.receiptUrlInvalid"));
       return;
     }
     setSubmitting(true);
     try {
       await postStudentPrivateCheckout(slot.id, { paymentMethod, receiptUrl: url });
-      toast.success(t("bookSession.success"));
+      toast.success(t("bookSession.successPending", { defaultValue: "Payment submitted. Wait for Super Admin approval before the session is confirmed." }));
       onSuccess();
     } catch (e2) {
       const message = getErrorMessage(e2, t("bookSession.bookError", { defaultValue: "Booking failed." }));
@@ -79,25 +75,23 @@ export default function PrivateSessionPayModal({ slot, instructorName, onClose, 
               onChange={(e) => setPaymentMethod(e.target.value)}
               className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
             >
-              <option value="BANK_TRANSFER">{t("checkout.package.methodBank")}</option>
-              <option value="CARD">{t("checkout.package.methodCard")}</option>
-              <option value="OTHER">{t("checkout.package.methodOther")}</option>
+              {MANUAL_PAYMENT_METHODS.map((method) => (
+                <option key={method.value} value={method.value}>
+                  {isRtl ? method.labelAr : method.labelEn}
+                </option>
+              ))}
             </select>
+            <p className="mt-2 text-xs text-slate-500">
+              {isRtl ? PAYMENT_INSTRUCTIONS[paymentMethod]?.ar : PAYMENT_INSTRUCTIONS[paymentMethod]?.en}
+            </p>
           </div>
-          <div>
-            <label htmlFor="private-receipt-url" className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              {t("checkout.package.receiptUrl")}
-            </label>
-            <input
-              id="private-receipt-url"
-              type="url"
-              value={receiptUrl}
-              onChange={(e) => setReceiptUrl(e.target.value)}
-              placeholder="https://"
-              className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
-            />
-            <p className="mt-1 text-xs text-slate-500">{t("checkout.package.receiptHint")}</p>
-          </div>
+          <ImageUploader
+            kind="receipt"
+            required
+            value={receiptUrl}
+            onChange={setReceiptUrl}
+            label={t("checkout.package.receiptUpload", { defaultValue: "Payment proof" })}
+          />
           {err ? <p className="text-sm text-red-600">{err}</p> : null}
           <div className="flex justify-end gap-2">
             <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700">

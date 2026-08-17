@@ -16,6 +16,8 @@ import {
   postStudentPackageCheckout
 } from "../features/student/financials/api";
 import { applyCouponDiscount, couponDiscountLabel } from "../features/student/financials/coupon";
+import ImageUploader from "../components/ui/ImageUploader";
+import { MANUAL_PAYMENT_METHODS, PAYMENT_INSTRUCTIONS, isReceiptPath } from "../utils/manualPayments";
 
 function formatPrice(price, isRtl) {
   const value = Math.round(Number(price) || 0);
@@ -217,9 +219,7 @@ export default function Checkout() {
       setLocalError(t("checkout.package.receiptRequired"));
       return;
     }
-    try {
-      new URL(url);
-    } catch {
+    if (!isReceiptPath(url) && !/^https?:\/\//i.test(url)) {
       setLocalError(t("checkout.package.receiptUrlInvalid"));
       return;
     }
@@ -240,12 +240,12 @@ export default function Checkout() {
           payload.pricingTierId = tierId;
         }
         const data = await postStudentPackageCheckout(packageId, payload);
-        setOrderMeta({ reusedPending: Boolean(data?.reusedPending) });
+        setOrderMeta({ reusedPending: Boolean(data?.reusedPending), enrolledInstantly: Boolean(data?.enrolledInstantly) });
         setFlow("success");
         toast.success(isRtl ? "تم إرسال طلب الدفع للباقة بنجاح." : "Package purchase request submitted.");
       } else if (liveSessionId) {
         const data = await postStudentLiveSessionCheckout(liveSessionId, payload);
-        setOrderMeta({ reusedPending: Boolean(data?.reusedPending) });
+        setOrderMeta({ reusedPending: Boolean(data?.reusedPending), enrolledInstantly: Boolean(data?.enrolledInstantly) });
         setFlow("success");
         toast.success(isRtl ? "تم إرسال طلب الحجز بنجاح." : "Seat booking request submitted.");
       } else {
@@ -258,7 +258,7 @@ export default function Checkout() {
           payload.couponCode = couponCode.trim();
         }
         const data = await postStudentCourseCheckout(courseId, payload);
-        setOrderMeta({ reusedPending: Boolean(data?.reusedPending) });
+        setOrderMeta({ reusedPending: Boolean(data?.reusedPending), enrolledInstantly: Boolean(data?.enrolledInstantly) });
         setFlow("success");
         toast.success(t("checkout.cohort.successToast", { defaultValue: "Payment submitted." }));
       }
@@ -297,24 +297,35 @@ export default function Checkout() {
                 <CheckCircle2 className="h-14 w-14 text-emerald-600" aria-hidden />
               </div>
               <p className="text-center text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                {t("checkout.cohort.successBody", { defaultValue: "Your payment is pending review. You will get access once approved." })}
+                {orderMeta.enrolledInstantly
+                  ? t("checkout.cohort.instantBody", { defaultValue: "Access is ready." })
+                  : t("checkout.cohort.successBody", { defaultValue: "Your payment is pending Super Admin review. You will get access only after approval." })}
               </p>
               {orderMeta.reusedPending ? (
                 <p className="text-center text-sm text-slate-500">{t("checkout.cohort.successPendingNote")}</p>
               ) : null}
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
                 <Link
-                  to="/student/classes"
-                  className="inline-flex items-center justify-center rounded-xl bg-[#EE7C11] px-5 py-3 text-sm font-bold text-white transition hover:bg-orange-600"
-                >
-                  {t("checkout.goToClasses")}
-                </Link>
-                <Link
                   to="/student/payments"
-                  className="inline-flex items-center justify-center rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
+                  className="inline-flex items-center justify-center rounded-xl bg-[#EE7C11] px-5 py-3 text-sm font-bold text-white transition hover:bg-orange-600"
                 >
                   {t("checkout.viewPayments", { defaultValue: "View payments" })}
                 </Link>
+                {orderMeta.enrolledInstantly ? (
+                  <Link
+                    to={liveSessionId ? "/student/live-sessions" : "/student/classes"}
+                    className="inline-flex items-center justify-center rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
+                  >
+                    {t("checkout.goToClasses")}
+                  </Link>
+                ) : (
+                  <Link
+                    to="/student/tickets"
+                    className="inline-flex items-center justify-center rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
+                  >
+                    {t("checkout.openTicket", { defaultValue: "Open a support ticket" })}
+                  </Link>
+                )}
               </div>
             </>
           ) : null}
@@ -443,26 +454,25 @@ export default function Checkout() {
                   onChange={(e) => setPaymentMethod(e.target.value)}
                   className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-[#0F172A] dark:text-white"
                 >
-                  <option value="BANK_TRANSFER">{t("checkout.package.methodBank")}</option>
-                  <option value="CARD">{t("checkout.package.methodCard")}</option>
-                  <option value="OTHER">{t("checkout.package.methodOther")}</option>
+                  {MANUAL_PAYMENT_METHODS.map((method) => (
+                    <option key={method.value} value={method.value}>
+                      {isRtl ? method.labelAr : method.labelEn}
+                    </option>
+                  ))}
                 </select>
+                <p className="mt-2 text-xs text-slate-500">
+                  {isRtl ? PAYMENT_INSTRUCTIONS[paymentMethod]?.ar : PAYMENT_INSTRUCTIONS[paymentMethod]?.en}
+                </p>
               </div>
 
-              <div>
-                <label htmlFor="receipt-url" className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  {t("checkout.package.receiptUrl")}
-                </label>
-                <input
-                  id="receipt-url"
-                  type="url"
-                  value={receiptUrl}
-                  onChange={(e) => setReceiptUrl(e.target.value)}
-                  placeholder="https://"
-                  className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-[#0F172A] dark:text-white"
-                />
-                <p className="mt-1 text-xs text-slate-500">{t("checkout.package.receiptHint")}</p>
-              </div>
+              <ImageUploader
+                kind="receipt"
+                required
+                value={receiptUrl}
+                onChange={setReceiptUrl}
+                label={t("checkout.package.receiptUpload", { defaultValue: "Payment proof" })}
+                helperText={t("checkout.package.receiptHint", { defaultValue: "Upload a screenshot of your transfer." })}
+              />
             </>
           ) : null}
 
