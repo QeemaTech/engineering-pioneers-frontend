@@ -52,6 +52,11 @@ const endpoints = {
     surveysQuestionDetail: (id) => `/admin/surveys/questions/${id}`,
     events: "/admin/events",
     eventDetail: (id) => `/admin/events/${id}`,
+    reviews: "/admin/reviews",
+    reviewVisibility: (id) => `/admin/reviews/${id}/visibility`,
+    reviewFeature: (id) => `/admin/reviews/${id}/feature`,
+    reviewDelete: (id) => `/admin/reviews/${id}`,
+    reviewsExportPdf: "/admin/reviews/export-pdf",
   },
   instructorDashboard: {
     overview: "/instructor/dashboard/overview",
@@ -110,7 +115,9 @@ const endpoints = {
     myQuestions: "/student/questions",
     lessonQuestions: (lessonId) => `/student/lessons/${lessonId}/questions`,
     questionAnswers: (questionId) => `/student/questions/${questionId}/answers`,
-    courseReviews: (courseId) => `/courses/${courseId}/reviews`,
+    myCourseReview: (courseId) => `/student/courses/${courseId}/reviews/mine`,
+    createCourseReview: (courseId) => `/student/courses/${courseId}/reviews`,
+    updateCourseReview: (reviewId) => `/student/reviews/${reviewId}`,
     // Survey
     surveyPending: (sessionId) => `/student/surveys/pending/${sessionId}`,
     surveySubmit: "/student/surveys/submit",
@@ -144,6 +151,7 @@ const endpoints = {
     downloadCertificateBySerial: (serial) => `/certificates/verify/${encodeURIComponent(serial)}/download`,
     events: "/public/events",
     eventDetail: (id) => `/public/events/${id}`,
+    courseReviews: (courseId) => `/courses/${courseId}/reviews`,
   },
   media: {
     uploadImage: "/media/images",

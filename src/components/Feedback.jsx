@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Star } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { resolveMediaUrl } from "../utils/mediaUrl";
 
 const StarRow = ({ value = 5, size = "h-4 w-4" }) => {
   const v = Math.min(5, Math.max(0, Math.round(Number(value) || 0)));
@@ -105,7 +106,7 @@ export default function Feedback({ featuredReviews = [], reviewsLoading = false 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {list.slice(0, 4).map((r) => {
                     const name = r?.student?.fullName || t("feedback.anonymousStudent");
-                    const avatar = r?.student?.avatar;
+                    const avatar = resolveMediaUrl(r?.student?.avatar);
                     const courseTitle = r?.course?.title;
                     const quote = (r?.comment || "").trim();
                     const rating = Math.min(5, Math.max(1, Number(r?.rating) || 5));

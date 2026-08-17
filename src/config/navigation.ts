@@ -23,6 +23,7 @@ import {
   Users,
   UserCheck,
   Video,
+  Star,
 } from "lucide-react";
 
 export type NavItem = {
@@ -205,6 +206,12 @@ export function getAdminNavigation(openTicketsCount = 0): NavSection[] {
               path: "/admin/courses/review",
               icon: ClipboardCheck,
               permission: "course:review",
+            },
+            {
+              labelKey: "sidebarNav.items.courseReviews",
+              path: "/admin/reviews",
+              icon: Star,
+              permission: "course:manage",
             },
              {
               labelKey: "sidebarNav.items.categories",

@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "../api/error";
 import { postStudentCourseCheckout } from "../features/student/financials/api";
@@ -25,8 +25,10 @@ import useAuthStore from "../store/authStore";
 import { APP_ROLES, normalizeRole } from "../config/permissions";
 import { usePublicCourse } from "../features/public/hooks";
 import { useMyCourses } from "../features/student/courses/hooks";
-import { fetchCourseReviews, computeAverageRating } from "../features/student/reviews/api";
+import { computeAverageRating } from "../features/student/reviews/api";
+import { useCourseReviews } from "../features/student/reviews/hooks";
 import PublicCourseCurriculum from "../components/public/PublicCourseCurriculum";
+import CourseReviewsSection from "../components/course/CourseReviewsSection";
 
 function Stars({ rating, max = 5, size = "h-4 w-4" }) {
   return (
@@ -91,16 +93,17 @@ export default function CourseDetails() {
 
   const { data: course, isLoading, isError, refetch } = usePublicCourse(id);
 
-  const { data: reviewsData } = useQuery({
-    queryKey: ["public", "course-reviews", id],
-    queryFn: () => fetchCourseReviews(id, 1, 50),
-    enabled: Boolean(id),
-    retry: false,
-  });
+  const { data: reviewsData } = useCourseReviews(id);
 
   const reviewStats = useMemo(() => {
     const reviews = reviewsData?.reviews ?? [];
-    return computeAverageRating(reviews);
+    const computed = computeAverageRating(reviews);
+    const total = Number(reviewsData?.pagination?.total);
+    const averageFromApi = Number(reviewsData?.averageRating);
+    return {
+      average: Number.isFinite(averageFromApi) && averageFromApi > 0 ? averageFromApi : computed.average,
+      count: Number.isFinite(total) ? total : computed.count,
+    };
   }, [reviewsData]);
 
   const { data: myCourses = [], isLoading: enrollmentsLoading } = useMyCourses({
@@ -330,6 +333,16 @@ export default function CourseDetails() {
                   </div>
                 </div>
               </section>
+            ) : null}
+
+            {course.id ? (
+              <CourseReviewsSection
+                courseId={course.id}
+                isStudent={isStudent}
+                isEnrolled={isEnrolled}
+                isAuth={isAuth}
+                loginHref={loginHref}
+              />
             ) : null}
           </main>
 

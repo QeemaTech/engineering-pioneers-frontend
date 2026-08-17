@@ -6,6 +6,7 @@ import HowItWorks from "../components/HowItWorks";
 import RecommendedCourses from "../components/RecommendedCourses";
 import HomePackagesSection from "../components/HomePackagesSection";
 import Testimonials from "../components/Testimonials";
+import Feedback from "../components/Feedback";
 import FaqSection from "../components/FaqSection";
 import HomeNewsBoard from "../components/HomeNewsBoard";
 import client from "../api/client";
@@ -35,7 +36,13 @@ function Home() {
       <HomePackagesSection />
       <HowItWorks />
       <HomeNewsBoard />
-      {isVisible("TESTIMONIALS") ? <Testimonials /> : null}
+      {isVisible("TESTIMONIALS") ? (
+        Array.isArray(data?.featuredReviews) && data.featuredReviews.length > 0 ? (
+          <Feedback featuredReviews={data.featuredReviews} reviewsLoading={landingLoading} />
+        ) : (
+          <Testimonials />
+        )
+      ) : null}
       {isVisible("FAQ") ? <FaqSection rawContent={faqSection?.content} /> : null}
       <CTA />
     </div>
