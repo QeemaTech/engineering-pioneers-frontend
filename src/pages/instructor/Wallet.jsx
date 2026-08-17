@@ -14,11 +14,15 @@ import {
   User, 
   CheckCircle2, 
   XCircle, 
-  Clock 
+  Clock,
+  Copy,
+  CheckCheck
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
 import ProofLink from "../../components/ui/ProofLink";
 import PageHeader from "../../components/dashboard/PageHeader";
+import Notice from "../../components/dashboard/Notice";
 import { getErrorMessage } from "../../api/error";
 import { 
   useRequestPayout, 
@@ -122,6 +126,29 @@ const formatDate = (dateString, isRtl) => {
   }
 };
 
+function CopyButton({ text, label = "نسخ" }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = (e) => {
+    e.stopPropagation();
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    toast.success(`${label || "تم النسخ"}: ${text}`);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      title={label}
+      className="inline-flex items-center gap-1 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-[#EE7C11]/10 hover:text-[#EE7C11] dark:hover:bg-[#EE7C11]/20 px-1.5 py-0.5 text-[11px] font-medium text-slate-600 dark:text-slate-300 transition-colors"
+    >
+      {copied ? <CheckCheck className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+      <span>{copied ? "تم النسخ" : label}</span>
+    </button>
+  );
+}
+
 // Helper: parses Payout details into beautiful stylized node
 const parsePayoutDetails = (detailsStr, isRtl) => {
   if (!detailsStr) return "-";
@@ -133,9 +160,11 @@ const parsePayoutDetails = (detailsStr, isRtl) => {
   }
 
   const nameElement = details.name ? (
-    <span className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1 mt-0.5">
-      <User className="h-3 w-3 text-slate-450 dark:text-slate-500" /> {details.name}
-    </span>
+    <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-1">
+      <User className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 shrink-0" />
+      <span>{details.name}</span>
+      <CopyButton text={details.name} label={isRtl ? "نسخ الاسم" : "Copy Name"} />
+    </div>
   ) : null;
 
   if (details.bank) {
@@ -147,13 +176,15 @@ const parsePayoutDetails = (detailsStr, isRtl) => {
     }
     
     const accountStr = details.account || details.accountNumber || "";
-    const maskedAccount = accountStr.startsWith("****") ? accountStr : `****${accountStr.slice(-4)}`;
 
     return (
-      <div className="flex flex-col text-xs md:text-sm">
-        <div className="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-300">
-          <Building2 className="h-4 w-4 text-slate-400 dark:text-slate-500 shrink-0" />
-          <span>{bankDisplayName} • {isRtl ? "حساب" : "Acc:"} {maskedAccount}</span>
+      <div className="flex flex-col text-xs md:text-sm gap-0.5">
+        <div className="flex flex-wrap items-center gap-1.5 font-bold text-slate-800 dark:text-slate-200">
+          <Building2 className="h-4 w-4 text-[#EE7C11] shrink-0" />
+          <span>{bankDisplayName}</span>
+          <span className="text-slate-400">•</span>
+          <span className="font-mono text-slate-900 dark:text-white select-all">{accountStr}</span>
+          {accountStr ? <CopyButton text={accountStr} label={isRtl ? "نسخ الحساب" : "Copy Acc"} /> : null}
         </div>
         {nameElement}
       </div>
@@ -162,15 +193,11 @@ const parsePayoutDetails = (detailsStr, isRtl) => {
 
   if (details.phone || details.mobile || details.wallet) {
     const phoneNumber = details.phone || details.mobile || details.wallet;
-    let maskedPhone = phoneNumber;
-    let cleanPhone = String(phoneNumber).replace(/^\+2/, ""); 
-    if (cleanPhone.length >= 10) {
-      maskedPhone = `${cleanPhone.slice(0, 3)}*****${cleanPhone.slice(-2)}`;
-    }
+    const cleanPhone = String(phoneNumber).replace(/^\+2/, "");
 
     let providerName = isRtl ? "فودافون كاش" : "Vodafone Cash";
     if (cleanPhone.startsWith("011") || cleanPhone.startsWith("11")) {
-      providerName = isRtl ? "إيصال اتصالات كاش" : "Etisalat Cash";
+      providerName = isRtl ? "اتصالات كاش" : "Etisalat Cash";
     } else if (cleanPhone.startsWith("012") || cleanPhone.startsWith("12")) {
       providerName = isRtl ? "أورنج كاش" : "Orange Cash";
     } else if (cleanPhone.startsWith("015") || cleanPhone.startsWith("15")) {
@@ -178,10 +205,13 @@ const parsePayoutDetails = (detailsStr, isRtl) => {
     }
 
     return (
-      <div className="flex flex-col text-xs md:text-sm">
-        <div className="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-300">
-          <Smartphone className="h-4 w-4 text-slate-400 dark:text-slate-500 shrink-0" />
-          <span>{providerName} • {maskedPhone}</span>
+      <div className="flex flex-col text-xs md:text-sm gap-0.5">
+        <div className="flex flex-wrap items-center gap-1.5 font-bold text-slate-800 dark:text-slate-200">
+          <Smartphone className="h-4 w-4 text-[#EE7C11] shrink-0" />
+          <span>{providerName}</span>
+          <span className="text-slate-400">•</span>
+          <span className="font-mono text-slate-900 dark:text-white select-all">{phoneNumber}</span>
+          <CopyButton text={phoneNumber} label={isRtl ? "نسخ الرقم" : "Copy Phone"} />
         </div>
         {nameElement}
       </div>
@@ -194,7 +224,7 @@ const parsePayoutDetails = (detailsStr, isRtl) => {
 
   return (
     <div className="flex flex-col text-xs md:text-sm">
-      <span className="font-medium text-slate-700 dark:text-slate-300">{summaryStr || "-"}</span>
+      <span className="font-mono font-medium text-slate-800 dark:text-slate-200 select-all">{summaryStr || "-"}</span>
       {nameElement}
     </div>
   );
