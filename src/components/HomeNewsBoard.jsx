@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, ArrowRight, Calendar, User, Newspaper, Clock, BookOpen, Loader2 } from "lucide-react";
 import client from "../api/client";
+import { resolveMediaUrl } from "../utils/mediaUrl";
 
 function HomeNewsBoard() {
   const { t, i18n } = useTranslation();
@@ -182,7 +183,7 @@ function HomeNewsBoard() {
                 {/* Image panel with hover zoom */}
                 <div className="lg:col-span-6 relative h-72 sm:h-96 lg:h-auto overflow-hidden min-h-[340px]">
                   <img
-                    src={featuredPost.thumbnail || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600"}
+                    src={resolveMediaUrl(featuredPost.thumbnail) || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600"}
                     alt="Featured story"
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   />
@@ -255,7 +256,7 @@ function HomeNewsBoard() {
                       {/* Thumbnail frame */}
                       <div className="relative aspect-[16/10] overflow-hidden bg-slate-100 dark:bg-white/5">
                         <img
-                          src={post.thumbnail || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600"}
+                          src={resolveMediaUrl(post.thumbnail) || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600"}
                           alt=""
                           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 animate-fade-in"
                         />

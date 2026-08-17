@@ -6,6 +6,8 @@ import SlideOver from "../../components/ui/SlideOver";
 import StatusBadge from "../../components/ui/StatusBadge";
 import { useAdminPosts, useCreatePost, useDeletePost, useUpdatePost } from "../../features/admin/cms/hooks";
 import { getErrorMessage } from "../../api/error";
+import ImageUploader from "../../components/ui/ImageUploader";
+import { resolveMediaUrl } from "../../utils/mediaUrl";
 
 function slugFromTitle(title) {
   const base = String(title || "")
@@ -80,12 +82,6 @@ function CmsPosts() {
             placeholder={t("adminPages.cmsPosts.titlePlaceholder")}
             className="h-10 flex-1 rounded-lg border border-slate-200 px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
           />
-          <input
-            value={thumbNew}
-            onChange={(e) => setThumbNew(e.target.value)}
-            placeholder={t("adminPages.cmsPosts.thumbnailUrl")}
-            className="h-10 flex-1 rounded-lg border border-slate-200 px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white sm:max-w-md"
-          />
           <select
             value={categoryNew}
             onChange={(e) => setCategoryNew(e.target.value)}
@@ -123,6 +119,15 @@ function CmsPosts() {
             {createMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : t("adminPages.cmsPosts.create")}
           </button>
         </div>
+        <div className="mt-3">
+          <ImageUploader
+            value={thumbNew}
+            onChange={(url) => setThumbNew(url || "")}
+            allowRemove
+            allowExternalUrl
+            variant="compact"
+          />
+        </div>
         {createMutation.isError ? (
           <p className="mt-2 text-sm text-red-600 dark:text-red-400">{getErrorMessage(createMutation.error)}</p>
         ) : null}
@@ -156,7 +161,7 @@ function CmsPosts() {
           >
             {p.thumbnail ? (
               <div className="h-32 overflow-hidden bg-slate-100 dark:bg-white/5">
-                <img src={p.thumbnail} alt="" className="h-full w-full object-cover" />
+                <img src={resolveMediaUrl(p.thumbnail)} alt="" className="h-full w-full object-cover" />
               </div>
             ) : (
               <div className="h-24 bg-gradient-to-br from-slate-100 to-white dark:from-white/5 dark:to-transparent" />
@@ -253,10 +258,11 @@ function CmsPosts() {
             </div>
             <div>
               <label className="mb-1 block text-xs font-bold uppercase text-slate-500">{t("adminPages.cmsPosts.thumbnailUrl")}</label>
-              <input
+              <ImageUploader
                 value={form.thumbnail}
-                onChange={(e) => setForm((f) => ({ ...f, thumbnail: e.target.value }))}
-                className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                onChange={(url) => setForm((f) => ({ ...f, thumbnail: url || "" }))}
+                allowRemove
+                allowExternalUrl
               />
             </div>
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">

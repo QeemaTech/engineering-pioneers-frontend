@@ -13,7 +13,6 @@ import {
   Loader2,
   CheckCircle,
   HelpCircle,
-  Link2,
   AlertCircle
 } from "lucide-react";
 import client from "../../api/client";
@@ -21,6 +20,7 @@ import endpoints from "../../api/endpoints";
 import PageHeader from "../../components/ui/PageHeader";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { getErrorMessage } from "../../api/error";
+import ImageUploader from "../../components/ui/ImageUploader";
 
 const inputFieldClass =
   "h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#EE7C11] focus:ring-2 focus:ring-[#EE7C11]/15 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-[#EE7C11]";
@@ -376,21 +376,16 @@ export default function AdminEvents() {
                 </div>
               </div>
 
-              {/* Banner URL */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
-                  {isRtl ? "رابط صورة الغلاف (اختياري)" : "Banner Cover Image URL (Optional)"}
+                  {isRtl ? "صورة الغلاف (اختياري)" : "Banner Cover Image (Optional)"}
                 </label>
-                <div className="relative">
-                  <Link2 className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                  <input
-                    type="url"
-                    value={bannerUrl}
-                    onChange={(e) => setBannerUrl(e.target.value)}
-                    className={`${inputFieldClass} ps-9`}
-                    placeholder="https://images.unsplash.com/..."
-                  />
-                </div>
+                <ImageUploader
+                  value={bannerUrl}
+                  onChange={(url) => setBannerUrl(url || "")}
+                  allowRemove
+                  allowExternalUrl
+                />
               </div>
 
               {/* Active Toggle Switch */}

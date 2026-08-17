@@ -6,6 +6,8 @@ import PageHeader from "../../components/ui/PageHeader";
 import SlideOver from "../../components/ui/SlideOver";
 import { useAdminBanners, useCreateBanner, useDeleteBanner, useUpdateBanner } from "../../features/admin/cms/hooks";
 import { getErrorMessage } from "../../api/error";
+import ImageUploader from "../../components/ui/ImageUploader";
+import { resolveMediaUrl } from "../../utils/mediaUrl";
 
 const emptyForm = { title: "", link: "", imageUrl: "", order: "0", isActive: true };
 
@@ -28,7 +30,7 @@ function BannerPreview({ banners }) {
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-900 shadow-sm dark:border-white/10">
-      <img src={current.imageUrl} alt={current.title || "Banner"} className="h-44 w-full object-cover md:h-56" />
+        <img src={resolveMediaUrl(current.imageUrl)} alt={current.title || "Banner"} className="h-44 w-full object-cover md:h-56" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
       <div className="absolute bottom-0 start-0 end-0 p-4 text-white">
         <p className="text-xs uppercase tracking-wider text-white/70">Mobile slider preview</p>
@@ -187,7 +189,7 @@ function CmsBanners() {
           >
             <div className="relative h-36 bg-slate-100 dark:bg-white/5">
               {banner.imageUrl ? (
-                <img src={banner.imageUrl} alt="" className="h-full w-full object-cover" />
+                <img src={resolveMediaUrl(banner.imageUrl)} alt="" className="h-full w-full object-cover" />
               ) : (
                 <div className="flex h-full items-center justify-center text-slate-400">
                   <ImageIcon className="h-8 w-8" />
@@ -272,16 +274,15 @@ function CmsBanners() {
           </label>
           <label className="block space-y-1.5 text-sm font-medium text-slate-700 dark:text-slate-300">
             {t("adminPages.cmsBanners.imageUrl")}
-            <input
-              value={form.imageUrl}
-              onChange={(e) => setForm((prev) => ({ ...prev, imageUrl: e.target.value }))}
-              required
-              className="h-11 w-full rounded-lg border border-slate-200 px-3 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
-            />
+            <span className="text-red-500"> *</span>
           </label>
-          {form.imageUrl ? (
-            <img src={form.imageUrl} alt="" className="h-32 w-full rounded-lg object-cover" />
-          ) : null}
+          <ImageUploader
+            value={form.imageUrl}
+            onChange={(url) => setForm((prev) => ({ ...prev, imageUrl: url || "" }))}
+            required
+            allowRemove={false}
+            allowExternalUrl
+          />
           <label className="block space-y-1.5 text-sm font-medium text-slate-700 dark:text-slate-300">
             {t("adminPages.cmsBanners.form.link")}
             <input

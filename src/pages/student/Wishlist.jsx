@@ -4,6 +4,7 @@ import { Heart, Trash2 } from "lucide-react";
 import PageHeader from "../../components/dashboard/PageHeader";
 import { useToggleWishlist, useWishlist } from "../../features/student/wishlist/hooks";
 import { getErrorMessage } from "../../api/error";
+import { resolveMediaUrl } from "../../utils/mediaUrl";
 
 export default function Wishlist() {
   const { t } = useTranslation();
@@ -45,7 +46,7 @@ export default function Wishlist() {
             return (
               <article key={row.id || courseId} className="overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-sm dark:border-slate-700/40 dark:bg-[#1E293B]">
                 {course.thumbnail ? (
-                  <img src={course.thumbnail} alt="" className="h-36 w-full object-cover" />
+                  <img src={resolveMediaUrl(course.thumbnail)} alt="" className="h-36 w-full object-cover" />
                 ) : (
                   <div className="flex h-36 items-center justify-center bg-pioneer-orange-light">
                     <Heart className="h-8 w-8 text-pioneer-orange-normal/40" />

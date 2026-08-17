@@ -5,6 +5,7 @@ import { User as UserIcon, Users, Cpu, Play, Star, ArrowRight, ArrowLeft, Gradua
 import { motion } from "framer-motion";
 import ShapeGrid from "./ui/ShapeGrid";
 import { pickLocalized } from "../utils/cmsLocale";
+import { resolveMediaUrl } from "../utils/mediaUrl";
 import client from "../api/client";
 
 const FEATURE_ICONS = [UserIcon, Users, Cpu];
@@ -193,14 +194,14 @@ export default function Hero({ cmsContent, stats }) {
                       className="block h-full w-full"
                     >
                       <img
-                        src={currentBanner.imageUrl}
+                        src={resolveMediaUrl(currentBanner.imageUrl)}
                         alt={currentBanner.title || "Banner"}
                         className="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-105"
                       />
                     </a>
                   ) : (
                     <img
-                      src={currentBanner.imageUrl}
+                      src={resolveMediaUrl(currentBanner.imageUrl)}
                       alt={currentBanner.title || "Banner"}
                       className="h-full w-full object-cover"
                     />

@@ -7,6 +7,7 @@ import useAuthStore from "../../store/authStore";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useLang } from "../../contexts/LangContext";
 import NotificationBell from "./NotificationBell";
+import { resolveMediaUrl } from "../../utils/mediaUrl";
 
 function Topbar({ onMenuClick }) {
   const { t } = useTranslation();
@@ -242,7 +243,7 @@ function Topbar({ onMenuClick }) {
               </div>
               <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-100 ring-2 ring-slate-200 sm:h-10 sm:w-10 dark:bg-white/5 dark:ring-white/10">
                 {user?.avatar ? (
-                  <img src={user.avatar} alt="" className="h-full w-full object-cover" />
+                  <img src={resolveMediaUrl(user.avatar)} alt="" className="h-full w-full object-cover" />
                 ) : (
                   <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
                     {String(user?.fullName || "AD")

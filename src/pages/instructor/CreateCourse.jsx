@@ -7,6 +7,7 @@ import {
 import { useAdminCategories } from "../../features/admin/categories/hooks";
 import { useCreateInstructorCourse, useSubmitInstructorCourseForReview } from "../../features/instructor/courses/hooks";
 import toast from "react-hot-toast";
+import ImageUploader from "../../components/ui/ImageUploader";
 
 function CreateCourse() {
   const { t, i18n } = useTranslation();
@@ -228,17 +229,17 @@ function CreateCourse() {
               )}
             </label>
 
-            <label className="block">
+            <div className="block">
               <span className={labelClass}>
-                {dir === "rtl" ? "رابط الصورة المصغرة" : "Thumbnail URL"}
+                {dir === "rtl" ? "الصورة المصغرة" : "Thumbnail"}
               </span>
-              <input
+              <ImageUploader
                 value={form.thumbnail}
-                onChange={(e) => set("thumbnail", e.target.value)}
-                placeholder="https://images.unsplash.com/photo-..."
-                className={inputClass(errors.thumbnail)}
+                onChange={(url) => set("thumbnail", url || "")}
+                allowRemove
+                allowExternalUrl
               />
-            </label>
+            </div>
           </div>
 
           <label className="block">

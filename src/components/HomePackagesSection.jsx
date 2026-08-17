@@ -4,13 +4,12 @@ import { Layers, Check, Sparkles, BookOpen, ArrowRight, ShoppingCart } from "luc
 import { usePublicPackages } from "../features/public/hooks";
 import useAuthStore from "../store/authStore";
 import { APP_ROLES, normalizeRole } from "../config/permissions";
+import { resolveMediaUrl } from "../utils/mediaUrl";
 
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600&auto=format&fit=crop";
 
 function getPackageImageUrl(image) {
-  if (!image) return FALLBACK_IMAGE;
-  if (image.startsWith("http")) return image;
-  return `${import.meta.env.VITE_API_URL || ""}${image}`;
+  return resolveMediaUrl(image) || FALLBACK_IMAGE;
 }
 
 export default function HomePackagesSection() {

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Calendar, MapPin, Video, Clock, ExternalLink } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { resolveMediaUrl } from "../../utils/mediaUrl";
 
 function formatTimeLeft(ms, isRtl) {
   if (ms <= 0) return null;
@@ -56,7 +57,7 @@ export default function EventCard({ event }) {
       <div className="relative h-44 w-full overflow-hidden bg-slate-100 dark:bg-slate-900">
         {event.bannerUrl ? (
           <img
-            src={event.bannerUrl}
+            src={resolveMediaUrl(event.bannerUrl)}
             alt={isRtl ? event.titleAr : event.titleEn}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />

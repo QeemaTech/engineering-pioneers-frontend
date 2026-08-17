@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { BookOpen, TrendingUp, User, Video } from "lucide-react";
 import { useMyCourses } from "../features/student/courses/hooks";
+import { resolveMediaUrl } from "../utils/mediaUrl";
 
 export default function MyClasses() {
   const { t } = useTranslation();
@@ -37,7 +38,7 @@ export default function MyClasses() {
               <article key={c.id} className="flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition hover:shadow-md dark:border-slate-700/40 dark:bg-[#1E293B]">
                 <div className="relative h-36 bg-gradient-to-br from-pioneer-orange-light to-white dark:from-pioneer-orange-normal/20 dark:to-[#1E293B]">
                   {c.thumbnail ? (
-                    <img src={c.thumbnail} alt="" className="h-full w-full object-cover opacity-90" />
+                    <img src={resolveMediaUrl(c.thumbnail)} alt="" className="h-full w-full object-cover opacity-90" />
                   ) : (
                     <div className="flex h-full items-center justify-center">
                       <BookOpen className="h-12 w-12 text-pioneer-orange-normal/30" />

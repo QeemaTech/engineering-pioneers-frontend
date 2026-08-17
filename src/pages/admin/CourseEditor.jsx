@@ -28,6 +28,7 @@ import {
 import { useAdminUsers } from "../../features/admin/users/hooks";
 import toast from "react-hot-toast";
 import { ExamQuestionBankDrawer } from "../../components/exams/ExamQuestionBank";
+import ImageUploader from "../../components/ui/ImageUploader";
 
 /* â”€â”€â”€ Exam Editor Drawer â”€â”€â”€ */
 function ExamEditorDrawer({ examId, onClose }) {
@@ -698,7 +699,7 @@ function DetailEditor({ node, onClose }) {
           body: { 
             title: formData.title, 
             description: formData.description || undefined, 
-            thumbnail: formData.thumbnail.trim() || undefined,
+            thumbnail: formData.thumbnail.trim() || null,
             introVideoUrl: formData.introVideoUrl.trim() || null,
             price: price != null && !Number.isNaN(price) ? price : undefined,
             type: formData.type,
@@ -808,13 +809,13 @@ function DetailEditor({ node, onClose }) {
               </label>
               <label className="block space-y-1.5">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  {t("adminPages.courseEditor.fields.thumbnailUrl", { defaultValue: "Thumbnail URL" })}
+                  {t("adminPages.courseEditor.fields.thumbnailUrl", { defaultValue: "Thumbnail" })}
                 </span>
-                <input
+                <ImageUploader
                   value={formData.thumbnail}
-                  onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
-                  placeholder="https://example.com/image.jpg"
-                  className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                  onChange={(url) => setFormData({ ...formData, thumbnail: url || "" })}
+                  allowRemove
+                  allowExternalUrl
                 />
               </label>
 

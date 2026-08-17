@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { getErrorMessage } from "../api/error";
 import { postStudentCourseCheckout } from "../features/student/financials/api";
 import SocialShare from "../components/SocialShare";
+import { resolveMediaUrl } from "../utils/mediaUrl";
 import {
   BookOpen,
   Headphones,
@@ -336,7 +337,7 @@ export default function CourseDetails() {
             <div className="sticky top-24 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-lg">
               <div className="relative overflow-hidden bg-gradient-to-br from-pioneer-orange-dark to-pioneer-orange-normal" style={{ paddingTop: "56.25%" }}>
                 {course.thumbnail ? (
-                  <img src={course.thumbnail} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                  <img src={resolveMediaUrl(course.thumbnail)} alt="" className="absolute inset-0 h-full w-full object-cover" />
                 ) : (
                   <>
                     <div className="absolute -end-8 -top-8 h-28 w-28 rounded-full bg-white/10" />

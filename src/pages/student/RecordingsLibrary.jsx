@@ -5,6 +5,7 @@ import { ChevronDown, Headphones, Play, Search } from "lucide-react";
 import PageHeader from "../../components/dashboard/PageHeader";
 import { useStudentRecordings } from "../../features/student/recordings/hooks";
 import { getErrorMessage } from "../../api/error";
+import { resolveMediaUrl } from "../../utils/mediaUrl";
 
 const THUMB_GRADIENTS = [
   "from-pioneer-orange-dark to-pioneer-orange-normal",
@@ -23,7 +24,7 @@ function RecordingCard({ item, gradientClass }) {
     >
       <div className={`relative overflow-hidden bg-gradient-to-br ${gradientClass}`} style={{ paddingTop: "56.25%" }}>
         {item.thumbnailUrl ? (
-          <img src={item.thumbnailUrl} alt="" className="absolute inset-0 h-full w-full object-cover opacity-90" />
+          <img src={resolveMediaUrl(item.thumbnailUrl)} alt="" className="absolute inset-0 h-full w-full object-cover opacity-90" />
         ) : null}
         <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition group-hover:opacity-100">
           <Play className="h-12 w-12 text-white" />

@@ -7,6 +7,7 @@ import { useAdminCategories } from "../../features/admin/categories/hooks";
 import { useAdminInstructors } from "../../features/admin/instructors/hooks";
 import { useCreateAdminCourse } from "../../features/admin/courses/hooks";
 import { getErrorMessage } from "../../api/error";
+import ImageUploader from "../../components/ui/ImageUploader";
 
 function AddCourse() {
   const { t, i18n } = useTranslation();
@@ -384,15 +385,15 @@ function AddCourse() {
             </div>
           </div>
 
-          <label className="block space-y-1.5">
+          <div className="block space-y-1.5">
             <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{t("adminPages.courseEditor.fields.thumbnailUrl")}</span>
-            <input
+            <ImageUploader
               value={form.thumbnail}
-              onChange={(e) => set("thumbnail", e.target.value)}
-              placeholder="https://example.com/thumbnail.jpg"
-              className={inputClass}
+              onChange={(url) => set("thumbnail", url || "")}
+              allowRemove
+              allowExternalUrl
             />
-          </label>
+          </div>
 
           <label className="block space-y-1.5">
             <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{t("dashboard.admin.courses.introVideoUrl")}</span>

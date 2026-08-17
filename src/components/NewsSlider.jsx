@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, ArrowRight, Calendar, User, Newspaper } from "lucide-react";
 import client from "../api/client";
+import { resolveMediaUrl } from "../utils/mediaUrl";
 
 function NewsSlider() {
   const { i18n } = useTranslation();
@@ -103,7 +104,7 @@ function NewsSlider() {
             {/* Image Block */}
             <div className="md:col-span-5 relative h-64 md:h-96">
               <img
-                src={current.thumbnail || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600"}
+                src={resolveMediaUrl(current.thumbnail) || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600"}
                 alt="News Thumbnail"
                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
               />

@@ -11,6 +11,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useRecommendedCourses } from "../features/public/hooks";
+import { resolveMediaUrl } from "../utils/mediaUrl";
 
 const FALLBACK_THUMB =
   "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80";
@@ -48,8 +49,8 @@ function CourseCardSkeleton() {
 function RecommendedCourseCard({ course, isRtl }) {
   const { t } = useTranslation();
   const imageSrc =
-    course.thumbnail ||
-    course.instructor?.avatar ||
+    resolveMediaUrl(course.thumbnail) ||
+    resolveMediaUrl(course.instructor?.avatar) ||
     FALLBACK_THUMB;
 
   const isHybrid = course.type === "HYBRID";

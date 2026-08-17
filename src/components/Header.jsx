@@ -22,6 +22,7 @@ import useAuthStore from "../store/authStore";
 import { APP_ROLES, normalizeRole } from "../config/permissions";
 import { useSiteSettings } from "../features/public/siteSettings/hooks";
 import { useMarkAllNotificationsRead, useMarkNotificationRead, useNotifications } from "../features/student/notifications/hooks";
+import { resolveMediaUrl } from "../utils/mediaUrl";
 
 /* ── Social SVG icons ── */
 const FbIcon = () => (
@@ -62,7 +63,7 @@ function getInitials(name = "") {
 }
 
 function UserAvatarMark({ user, className = "", textClassName = "text-sm font-bold" }) {
-  const src = user?.avatar;
+  const src = resolveMediaUrl(user?.avatar);
   if (src) {
     return <img src={src} alt="" className={`rounded-full object-cover ${className}`} />;
   }

@@ -10,6 +10,20 @@
     "retry": "Try again",
     "home": "Go home"
   },
+  "imageUploader": {
+    "drop": "Drag & drop an image here",
+    "browse": "or click to browse",
+    "hint": "JPEG, PNG, WEBP · max 5MB",
+    "uploading": "Uploading...",
+    "replace": "Replace",
+    "remove": "Remove",
+    "useUrl": "Use URL",
+    "urlPlaceholder": "or paste https://...",
+    "failed": "Image upload failed.",
+    "invalidType": "Unsupported file type. Use JPEG, PNG, or WEBP.",
+    "tooLarge": "Image is too large. Maximum size is 5MB.",
+    "badUrl": "Enter a valid image URL."
+  },
   "nav": {
     "overview": "Overview",
     "finance": "Finance",
@@ -1291,6 +1305,10 @@
         "title": "1-on-1 & Group Sessions",
         "description": "Access private mentoring or study with high-caliber peers. Solve complex computational problems together in dedicated workspace channels."
       },
+      "homeworkAndPractice": {
+        "title": "Practical Projects & Code Challenges",
+        "description": "Test your learning by building functional code repositories and drawing stress vector charts, graded weekly by active senior engineers."
+      },
       "assignmentAndPractice": {
         "title": "Practical Projects & Code Challenges",
         "description": "Test your learning by building functional code repositories and drawing stress vector charts, graded weekly by active senior engineers."
@@ -2023,7 +2041,7 @@
     },
     "avatar": {
       "title": "Profile photo",
-      "hint": "Upload an image (max ~450 KB) or paste a direct HTTPS link. Shown across the platform.",
+        "hint": "Upload an image (JPEG, PNG, WEBP, max 5MB) or paste a hosted URL.",
       "upload": "Upload photo",
       "chooseFile": "Choose image",
       "remove": "Remove photo",

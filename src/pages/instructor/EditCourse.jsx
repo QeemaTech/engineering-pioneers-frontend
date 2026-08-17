@@ -16,6 +16,7 @@ import {
 import { 
   useCreateAdminSection, useUpdateAdminSection, useDeleteAdminSection 
 } from "../../features/admin/sections/hooks";
+import ImageUploader from "../../components/ui/ImageUploader";
 import { 
   useDeleteInstructorExam,
 } from "../../features/instructor/exams/hooks";
@@ -396,14 +397,15 @@ function DetailsTab({ course, categories, updateMutation, sync, dir }) {
             </select>
           </label>
 
-          <label className="block">
-            <span className={labelClass}>{dir === "rtl" ? "رابط الصورة المصغرة" : "Thumbnail URL"}</span>
-            <input
+          <div className="block">
+            <span className={labelClass}>{dir === "rtl" ? "الصورة المصغرة" : "Thumbnail"}</span>
+            <ImageUploader
               value={form.thumbnail}
-              onChange={(e) => set("thumbnail", e.target.value)}
-              className={inputClass}
+              onChange={(url) => set("thumbnail", url || "")}
+              allowRemove
+              allowExternalUrl
             />
-          </label>
+          </div>
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2">

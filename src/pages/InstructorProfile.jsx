@@ -22,6 +22,7 @@ import {
   usePublicInstructorCourses,
   usePublicInstructorSlots,
 } from "../features/public/instructors/hooks";
+import { resolveMediaUrl } from "../utils/mediaUrl";
 
 function initials(name = "") {
   const parts = String(name).trim().split(/\s+/).filter(Boolean);
@@ -129,7 +130,7 @@ export default function InstructorProfile() {
             {/* Main Avatar with glowing tech ring */}
             <div className="relative flex h-32 w-32 shrink-0 items-center justify-center overflow-hidden rounded-3xl bg-slate-100 ring-4 ring-[#EE7C11]/20 shadow-xl">
               {instructor.avatar ? (
-                <img src={instructor.avatar} alt={instructor.fullName} className="h-full w-full object-cover" />
+                <img src={resolveMediaUrl(instructor.avatar)} alt={instructor.fullName} className="h-full w-full object-cover" />
               ) : (
                 <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-orange-500 to-amber-600">
                   <GraduationCap className="h-9 w-9 opacity-80 mb-1" />

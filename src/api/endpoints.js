@@ -145,6 +145,9 @@ const endpoints = {
     events: "/public/events",
     eventDetail: (id) => `/public/events/${id}`,
   },
+  media: {
+    uploadImage: "/media/images",
+  },
 };
 
 export default endpoints;

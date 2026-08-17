@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { BookOpen, ArrowRight, ArrowLeft } from "lucide-react";
 import { usePublicPosts } from "../features/public/hooks";
 import { localizedPostFields } from "../utils/cmsLocale";
+import { resolveMediaUrl } from "../utils/mediaUrl";
 
 export default function BlogsPage() {
   const { t, i18n } = useTranslation();
@@ -53,7 +54,7 @@ export default function BlogsPage() {
                 {post.thumbnail ? (
                   <div className="aspect-[16/10] overflow-hidden bg-slate-100">
                     <img
-                      src={post.thumbnail}
+                      src={resolveMediaUrl(post.thumbnail)}
                       alt=""
                       className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                       loading="lazy"

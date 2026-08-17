@@ -17,6 +17,7 @@ import { usePublicCourses, usePublicCategories } from "../features/public/hooks"
 import useAuthStore from "../store/authStore";
 import { APP_ROLES, normalizeRole } from "../config/permissions";
 import { useToggleWishlist, useWishlist } from "../features/student/wishlist/hooks";
+import { resolveMediaUrl } from "../utils/mediaUrl";
 
 const FALLBACK_THUMB =
   "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80";
@@ -61,7 +62,7 @@ function CourseCard({ course, isRtl, isWishlisted, onToggleWishlist, showWishlis
   const Arrow = isRtl ? ArrowLeft : ArrowRight;
 
   const imageSrc =
-    course.thumbnail || course.instructor?.avatar || FALLBACK_THUMB;
+    resolveMediaUrl(course.thumbnail) || resolveMediaUrl(course.instructor?.avatar) || FALLBACK_THUMB;
 
   const typeLabel = isHybrid
     ? t("explore.categories.hybrid", { defaultValue: isRtl ? "مجموعة حية" : "Live Cohort" })
