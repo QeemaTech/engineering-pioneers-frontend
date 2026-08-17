@@ -1472,6 +1472,8 @@
       "terms": "Terms & Conditions"
     },
     "copyright": "© 2026 Engineering Pioneers. All rights reserved.",
+    "developedBy": "Developed & Designed by",
+    "qeemaTech": "Qeema Tech",
     "socialComingSoon": "Social links coming soon — set VITE_SOCIAL_*_URL in your environment to enable."
   },
   "auth": {

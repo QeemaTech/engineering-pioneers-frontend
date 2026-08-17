@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Mail, MapPin } from "lucide-react";
 import { useSiteSettings } from "../features/public/siteSettings/hooks";
+import QeemaCopyrightBadge from "./common/QeemaCopyrightBadge";
 
 const FbIcon = () => (
   <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden>
@@ -179,8 +180,9 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 md:flex-row">
-          <p className="text-center text-xs text-slate-500 md:text-start">{t("footer.copyright")}</p>
+        <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 md:flex-row">
+          <p className="text-center text-xs text-slate-400 md:text-start">{t("footer.copyright")}</p>
+          <QeemaCopyrightBadge variant="dark" />
           <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-500">
             <Link to="/terms" className="transition hover:text-[#EE7C11]">
               {t("footer.teaching.terms")}

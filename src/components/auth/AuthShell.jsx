@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { GraduationCap, Layers, ShieldCheck } from "lucide-react";
+import QeemaCopyrightBadge from "../common/QeemaCopyrightBadge";
 
 const highlights = [
   { icon: GraduationCap, key: "auth.shell.highlight1" },
@@ -12,7 +13,7 @@ export default function AuthShell({ title, subtitle, footer, children }) {
   const { t } = useTranslation();
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-50 text-slate-900 dark:bg-[#0B0B10] dark:text-white">
+    <div className="relative flex min-h-screen flex-col justify-between overflow-hidden bg-slate-50 text-slate-900 dark:bg-[#0B0B10] dark:text-white">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(238,124,17,0.12),transparent_50%),radial-gradient(ellipse_at_bottom_right,rgba(13,148,136,0.14),transparent_55%)]" />
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.35] dark:opacity-20"
@@ -23,7 +24,7 @@ export default function AuthShell({ title, subtitle, footer, children }) {
         }}
       />
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 py-8 lg:flex-row lg:items-center lg:gap-10 lg:px-8">
+      <div className="relative mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-8 lg:flex-row lg:items-center lg:gap-10 lg:px-8">
         {/* Brand panel */}
         <section className="mb-8 flex flex-1 flex-col justify-center lg:mb-0 lg:pe-6">
           <Link to="/" className="mb-8 inline-flex items-center gap-3">
@@ -76,6 +77,14 @@ export default function AuthShell({ title, subtitle, footer, children }) {
           </div>
         </section>
       </div>
+
+      {/* Auth page bottom footer */}
+      <footer className="relative z-10 border-t border-slate-200/60 bg-white/40 px-4 py-4 backdrop-blur-sm dark:border-white/5 dark:bg-black/20 lg:px-8">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 sm:flex-row">
+          <p className="text-center sm:text-start">{t("footer.copyright")}</p>
+          <QeemaCopyrightBadge variant="auto" />
+        </div>
+      </footer>
     </div>
   );
 }
