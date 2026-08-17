@@ -400,7 +400,7 @@ export default function Checkout() {
             </div>
           ) : null}
 
-          {flow !== "success" && ((course && course.isLifetimePurchasable) || liveSession || packageData) ? (
+          {flow !== "success" && ((course && course.isLifetimePurchasable) || (liveSession && liveSession.canCheckout) || packageData) ? (
             <>
               {courseId ? (
                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-600 dark:bg-slate-800/50">
@@ -483,7 +483,7 @@ export default function Checkout() {
             </div>
           ) : null}
 
-          {flow !== "success" && ((course && course.isLifetimePurchasable) || liveSession || packageData) ? (
+          {flow !== "success" && ((course && course.isLifetimePurchasable) || (liveSession && liveSession.canCheckout) || packageData) ? (
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
               <Link
                 to={packageId ? "/packages" : (liveSessionId ? "/student/live-sessions" : `/courses/${courseId}`)}
