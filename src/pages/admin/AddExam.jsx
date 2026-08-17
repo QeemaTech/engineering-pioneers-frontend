@@ -34,10 +34,16 @@ function AddExam() {
   ];
 
   const handleLevelToggle = (lvl) => {
-    if (selectedLevels.includes(lvl)) {
-      setSelectedLevels(selectedLevels.filter((l) => l !== lvl));
+    if (lvl === "GENERAL") {
+      setSelectedLevels(selectedLevels.includes("GENERAL") ? selectedLevels.filter((l) => l !== "GENERAL") : ["GENERAL"]);
+      return;
+    }
+    const withoutGeneral = selectedLevels.filter((l) => l !== "GENERAL");
+    if (withoutGeneral.includes(lvl)) {
+      const next = withoutGeneral.filter((l) => l !== lvl);
+      setSelectedLevels(next.length ? next : ["GENERAL"]);
     } else {
-      setSelectedLevels([...selectedLevels, lvl]);
+      setSelectedLevels([...withoutGeneral, lvl]);
     }
   };
 
@@ -143,8 +149,15 @@ function AddExam() {
           {/* Academic target levels */}
           <div className="space-y-2 pt-2">
             <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
-              {isRtl ? "السنوات الدراسية المستهدفة" : "Target Academic Levels"}
+              {t("adminPages.addExam.targetLevels", { defaultValue: isRtl ? "السنوات الدراسية المستهدفة" : "Target Academic Levels" })}
             </span>
+            <p className="text-xs text-slate-500">
+              {t("adminPages.addExam.targetLevelsHint", {
+                defaultValue: isRtl
+                  ? "عام = لكل الطلبة. شيل «عام» واختار فرقة واحدة عشان الامتحان المجاني يوصل للدفعة دي بس."
+                  : "General = every student. Uncheck General and pick a year so this free exam only reaches that academic batch.",
+              })}
+            </p>
             <div className="grid grid-cols-2 gap-2 rounded-xl bg-slate-50 dark:bg-[#0F0F13] p-4 border border-slate-100 dark:border-white/5">
               {LEVELS.map((lvl) => (
                 <label key={lvl.value} className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 cursor-pointer">

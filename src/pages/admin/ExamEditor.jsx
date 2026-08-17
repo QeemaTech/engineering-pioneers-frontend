@@ -124,7 +124,7 @@ export default function ExamEditor() {
           importantInstructions: textToList(settings.importantInstructionsText),
           preparationTips: textToList(settings.preparationTipsText),
           readyMessage: settings.readyMessage?.trim() || null,
-          targetLevels: settings.targetLevels,
+          targetLevels: settings.targetLevels?.length ? settings.targetLevels : ["GENERAL"],
         },
       });
       setEditingSettings(false);
@@ -252,6 +252,14 @@ export default function ExamEditor() {
               <span className="text-xs font-bold text-slate-500">
                 {isRtl ? "السنوات الدراسية المستهدفة" : "Target Academic Levels"}
               </span>
+              <p className="mt-1 text-[11px] text-slate-400">
+                {label(
+                  "targetLevelsHint",
+                  isRtl
+                    ? "عام = لكل الطلبة. شيل «عام» واختار فرقة واحدة عشان الامتحان المستقل يوصل للدفعة دي بس."
+                    : "General = every student. Uncheck General and pick a year so this standalone exam only reaches that academic batch."
+                )}
+              </p>
               <div className="mt-1.5 grid grid-cols-2 gap-2 rounded-xl bg-slate-50 dark:bg-[#0F0F13] p-4 border border-slate-100 dark:border-white/5">
                 {LEVELS.map((lvl) => (
                   <label key={lvl.value} className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 cursor-pointer">
@@ -260,9 +268,16 @@ export default function ExamEditor() {
                       checked={(settings.targetLevels || []).includes(lvl.value)}
                       onChange={() => {
                         const current = settings.targetLevels || [];
-                        const updated = current.includes(lvl.value)
-                          ? current.filter((v) => v !== lvl.value)
-                          : [...current, lvl.value];
+                        let updated;
+                        if (lvl.value === "GENERAL") {
+                          updated = current.includes("GENERAL") ? current.filter((v) => v !== "GENERAL") : ["GENERAL"];
+                        } else {
+                          const withoutGeneral = current.filter((v) => v !== "GENERAL");
+                          updated = withoutGeneral.includes(lvl.value)
+                            ? withoutGeneral.filter((v) => v !== lvl.value)
+                            : [...withoutGeneral, lvl.value];
+                          if (!updated.length) updated = ["GENERAL"];
+                        }
                         setSettings({ ...settings, targetLevels: updated });
                       }}
                       className="rounded text-pioneer-orange-normal focus:ring-pioneer-orange-normal/30 h-4 w-4"
