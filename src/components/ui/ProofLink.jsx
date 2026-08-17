@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ExternalLink, Loader2 } from "lucide-react";
-import client from "../api/client";
+import client from "../../api/client";
 
 function isExternalHttp(url) {
   return typeof url === "string" && /^https?:\/\//i.test(url.trim()) && !/\/uploads\/(receipts|payouts)\//i.test(url);

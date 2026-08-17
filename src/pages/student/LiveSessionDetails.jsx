@@ -296,7 +296,7 @@ export default function LiveSessionDetails() {
                   </div>
                 )}
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
