@@ -5,6 +5,7 @@ import { usePublicPost } from "../features/public/hooks";
 import { localizedPostFields } from "../utils/cmsLocale";
 import SocialShare from "../components/SocialShare";
 import { resolveMediaUrl } from "../utils/mediaUrl";
+import SEOHead from "../components/common/SEOHead";
 
 function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null;
@@ -78,8 +79,39 @@ export default function BlogPostPage() {
   const status = axios.isAxiosError(error) ? error.response?.status : undefined;
   const { title, content } = localizedPostFields(post, i18n.language);
 
+  const articleSchema = post ? {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": title,
+    "image": post.thumbnail ? resolveMediaUrl(post.thumbnail) : undefined,
+    "datePublished": post.createdAt,
+    "dateModified": post.updatedAt || post.createdAt,
+    "author": {
+      "@type": "Person",
+      "name": post.author?.fullName || "Engineering Pioneers"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Engineering Pioneers",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://engineeringpioneers.com/assets/logo.png"
+      }
+    }
+  } : null;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-slate-50/80 to-white py-12 md:py-16">
+      {post && (
+        <SEOHead
+          title={`${title} | رواد الهندسة`}
+          description={typeof content === "string" ? content.slice(0, 160) : title}
+          image={post.thumbnail ? resolveMediaUrl(post.thumbnail) : undefined}
+          schema={articleSchema}
+          type="article"
+          path={`/blogs/${slug}`}
+        />
+      )}
       <div className="mx-auto max-w-3xl px-4 md:px-6 lg:px-8">
         <nav className="text-sm text-slate-500">
           <Link to="/" className="transition hover:text-[#EE7C11]">

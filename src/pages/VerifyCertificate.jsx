@@ -7,6 +7,7 @@ import client from "../api/client";
 import endpoints from "../api/endpoints";
 import { getErrorMessage } from "../api/error";
 import { getStaticCertificateUrl, openCertificateDownloadUrl } from "../utils/certificate";
+import SEOHead from "../components/common/SEOHead";
 
 async function fetchVerifiedCertificate(serial) {
   const res = await client.get(endpoints.public.verifyCertificate(serial), { skip403Redirect: true });
@@ -39,6 +40,10 @@ export default function VerifyCertificate() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-16">
+      <SEOHead
+        path={decodedSerial ? `/verify-certificate/${encodeURIComponent(decodedSerial)}` : "/verify-certificate"}
+        title={decodedSerial ? `التحقق من الشهادة: ${decodedSerial} | رواد الهندسة` : undefined}
+      />
       <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-[#1E293B]">
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-pioneer-orange-light">

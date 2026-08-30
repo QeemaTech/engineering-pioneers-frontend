@@ -4,6 +4,7 @@ import { ChevronDown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { usePublicLandingPage } from "../features/public/hooks";
 import { pickLocalized } from "../utils/cmsLocale";
+import SEOHead from "../components/common/SEOHead";
 
 type FaqItem = { id?: string; question?: unknown; answer?: unknown };
 
@@ -34,8 +35,22 @@ export default function FaqPage() {
     return normalizeFaqContent(faq?.content, lang);
   }, [data?.sections, lang]);
 
+  const faqSchema = items.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": items.map((item) => ({
+      "@type": "Question",
+      "name": item.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.answer
+      }
+    }))
+  } : null;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-slate-50/80 to-white py-12 md:py-16">
+      <SEOHead path="/faq" schema={faqSchema} />
       <div className="mx-auto max-w-3xl px-4 md:px-6">
         <nav className="text-sm text-slate-500">
           <Link to="/" className="transition hover:text-[#EE7C11]">

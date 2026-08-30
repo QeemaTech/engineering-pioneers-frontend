@@ -22,7 +22,7 @@ import {
   usePublicInstructorCourses,
   usePublicInstructorSlots,
 } from "../features/public/instructors/hooks";
-import { resolveMediaUrl } from "../utils/mediaUrl";
+import SEOHead from "../components/common/SEOHead";
 
 function initials(name = "") {
   const parts = String(name).trim().split(/\s+/).filter(Boolean);
@@ -95,8 +95,30 @@ export default function InstructorProfile() {
     );
   }
 
+  const instructorSchema = instructor ? {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": instructor.fullName,
+    "description": instructor.bio || `محاضر وخبير في منصة رواد الهندسة`,
+    "jobTitle": "Engineering Instructor",
+    "worksFor": {
+      "@type": "Organization",
+      "name": "Engineering Pioneers"
+    },
+    "image": instructor.avatar || undefined
+  } : null;
+
   return (
     <div className="bg-slate-50/50 pb-20">
+      {instructor && (
+        <SEOHead
+          title={`${instructor.fullName} | رواد الهندسة`}
+          description={instructor.bio?.slice(0, 160) || `تعرف على المهندس ${instructor.fullName} والكورسات المقدمة على منصة رواد الهندسة.`}
+          image={instructor.avatar || undefined}
+          schema={instructorSchema}
+          path={`/instructors/${id}`}
+        />
+      )}
       
       {/* 1. Global Premium Header Banner */}
       <section className="relative overflow-hidden bg-gradient-to-r from-orange-50/60 to-blue-50/40 border-b border-slate-200/80 px-4 py-16 text-slate-900 md:px-6 lg:py-20 font-cairo">

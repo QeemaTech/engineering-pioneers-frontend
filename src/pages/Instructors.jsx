@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Search, Sparkles, Users } from "lucide-react";
 import InstructorCard from "../components/public/InstructorCard";
 import { usePublicInstructors } from "../features/public/instructors/hooks";
+import SEOHead from "../components/common/SEOHead";
 
 function CardSkeleton() {
   return (
@@ -34,6 +35,7 @@ export default function Instructors() {
 
   return (
     <div className="bg-white">
+      <SEOHead path="/instructors" />
       <section className="border-b border-slate-100 bg-gradient-to-b from-pioneer-orange-light/40 to-white py-14 md:py-16">
         <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">

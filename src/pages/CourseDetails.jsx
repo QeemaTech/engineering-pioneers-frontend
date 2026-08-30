@@ -29,6 +29,7 @@ import { computeAverageRating } from "../features/student/reviews/api";
 import { useCourseReviews } from "../features/student/reviews/hooks";
 import PublicCourseCurriculum from "../components/public/PublicCourseCurriculum";
 import CourseReviewsSection from "../components/course/CourseReviewsSection";
+import SEOHead from "../components/common/SEOHead";
 
 function Stars({ rating, max = 5, size = "h-4 w-4" }) {
   return (
@@ -211,8 +212,45 @@ export default function CourseDetails() {
     );
   }
 
+  const courseSchema = course ? {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": course.title,
+    "description": course.description || course.title,
+    "provider": {
+      "@type": "Organization",
+      "name": "Engineering Pioneers",
+      "sameAs": "https://engineeringpioneers.com"
+    },
+    "image": course.thumbnail ? resolveMediaUrl(course.thumbnail) : undefined,
+    "instructor": course.instructor ? {
+      "@type": "Person",
+      "name": course.instructor.fullName || "Instructor"
+    } : undefined,
+    "offers": {
+      "@type": "Offer",
+      "price": course.price || 0,
+      "priceCurrency": "EGP",
+      "availability": "https://schema.org/InStock"
+    },
+    "aggregateRating": reviewStats.count > 0 ? {
+      "@type": "AggregateRating",
+      "ratingValue": reviewStats.average || 5,
+      "reviewCount": reviewStats.count
+    } : undefined
+  } : null;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-slate-50/80 to-white py-10 md:py-14">
+      {course && (
+        <SEOHead
+          title={course.title}
+          description={course.description?.slice(0, 160) || course.title}
+          image={course.thumbnail ? resolveMediaUrl(course.thumbnail) : undefined}
+          schema={courseSchema}
+          path={`/courses/${id}`}
+        />
+      )}
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
         <nav className="mb-6 flex items-center gap-1.5 text-sm text-slate-500">
           <Link to="/explore" className="transition hover:text-[#EE7C11]">

@@ -7,6 +7,7 @@ import { useSiteSettings } from "../features/public/siteSettings/hooks";
 import { parseCmsSections } from "../utils/cmsLocale";
 import ContactForm from "../components/ContactForm";
 import BecomeInstructorModal from "../components/BecomeInstructorModal";
+import SEOHead from "../components/common/SEOHead";
 
 function SectionBlock({ section, isRtl }) {
   const Chevron = isRtl ? ChevronLeft : ChevronRight;
@@ -56,6 +57,11 @@ export default function StaticContentPage({ slug, showContactInfo = false, extra
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-slate-50/80 to-white py-12 md:py-16">
+      <SEOHead
+        path={`/${slug}`}
+        title={title ? `${title} | رواد الهندسة` : undefined}
+        description={subtitle || undefined}
+      />
       <div className="mx-auto max-w-4xl px-4 md:px-6">
         <nav className="text-sm text-slate-500">
           <Link to="/" className="transition hover:text-[#EE7C11]">

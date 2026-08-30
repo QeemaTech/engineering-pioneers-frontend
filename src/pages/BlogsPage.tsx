@@ -4,6 +4,7 @@ import { BookOpen, ArrowRight, ArrowLeft } from "lucide-react";
 import { usePublicPosts } from "../features/public/hooks";
 import { localizedPostFields } from "../utils/cmsLocale";
 import { resolveMediaUrl } from "../utils/mediaUrl";
+import SEOHead from "../components/common/SEOHead";
 
 export default function BlogsPage() {
   const { t, i18n } = useTranslation();
@@ -15,6 +16,7 @@ export default function BlogsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-slate-50/80 to-white py-12 md:py-16">
+      <SEOHead path="/blogs" />
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
         <nav className="text-sm text-slate-500">
           <Link to="/" className="transition hover:text-[#EE7C11]">

@@ -57,6 +57,9 @@ const endpoints = {
     reviewFeature: (id) => `/admin/reviews/${id}/feature`,
     reviewDelete: (id) => `/admin/reviews/${id}`,
     reviewsExportPdf: "/admin/reviews/export-pdf",
+    seo: "/admin/seo",
+    seoAudit: "/admin/seo/audit",
+    seoSitemapPreview: "/admin/seo/sitemap-preview",
   },
   instructorDashboard: {
     overview: "/instructor/dashboard/overview",
@@ -153,6 +156,7 @@ const endpoints = {
     events: "/public/events",
     eventDetail: (id) => `/public/events/${id}`,
     courseReviews: (courseId) => `/courses/${courseId}/reviews`,
+    seoSettings: "/public/seo/settings",
   },
   media: {
     uploadImage: "/media/images",

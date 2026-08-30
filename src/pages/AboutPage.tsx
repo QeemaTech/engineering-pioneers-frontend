@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Target, Sparkles, Users } from "lucide-react";
 import { usePublicLandingPage } from "../features/public/hooks";
 import { pickLocalized } from "../utils/cmsLocale";
+import SEOHead from "../components/common/SEOHead";
 
 type AboutContent = {
   mission?: unknown;
@@ -34,6 +35,7 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-slate-50/80 to-white py-12 md:py-16">
+      <SEOHead path="/about" />
       <div className="mx-auto max-w-5xl px-4 md:px-6">
         <nav className="text-sm text-slate-500">
           <Link to="/" className="transition hover:text-[#EE7C11]">

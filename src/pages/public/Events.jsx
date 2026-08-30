@@ -5,6 +5,7 @@ import { Sparkles, Calendar, Search, Loader2 } from "lucide-react";
 import client from "../../api/client";
 import endpoints from "../../api/endpoints";
 import EventCard from "../../components/public/EventCard";
+import SEOHead from "../../components/common/SEOHead";
 
 function GridSkeleton() {
   return (
@@ -63,6 +64,7 @@ export default function Events() {
 
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-[#0F0F13] pb-20">
+      <SEOHead path="/events" />
       
       {/* Hero Banner */}
       <section className="relative border-b border-slate-250/20 bg-slate-900 text-white py-16 md:py-20 overflow-hidden">

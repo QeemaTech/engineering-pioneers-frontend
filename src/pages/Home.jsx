@@ -9,6 +9,7 @@ import Testimonials from "../components/Testimonials";
 import Feedback from "../components/Feedback";
 import FaqSection from "../components/FaqSection";
 import HomeNewsBoard from "../components/HomeNewsBoard";
+import SEOHead from "../components/common/SEOHead";
 import client from "../api/client";
 
 function Home() {
@@ -28,8 +29,23 @@ function Home() {
   const isVisible = (key) =>
     sections.length === 0 || sections.some((s) => s?.key === key && s?.isVisible !== false);
 
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": "Engineering Pioneers | رواد الهندسة",
+    "url": "https://engineeringpioneers.com",
+    "logo": "https://engineeringpioneers.com/assets/logo.png",
+    "description": "المنصة التعليمية الرائدة للطلاب والمهندسين في العالم العربي، تقدم كورسات هندسية متخصصة وحصص مباشرة مع نخبة من أفضل الأساتذة.",
+    "sameAs": [
+      "https://facebook.com",
+      "https://twitter.com",
+      "https://linkedin.com"
+    ]
+  };
+
   return (
     <div className="overflow-hidden">
+      <SEOHead path="/" schema={organizationSchema} />
       {showHero ? <Hero cmsContent={heroSection?.content} stats={data?.stats} /> : null}
       <Features />
       <RecommendedCourses />

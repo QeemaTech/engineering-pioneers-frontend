@@ -1,4 +1,13 @@
+# Dependencies
 node_modules/
+
+# Build output
 dist/
+
+# Environment variables (sensitive information)
 .env
+
+# IDE and editor settings
+.idea/
+.vscode/
 .cursor/

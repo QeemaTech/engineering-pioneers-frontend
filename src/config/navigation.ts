@@ -351,6 +351,12 @@ export function getAdminNavigation(openTicketsCount = 0): NavSection[] {
               icon: Settings2,
               permission: "settings:manage",
             },
+            {
+              labelKey: "sidebarNav.items.seo",
+              path: "/admin/settings/seo",
+              icon: Globe,
+              permission: "settings:manage",
+            },
           ],
         },
       ],

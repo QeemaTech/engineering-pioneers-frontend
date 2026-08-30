@@ -18,6 +18,7 @@ import useAuthStore from "../store/authStore";
 import { APP_ROLES, normalizeRole } from "../config/permissions";
 import { useToggleWishlist, useWishlist } from "../features/student/wishlist/hooks";
 import { resolveMediaUrl } from "../utils/mediaUrl";
+import SEOHead from "../components/common/SEOHead";
 
 const FALLBACK_THUMB =
   "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80";
@@ -238,6 +239,7 @@ export default function Explore() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-slate-50/80 to-white pb-16 pt-10 md:pt-14">
+      <SEOHead path="/explore" />
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="text-3xl font-black tracking-tight text-slate-900 md:text-4xl lg:text-[2.65rem] font-cairo">

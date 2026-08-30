@@ -9,6 +9,7 @@ import { usePublicPackages } from "../features/public/hooks";
 import useAuthStore from "../store/authStore";
 import { APP_ROLES, normalizeRole } from "../config/permissions";
 import { resolveMediaUrl } from "../utils/mediaUrl";
+import SEOHead from "../components/common/SEOHead";
 
 // ─── Image Fallback ─────────────────────────────────────────────────────────────
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600&auto=format&fit=crop";
@@ -207,6 +208,7 @@ export default function PublicPackages() {
 
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-[#0C0C0E] py-12 md:py-16">
+      <SEOHead path="/packages" />
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
         
         {/* Header Block */}
