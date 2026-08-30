@@ -11,64 +11,164 @@ function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null;
 }
 
+function renderFormattedText(text: string) {
+  if (!text) return null;
+
+  // Split by line breaks
+  const lines = text.split(/\r?\n/);
+  const elements: React.ReactNode[] = [];
+  let currentList: string[] = [];
+
+  const flushList = () => {
+    if (currentList.length > 0) {
+      elements.push(
+        <ul key={`list-${elements.length}`} className="my-4 list-disc space-y-2 ps-6 text-slate-700 dark:text-slate-300">
+          {currentList.map((item, idx) => (
+            <li key={idx} className="leading-relaxed">
+              {item}
+            </li>
+          ))}
+        </ul>
+      );
+      currentList = [];
+    }
+  };
+
+  lines.forEach((line, index) => {
+    const trimmed = line.trim();
+
+    if (!trimmed) {
+      flushList();
+      return;
+    }
+
+    // Heading 1 (# ...)
+    if (trimmed.startsWith("# ")) {
+      flushList();
+      elements.push(
+        <h2 key={index} className="mt-8 mb-4 text-2xl font-black text-slate-900 dark:text-white">
+          {trimmed.slice(2)}
+        </h2>
+      );
+      return;
+    }
+
+    // Heading 2 (## ...)
+    if (trimmed.startsWith("## ")) {
+      flushList();
+      elements.push(
+        <h3 key={index} className="mt-6 mb-3 text-xl font-bold text-slate-900 dark:text-white">
+          {trimmed.slice(3)}
+        </h3>
+      );
+      return;
+    }
+
+    // Heading 3 (### ...)
+    if (trimmed.startsWith("### ")) {
+      flushList();
+      elements.push(
+        <h4 key={index} className="mt-5 mb-2 text-lg font-bold text-[#EE7C11]">
+          {trimmed.slice(4)}
+        </h4>
+      );
+      return;
+    }
+
+    // Blockquote (> ...)
+    if (trimmed.startsWith("> ")) {
+      flushList();
+      elements.push(
+        <blockquote
+          key={index}
+          className="my-4 border-s-4 border-[#EE7C11] bg-orange-50/50 p-4 font-medium italic text-slate-700 dark:bg-orange-500/10 dark:text-slate-200 rounded-e-xl"
+        >
+          {trimmed.slice(2)}
+        </blockquote>
+      );
+      return;
+    }
+
+    // Bullet points (- ... or * ...)
+    if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
+      currentList.push(trimmed.slice(2));
+      return;
+    }
+
+    // Regular paragraph
+    flushList();
+    elements.push(
+      <p key={index} className="my-3 text-base leading-relaxed text-slate-700 dark:text-slate-300">
+        {trimmed}
+      </p>
+    );
+  });
+
+  flushList();
+  return <div className="space-y-1">{elements}</div>;
+}
+
 function PostBody({ content }: { content: unknown }) {
   const { t } = useTranslation();
 
-  if (!isRecord(content)) {
-    return <p className="text-slate-500">{String(content ?? "")}</p>;
+  if (!content) {
+    return <p className="text-slate-500">{t("publicBlogs.emptyBody", { defaultValue: "No content available." })}</p>;
   }
 
-  const format = content.format;
-  const body = content.body;
-  if (format === "markdown" && typeof body === "string") {
-    return (
-      <div className="max-w-none text-base leading-relaxed text-slate-700">
-        <div className="whitespace-pre-wrap">{body}</div>
-      </div>
-    );
+  if (typeof content === "string") {
+    return renderFormattedText(content);
   }
 
-  const bullets = content.bullets;
-  if (Array.isArray(bullets) && bullets.length > 0) {
-    return (
-      <ul className="list-disc space-y-3 ps-5 text-slate-700">
-        {bullets.map((item, i) => {
-          if (!isRecord(item)) return null;
-          const title = typeof item.title === "string" ? item.title : null;
-          const b = typeof item.body === "string" ? item.body : null;
-          return (
-            <li key={i}>
-              {title ? <span className="font-semibold text-slate-900">{title}: </span> : null}
-              {b}
-            </li>
-          );
-        })}
-      </ul>
-    );
+  if (isRecord(content)) {
+    // 1. Markdown or Body string
+    if (typeof content.body === "string" && content.body.trim()) {
+      return renderFormattedText(content.body);
+    }
+    if (typeof content.text === "string" && content.text.trim()) {
+      return renderFormattedText(content.text);
+    }
+
+    // 2. Bullets array
+    const bullets = content.bullets;
+    if (Array.isArray(bullets) && bullets.length > 0) {
+      return (
+        <ul className="list-disc space-y-3 ps-5 text-slate-700 dark:text-slate-300">
+          {bullets.map((item, i) => {
+            if (!isRecord(item)) return <li key={i}>{String(item)}</li>;
+            const title = typeof item.title === "string" ? item.title : null;
+            const b = typeof item.body === "string" ? item.body : null;
+            return (
+              <li key={i} className="leading-relaxed">
+                {title ? <strong className="font-bold text-slate-900 dark:text-white">{title}: </strong> : null}
+                {b}
+              </li>
+            );
+          })}
+        </ul>
+      );
+    }
+
+    // 3. Blocks array
+    const blocks = content.blocks;
+    if (Array.isArray(blocks) && blocks.length > 0) {
+      return (
+        <div className="space-y-4 text-slate-700 dark:text-slate-300">
+          {blocks.map((block, i) => {
+            if (!isRecord(block)) return null;
+            if (block.type === "paragraph" && typeof block.text === "string") {
+              return <p key={i} className="leading-relaxed">{block.text}</p>;
+            }
+            if (block.type === "heading" && typeof block.text === "string") {
+              return <h3 key={i} className="text-xl font-bold text-slate-900 dark:text-white">{block.text}</h3>;
+            }
+            return null;
+          })}
+        </div>
+      );
+    }
   }
 
-  const blocks = content.blocks;
-  if (Array.isArray(blocks) && blocks.length > 0) {
-    return (
-      <div className="space-y-4 text-slate-700">
-        {blocks.map((block, i) => {
-          if (!isRecord(block)) return null;
-          if (block.type === "paragraph" && typeof block.text === "string") {
-            return <p key={i} className="leading-relaxed">{block.text}</p>;
-          }
-          return null;
-        })}
-      </div>
-    );
-  }
-
-  if (Array.isArray(blocks) && blocks.length === 0) {
-    return <p className="text-slate-500">{t("publicBlogs.emptyBody")}</p>;
-  }
-
-  return (
-    <pre className="overflow-x-auto rounded-xl bg-slate-100 p-4 text-xs text-slate-700">{JSON.stringify(content, null, 2)}</pre>
-  );
+  return <p className="text-slate-500">{t("publicBlogs.emptyBody", { defaultValue: "No content available." })}</p>;
 }
 
 export default function BlogPostPage() {

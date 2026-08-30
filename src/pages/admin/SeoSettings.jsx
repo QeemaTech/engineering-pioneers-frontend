@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import PageHeader from "../../components/dashboard/PageHeader";
+import ImageUploader from "../../components/ui/ImageUploader";
 import {
   useAdminSeoSettings,
   useUpdateAdminSeoSettings,
@@ -329,32 +330,27 @@ Sitemap: ${globalForm.canonicalBaseUrl || "https://engineeringpioneers.com"}/sit
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div>
-                    <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                      {isArabic ? "الرابط الأساسي للمنصة (Canonical Base URL)" : "Canonical Base URL"}
-                    </label>
-                    <input
-                      type="url"
-                      value={globalForm.canonicalBaseUrl}
-                      onChange={(e) => handleGlobalChange("canonicalBaseUrl", e.target.value)}
-                      placeholder="https://engineeringpioneers.com"
-                      className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-[#EE7C11] focus:ring-2 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
-                    />
-                  </div>
+                <div>
+                  <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    {isArabic ? "الرابط الأساسي للمنصة (Canonical Base URL)" : "Canonical Base URL"}
+                  </label>
+                  <input
+                    type="url"
+                    value={globalForm.canonicalBaseUrl}
+                    onChange={(e) => handleGlobalChange("canonicalBaseUrl", e.target.value)}
+                    placeholder="https://engineeringpioneers.com"
+                    className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-[#EE7C11] focus:ring-2 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                  />
+                </div>
 
-                  <div>
-                    <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                      {isArabic ? "صورة المشاركة الافتراضية (OG Image)" : "Default Social Share Image"}
-                    </label>
-                    <input
-                      type="text"
-                      value={globalForm.ogImage}
-                      onChange={(e) => handleGlobalChange("ogImage", e.target.value)}
-                      placeholder="/assets/logo.png أو رابط كامل"
-                      className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-[#EE7C11] focus:ring-2 focus:ring-[#EE7C11]/20 dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
-                    />
-                  </div>
+                <div className="pt-2">
+                  <ImageUploader
+                    value={globalForm.ogImage}
+                    onChange={(url) => handleGlobalChange("ogImage", url)}
+                    label={isArabic ? "صورة المشاركة الافتراضية لمواقع التواصل (Social Share OG Image)" : "Default Social Share Image"}
+                    helperText={isArabic ? "الصورة التي ستظهر للمستخدمين عند إرسال أو مشاركة رابط المنصة على فيسبوك، واتساب، وتويتر (JPEG, PNG, WEBP حتى 5MB)." : "The image preview shown when sharing platform links on Facebook, WhatsApp, Twitter, etc."}
+                    kind="image"
+                  />
                 </div>
               </div>
             </div>
@@ -707,33 +703,27 @@ Sitemap: ${globalForm.canonicalBaseUrl || "https://engineeringpioneers.com"}/sit
                     />
                   </div>
 
-                  {/* Keywords & Custom OG Image */}
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                      <label className="mb-1 block text-xs font-bold uppercase text-slate-500 dark:text-slate-400">
-                        {isArabic ? "الكلمات المفتاحية المستهدفة" : "Focus Keywords"}
-                      </label>
-                      <input
-                        type="text"
-                        value={selectedPage.keywords || ""}
-                        onChange={(e) => handlePageChange("keywords", e.target.value)}
-                        placeholder="كورسات, تدريب هندسي, محاضرات"
-                        className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
-                      />
-                    </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-bold uppercase text-slate-500 dark:text-slate-400">
+                      {isArabic ? "الكلمات المفتاحية المستهدفة لهذه الصفحة" : "Focus Keywords"}
+                    </label>
+                    <input
+                      type="text"
+                      value={selectedPage.keywords || ""}
+                      onChange={(e) => handlePageChange("keywords", e.target.value)}
+                      placeholder="كورسات, تدريب هندسي, محاضرات"
+                      className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
+                    />
+                  </div>
 
-                    <div>
-                      <label className="mb-1 block text-xs font-bold uppercase text-slate-500 dark:text-slate-400">
-                        {isArabic ? "صورة مخصصة لمواقع التواصل (OG Image)" : "Custom OG Image"}
-                      </label>
-                      <input
-                        type="text"
-                        value={selectedPage.ogImage || ""}
-                        onChange={(e) => handlePageChange("ogImage", e.target.value)}
-                        placeholder="/assets/banner.png أو رابط صورة"
-                        className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-[#EE7C11] dark:border-white/10 dark:bg-[#0F0F13] dark:text-white"
-                      />
-                    </div>
+                  <div className="pt-2">
+                    <ImageUploader
+                      value={selectedPage.ogImage || ""}
+                      onChange={(url) => handlePageChange("ogImage", url)}
+                      label={isArabic ? "صورة المشاركة الخاصة بهذه الصفحة (Custom OG Image)" : "Custom Page Social Share Image"}
+                      helperText={isArabic ? "صورة مخصصة تظهر عند مشاركة رابط هذه الصفحة تحديداً على مواقع التواصل الاجتماعي (اختياري، في حال تركها فارغة سيتم استخدام الصورة الافتراضية للموقع)." : "Custom thumbnail shown when this specific page link is shared. Defaults to global site OG image if left empty."}
+                      kind="image"
+                    />
                   </div>
 
                   {/* Priority, ChangeFreq & NoIndex */}
