@@ -1,0 +1,12 @@
+# Robots.txt for Engineering Pioneers
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /student/
+Disallow: /instructor/
+Disallow: /api/
+Disallow: /uploads/receipts/
+Disallow: /uploads/payouts/
+
+# Sitemap location
+Sitemap: https://eng-pioneers.com/sitemap.xml

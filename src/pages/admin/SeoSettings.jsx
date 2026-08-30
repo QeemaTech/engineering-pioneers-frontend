@@ -64,8 +64,8 @@ export default function SeoSettings() {
 
   const { data: seoData, isLoading, refetch } = useAdminSeoSettings();
   const updateMutation = useUpdateAdminSeoSettings();
-  const { data: auditData, isLoading: isAuditLoading, refetch: refetchAudit } = useAdminSeoAudit();
-  const { data: sitemapXml } = useAdminSitemapPreview();
+  const { data: auditData, isLoading: isAuditLoading, isFetching: isAuditFetching, refetch: refetchAudit } = useAdminSeoAudit();
+  const { data: sitemapXml, refetch: refetchSitemap } = useAdminSitemapPreview();
 
   const [activeTab, setActiveTab] = useState("global");
   const [globalForm, setGlobalForm] = useState({
@@ -73,8 +73,8 @@ export default function SeoSettings() {
     titleTemplate: "%s | رواد الهندسة",
     metaDescription: "",
     metaKeywords: "",
-    ogImage: "/assets/logo.png",
-    canonicalBaseUrl: "https://engineeringpioneers.com",
+    ogImage: "https://eng-pioneers.com/assets/logo-icon.png",
+    canonicalBaseUrl: "https://eng-pioneers.com",
     googleSiteVerification: "",
     bingSiteVerification: "",
     googleAnalyticsId: "",
@@ -158,10 +158,20 @@ export default function SeoSettings() {
       robotsTxt,
     });
     refetchAudit();
+    refetchSitemap();
+  };
+
+  const handleRecheckAudit = async () => {
+    try {
+      await refetchAudit();
+      toast.success(isArabic ? "تم إعادة فحص الموقع وتحديث مؤشر الجودة بنجاح!" : "SEO Audit refreshed successfully!");
+    } catch {
+      toast.error(isArabic ? "تعذر تحديث الفحص حالياً" : "Failed to refresh SEO audit");
+    }
   };
 
   const handleCopySitemapUrl = () => {
-    const sitemapUrl = `${globalForm.canonicalBaseUrl || window.location.origin}/sitemap.xml`;
+    const sitemapUrl = `${globalForm.canonicalBaseUrl || "https://eng-pioneers.com"}/sitemap.xml`;
     navigator.clipboard.writeText(sitemapUrl);
     setCopiedSitemap(true);
     toast.success(isArabic ? "تم نسخ رابط خريطة الموقع" : "Sitemap URL copied");
@@ -180,7 +190,7 @@ Disallow: /uploads/receipts/
 Disallow: /uploads/payouts/
 
 # Sitemap location
-Sitemap: ${globalForm.canonicalBaseUrl || "https://engineeringpioneers.com"}/sitemap.xml
+Sitemap: ${globalForm.canonicalBaseUrl || "https://eng-pioneers.com"}/sitemap.xml
 `;
     setRobotsTxt(defaultRobots);
     toast.success(isArabic ? "تمت استعادة إعدادات ملف الروبوت الافتراضية" : "Reset to default robots.txt");
@@ -1005,27 +1015,30 @@ Sitemap: ${globalForm.canonicalBaseUrl || "https://engineeringpioneers.com"}/sit
                   : "Sitemap is dynamically generated from database entities including all published courses, active instructors, articles, and pages."}
               </p>
 
-              <div className="mt-4 flex items-center gap-2 rounded-xl bg-slate-50 p-3 font-mono text-xs text-slate-700 dark:bg-black/30 dark:text-slate-300">
-                <Globe className="h-4 w-4 text-slate-400" />
-                <span className="flex-1 truncate">
-                  {globalForm.canonicalBaseUrl || window.location.origin}/sitemap.xml
-                </span>
-                <button
-                  onClick={handleCopySitemapUrl}
-                  className="rounded-lg bg-white p-2 shadow-sm transition hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700"
-                  title="Copy URL"
-                >
-                  {copiedSitemap ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
-                </button>
-                <a
-                  href="/sitemap.xml"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-lg bg-white p-2 shadow-sm transition hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700"
-                  title="Open Sitemap"
-                >
-                  <ExternalLink className="h-4 w-4 text-[#EE7C11]" />
-                </a>
+              <div className="mt-4 space-y-2">
+                <div className="flex items-center gap-2 rounded-xl bg-slate-50 p-3 font-mono text-xs text-slate-700 dark:bg-black/30 dark:text-slate-300">
+                  <Globe className="h-4 w-4 text-[#EE7C11]" />
+                  <span className="flex-1 truncate">
+                    {globalForm.canonicalBaseUrl || "https://eng-pioneers.com"}/sitemap.xml
+                  </span>
+                  <button
+                    onClick={handleCopySitemapUrl}
+                    className="rounded-lg bg-white p-2 shadow-sm transition hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700"
+                    title={isArabic ? "نسخ الرابط" : "Copy URL"}
+                  >
+                    {copiedSitemap ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4 text-slate-600 dark:text-slate-300" />}
+                  </button>
+                  <a
+                    href="https://back.eng-pioneers.com/sitemap.xml"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1 rounded-lg bg-[#EE7C11]/10 px-2.5 py-1.5 font-sans text-xs font-bold text-[#EE7C11] transition hover:bg-[#EE7C11]/20"
+                    title="Open Live XML"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    <span>{isArabic ? "فتح الملف الحي" : "Open Live"}</span>
+                  </a>
+                </div>
               </div>
 
               {/* Sitemap Preview Box */}
@@ -1112,11 +1125,18 @@ Sitemap: ${globalForm.canonicalBaseUrl || "https://engineeringpioneers.com"}/sit
                 {isArabic ? "قائمة التنبيهات والتوصيات البرمجية" : "Audit Checklist & Recommendations"}
               </h4>
               <button
-                onClick={() => refetchAudit()}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200"
+                onClick={handleRecheckAudit}
+                disabled={isAuditFetching}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3.5 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 disabled:opacity-60"
               >
-                <RotateCcw className="h-3.5 w-3.5" />
-                {isArabic ? "إعادة الفحص" : "Re-run Audit"}
+                <RotateCcw className={`h-3.5 w-3.5 ${isAuditFetching ? "animate-spin text-[#EE7C11]" : ""}`} />
+                {isAuditFetching
+                  ? isArabic
+                    ? "جاري الفحص..."
+                    : "Scanning..."
+                  : isArabic
+                  ? "إعادة الفحص الآن"
+                  : "Re-run Audit"}
               </button>
             </div>
 
