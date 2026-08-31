@@ -1,16 +1,19 @@
+import { lazy, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
-import CTA from "../components/CTA";
 import Features from "../components/Features";
 import Hero from "../components/Hero";
-import HowItWorks from "../components/HowItWorks";
 import RecommendedCourses from "../components/RecommendedCourses";
-import HomePackagesSection from "../components/HomePackagesSection";
-import Testimonials from "../components/Testimonials";
-import Feedback from "../components/Feedback";
-import FaqSection from "../components/FaqSection";
-import HomeNewsBoard from "../components/HomeNewsBoard";
 import SEOHead from "../components/common/SEOHead";
 import client from "../api/client";
+
+// Lazy load below-the-fold components for instant FCP/LCP
+const HomePackagesSection = lazy(() => import("../components/HomePackagesSection"));
+const HowItWorks = lazy(() => import("../components/HowItWorks"));
+const HomeNewsBoard = lazy(() => import("../components/HomeNewsBoard"));
+const Testimonials = lazy(() => import("../components/Testimonials"));
+const Feedback = lazy(() => import("../components/Feedback"));
+const FaqSection = lazy(() => import("../components/FaqSection"));
+const CTA = lazy(() => import("../components/CTA"));
 
 function Home() {
   const { data, isPending: landingLoading } = useQuery({
@@ -49,18 +52,20 @@ function Home() {
       {showHero ? <Hero cmsContent={heroSection?.content} stats={data?.stats} /> : null}
       <Features />
       <RecommendedCourses />
-      <HomePackagesSection />
-      <HowItWorks />
-      <HomeNewsBoard />
-      {isVisible("TESTIMONIALS") ? (
-        Array.isArray(data?.featuredReviews) && data.featuredReviews.length > 0 ? (
-          <Feedback featuredReviews={data.featuredReviews} reviewsLoading={landingLoading} />
-        ) : (
-          <Testimonials />
-        )
-      ) : null}
-      {isVisible("FAQ") ? <FaqSection rawContent={faqSection?.content} /> : null}
-      <CTA />
+      <Suspense fallback={<div className="py-8" />}>
+        <HomePackagesSection />
+        <HowItWorks />
+        <HomeNewsBoard />
+        {isVisible("TESTIMONIALS") ? (
+          Array.isArray(data?.featuredReviews) && data.featuredReviews.length > 0 ? (
+            <Feedback featuredReviews={data.featuredReviews} reviewsLoading={landingLoading} />
+          ) : (
+            <Testimonials />
+          )
+        ) : null}
+        {isVisible("FAQ") ? <FaqSection rawContent={faqSection?.content} /> : null}
+        <CTA />
+      </Suspense>
     </div>
   );
 }
