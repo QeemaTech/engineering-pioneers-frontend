@@ -366,6 +366,7 @@ export default function Header() {
             <button
               type="button"
               onClick={toggleLanguage}
+              aria-label={t("header.topbar.language", { defaultValue: "Toggle Language" })}
               className="flex items-center gap-1 text-xs transition hover:text-pioneer-orange-normal"
             >
               <Globe className="h-3.5 w-3.5" />
@@ -381,14 +382,15 @@ export default function Header() {
         <div className="flex h-[72px] items-center justify-between">
           {/* Logo */}
           <Link to="/" className="shrink-0">
-<div className="flex items-center gap-2">
-  
-            <img
-              src="/assets/ChatGPT%20Image%20Mar%2025,%202026,%2002_45_22%20PM%201.svg"
-                alt={t("header.logoAlt")}
+            <div className="flex items-center gap-2">
+              <img
+                src="/assets/ChatGPT%20Image%20Mar%2025,%202026,%2002_45_22%20PM%201.svg"
+                alt={t("header.logoAlt", { defaultValue: "Engineering Pioneers Logo" })}
+                width="48"
+                height="48"
                 className="h-10 w-auto md:h-12"
               />
-              <h1 className="text-2xl font-bold text-slate-900">Engineering Pioneers </h1>
+              <span className="text-2xl font-bold text-slate-900">Engineering Pioneers</span>
             </div>
           </Link>
 
@@ -432,7 +434,7 @@ export default function Header() {
               type="button"
               className="rounded-md p-2 text-slate-700"
               onClick={() => setIsMenuOpen((v) => !v)}
-              aria-label={t("header.mobile.menuToggle")}
+              aria-label={t("header.mobile.menuToggle", { defaultValue: "Toggle Navigation Menu" })}
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>

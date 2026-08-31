@@ -1,24 +1,26 @@
+import { lazy } from "react";
 import { Navigate, Route } from "react-router-dom";
 import { APP_ROLES } from "../config/permissions";
 import GuardedRoute from "./guardedRoute";
 import InstructorLayout from "../layouts/InstructorLayout";
-import InstructorOverview from "../pages/instructor/Overview";
-import InstructorCourses from "../pages/instructor/Courses";
-import InstructorCreateCourse from "../pages/instructor/CreateCourse";
-import InstructorEditCourse from "../pages/instructor/EditCourse";
-import InstructorExams from "../pages/instructor/Exams";
-import InstructorExamDetailPage from "../pages/instructor/ExamDetail";
-import InstructorStudents from "../pages/instructor/Students";
-import InstructorStudentDetail from "../pages/instructor/StudentDetail";
-import InstructorQna from "../pages/instructor/Qna";
-import InstructorWallet from "../pages/instructor/Wallet";
-import InstructorPerformance from "../pages/instructor/Performance";
-import InstructorHomework from "../pages/instructor/Homework";
-import InstructorAvailability from "../pages/instructor/Availability";
-import InstructorAttendance from "../pages/instructor/Attendance";
-import InstructorSettings from "../pages/instructor/Settings";
-import InstructorLiveSessions from "../pages/instructor/LiveSessions";
-import InstructorSurveys from "../pages/instructor/Surveys";
+
+const InstructorOverview = lazy(() => import("../pages/instructor/Overview"));
+const InstructorCourses = lazy(() => import("../pages/instructor/Courses"));
+const InstructorCreateCourse = lazy(() => import("../pages/instructor/CreateCourse"));
+const InstructorEditCourse = lazy(() => import("../pages/instructor/EditCourse"));
+const InstructorExams = lazy(() => import("../pages/instructor/Exams"));
+const InstructorExamDetailPage = lazy(() => import("../pages/instructor/ExamDetail"));
+const InstructorStudents = lazy(() => import("../pages/instructor/Students"));
+const InstructorStudentDetail = lazy(() => import("../pages/instructor/StudentDetail"));
+const InstructorQna = lazy(() => import("../pages/instructor/Qna"));
+const InstructorWallet = lazy(() => import("../pages/instructor/Wallet"));
+const InstructorPerformance = lazy(() => import("../pages/instructor/Performance"));
+const InstructorHomework = lazy(() => import("../pages/instructor/Homework"));
+const InstructorAvailability = lazy(() => import("../pages/instructor/Availability"));
+const InstructorAttendance = lazy(() => import("../pages/instructor/Attendance"));
+const InstructorSettings = lazy(() => import("../pages/instructor/Settings"));
+const InstructorLiveSessions = lazy(() => import("../pages/instructor/LiveSessions"));
+const InstructorSurveys = lazy(() => import("../pages/instructor/Surveys"));
 
 function InstructorRoutes() {
   return (

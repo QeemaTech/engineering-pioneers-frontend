@@ -31,7 +31,7 @@ function NewsSlider() {
       titleEn: "Launch of the Summer Term on Engineering Pioneers Platform",
       content: "نعلن لطلابنا الأعزاء عن بدء التسجيل للفصل الصيفي للعام الأكاديمي الحالي، مع توفير باقات حصرية ومساقات مجانية لطلاب الجامعات.",
       contentEn: "We announce to our dear students the launch of registrations for the summer term, featuring exclusive bundles and free university courses.",
-      thumbnail: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop",
+      thumbnail: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=75&w=600&auto=format&fit=crop",
       createdAt: new Date().toISOString(),
       author: { fullName: "رواد الهندسة" }
     },
@@ -41,7 +41,7 @@ function NewsSlider() {
       titleEn: "Activation of Accredited Professional Certificates for Summer Training",
       content: "تحديث جديد لنظام الشهادات بالمنصة لإضافة الاختام الأكاديمية وتوفير مستندات معتمدة لطلاب الهندسة لتقديمها في التدريب الصيفي.",
       contentEn: "A new update to the certificate system adding academic credentials and providing certified documents for engineering students to submit for summer training.",
-      thumbnail: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1200&auto=format&fit=crop",
+      thumbnail: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=75&w=600&auto=format&fit=crop",
       createdAt: new Date(Date.now() - 86400000).toISOString(),
       author: { fullName: "الإدارة التعليمية" }
     }
@@ -82,6 +82,7 @@ function NewsSlider() {
             <div className="flex items-center gap-3">
               <button
                 type="button"
+                aria-label="Previous News"
                 onClick={prevSlide}
                 className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800 transition-all"
               >
@@ -89,6 +90,7 @@ function NewsSlider() {
               </button>
               <button
                 type="button"
+                aria-label="Next News"
                 onClick={nextSlide}
                 className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800 transition-all"
               >
@@ -104,8 +106,9 @@ function NewsSlider() {
             {/* Image Block */}
             <div className="md:col-span-5 relative h-64 md:h-96">
               <img
-                src={resolveMediaUrl(current.thumbnail) || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600"}
-                alt="News Thumbnail"
+                src={resolveMediaUrl(current.thumbnail) || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=75&w=600&auto=format&fit=crop"}
+                alt={current.title || "News Thumbnail"}
+                loading="lazy"
                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 to-transparent" />
@@ -115,7 +118,7 @@ function NewsSlider() {
             <div className="md:col-span-7 p-6 sm:p-10 flex flex-col justify-between">
               <div className="space-y-4">
                 {/* Meta details */}
-                <div className="flex items-center gap-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide">
+                <div className="flex items-center gap-4 text-xs font-semibold text-slate-500 dark:text-slate-400">
                   <span className="flex items-center gap-1.5">
                     <Calendar className="h-4 w-4" />
                     {new Date(current.createdAt).toLocaleDateString(isRtl ? "ar-EG" : "en-US")}
@@ -138,7 +141,7 @@ function NewsSlider() {
               {/* Action Button */}
               <div className="mt-8 pt-6 border-t border-slate-200/60 dark:border-slate-800/80 flex items-center">
                 <a
-                  href={`/blog/${current.slug || current.id}`}
+                  href={`/blogs/${current.slug || current.id}`}
                   className="inline-flex items-center gap-2 rounded-xl bg-[#EE7C11] hover:bg-[#d9700e] px-5 py-2.5 text-xs font-black text-white shadow-md shadow-orange-500/20 transition-all duration-200"
                 >
                   {isRtl ? "اقرأ الخبر كاملاً" : "Read Full Story"}
@@ -156,6 +159,7 @@ function NewsSlider() {
               <button
                 key={idx}
                 type="button"
+                aria-label={`Go to news slide ${idx + 1}`}
                 onClick={() => setCurrentIndex(idx)}
                 className={`h-2.5 rounded-full transition-all duration-300 ${currentIndex === idx ? "w-8 bg-[#EE7C11]" : "w-2.5 bg-slate-300 dark:bg-slate-700"}`}
               />

@@ -80,7 +80,7 @@ function RecommendedCourseCard({ course, isRtl }) {
       <div className="relative aspect-[5/3] overflow-hidden bg-slate-100">
         <img
           src={imageSrc}
-          alt=""
+          alt={course.title || "Engineering Pioneers Course Thumbnail"}
           className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           loading="lazy"
         />

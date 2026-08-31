@@ -195,14 +195,18 @@ export default function Hero({ cmsContent, stats }) {
                     >
                       <img
                         src={resolveMediaUrl(currentBanner.imageUrl)}
-                        alt={currentBanner.title || "Banner"}
+                        alt={currentBanner.title || "Engineering Pioneers Hero Banner"}
+                        fetchpriority="high"
+                        decoding="async"
                         className="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-105"
                       />
                     </a>
                   ) : (
                     <img
                       src={resolveMediaUrl(currentBanner.imageUrl)}
-                      alt={currentBanner.title || "Banner"}
+                      alt={currentBanner.title || "Engineering Pioneers Hero Banner"}
+                      fetchpriority="high"
+                      decoding="async"
                       className="h-full w-full object-cover"
                     />
                   )}
@@ -211,6 +215,7 @@ export default function Hero({ cmsContent, stats }) {
                     <>
                       <button
                         type="button"
+                        aria-label="Previous Banner Slide"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -222,6 +227,7 @@ export default function Hero({ cmsContent, stats }) {
                       </button>
                       <button
                         type="button"
+                        aria-label="Next Banner Slide"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -240,6 +246,7 @@ export default function Hero({ cmsContent, stats }) {
                         <button
                           type="button"
                           key={idx}
+                          aria-label={`Go to slide ${idx + 1}`}
                           onClick={() => setCurrentBannerIndex(idx)}
                           className={`h-1.5 rounded-full transition-all duration-300 ${currentBannerIndex === idx ? "w-4 bg-white" : "w-1.5 bg-white/40"
                             }`}
