@@ -154,15 +154,21 @@ function NewsSlider() {
 
         {/* Carousel indicators */}
         {activeNews.length > 1 && (
-          <div className="flex justify-center gap-1.5 mt-6">
+          <div className="flex justify-center items-center gap-1 mt-6">
             {activeNews.map((_, idx) => (
               <button
                 key={idx}
                 type="button"
                 aria-label={`Go to news slide ${idx + 1}`}
                 onClick={() => setCurrentIndex(idx)}
-                className={`h-2.5 rounded-full transition-all duration-300 ${currentIndex === idx ? "w-8 bg-[#EE7C11]" : "w-2.5 bg-slate-300 dark:bg-slate-700"}`}
-              />
+                className="flex h-7 min-w-7 items-center justify-center p-1 focus:outline-none"
+              >
+                <span
+                  className={`block h-2.5 rounded-full transition-all duration-300 ${
+                    currentIndex === idx ? "w-8 bg-[#EE7C11]" : "w-2.5 bg-slate-300 dark:bg-slate-700"
+                  }`}
+                />
+              </button>
             ))}
           </div>
         )}

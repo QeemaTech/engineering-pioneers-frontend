@@ -113,21 +113,22 @@ function RecommendedCourseCard({ course, isRtl }) {
             <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
             {ratingDisplay}
           </span>
-          <span className="inline-flex items-center gap-1 text-xs text-slate-400">
+          <span className="inline-flex items-center gap-1 text-xs text-slate-500">
             <Users className="h-3.5 w-3.5" />
             {learners}{" "}
             {t("recommendedCourses.learners", { defaultValue: isRtl ? "متعلّم" : "learners" })}
           </span>
         </div>
 
-        <p className="mt-4 text-2xl font-black tracking-tight text-[#EE7C11]">
+        <p className="mt-4 text-2xl font-black tracking-tight text-[#D96B07]">
           {formatPrice(course.price, isRtl)}
         </p>
 
         <div className="mt-auto pt-5">
           <Link
             to={`/courses/${course.id}`}
-            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#EE7C11]/10 px-4 text-sm font-extrabold text-[#EE7C11] ring-1 ring-[#EE7C11]/20 transition hover:bg-[#EE7C11] hover:text-white hover:ring-[#EE7C11] active:scale-[0.99]"
+            aria-label={`${t("recommendedCourses.subscribeNow", { defaultValue: isRtl ? "اشترك الآن" : "Enroll Now" })} - ${course.title}`}
+            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#EE7C11]/10 px-4 text-sm font-extrabold text-[#D96B07] ring-1 ring-[#EE7C11]/20 transition hover:bg-[#EE7C11] hover:text-white hover:ring-[#EE7C11] active:scale-[0.99]"
           >
             {t("recommendedCourses.subscribeNow", { defaultValue: isRtl ? "اشترك الآن" : "Enroll Now" })}
             {isRtl ? (

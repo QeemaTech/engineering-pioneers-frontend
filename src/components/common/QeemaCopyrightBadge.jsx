@@ -33,6 +33,8 @@ export default function QeemaCopyrightBadge({ variant = "auto", className = "" }
         <img
           src="/assets/qeema_letters.svg"
           alt={t("footer.qeemaTech", { defaultValue: "Qeema Tech" })}
+          width="64"
+          height="14"
           className="h-3.5 w-auto object-contain transition-opacity group-hover:opacity-90"
         />
       </span>

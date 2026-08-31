@@ -123,12 +123,14 @@ export default function Footer() {
             <div className="flex items-center gap-3">
               <img
                 src="/assets/ChatGPT%20Image%20Mar%2025,%202026,%2002_45_22%20PM%201.svg"
-                alt={t("footer.brand.logoAlt")}
+                alt={t("footer.brand.logoAlt", { defaultValue: "Engineering Pioneers Logo" })}
+                width="44"
+                height="44"
                 className="h-11 w-auto"
               />
               <span className="text-lg font-extrabold text-white">Engineering Pioneers</span>
             </div>
-            <p className="mt-4 max-w-sm text-sm leading-7 text-slate-400">{t("footer.brand.description")}</p>
+            <p className="mt-4 max-w-sm text-sm leading-7 text-slate-300">{t("footer.brand.description")}</p>
 
             <div className="mt-5 space-y-2 text-sm text-slate-400">
               {site.contactEmail ? (

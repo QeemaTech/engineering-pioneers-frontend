@@ -9,6 +9,15 @@ export function resolveMediaUrl(value) {
   if (!value || typeof value !== "string") return "";
   const trimmed = value.trim();
   if (!trimmed) return "";
+
+  if (trimmed.includes("images.unsplash.com")) {
+    let url = trimmed;
+    if (!url.includes("auto=format")) {
+      url += (url.includes("?") ? "&" : "?") + "auto=format&fit=crop&q=75";
+    }
+    return url;
+  }
+
   if (/^(https?:|data:|blob:)/i.test(trimmed)) return trimmed;
 
   let path = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;

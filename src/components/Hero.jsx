@@ -241,16 +241,21 @@ export default function Hero({ cmsContent, stats }) {
                   )}
 
                   {banners.length > 1 && (
-                    <div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 gap-1.5 rounded-full bg-black/35 px-3 py-1.5 backdrop-blur-xs">
+                    <div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-1 rounded-full bg-black/40 px-2.5 py-1 backdrop-blur-xs">
                       {banners.map((_, idx) => (
                         <button
                           type="button"
                           key={idx}
                           aria-label={`Go to slide ${idx + 1}`}
                           onClick={() => setCurrentBannerIndex(idx)}
-                          className={`h-1.5 rounded-full transition-all duration-300 ${currentBannerIndex === idx ? "w-4 bg-white" : "w-1.5 bg-white/40"
+                          className="flex h-7 min-w-7 items-center justify-center p-1 focus:outline-none"
+                        >
+                          <span
+                            className={`block h-1.5 rounded-full transition-all duration-300 ${
+                              currentBannerIndex === idx ? "w-4 bg-white" : "w-1.5 bg-white/40"
                             }`}
-                        />
+                          />
+                        </button>
                       ))}
                     </div>
                   )}
