@@ -33,14 +33,12 @@ const Packages = lazy(() => import("./pages/Packages"));
 import AdminRoutes from "./routes/adminRoutes";
 import InstructorRoutes from "./routes/instructorRoutes";
 import StudentRoutes from "./routes/studentRoutes";
+import PencilLoader from "./components/common/PencilLoader";
 
 function PageLoader() {
   return (
-    <div className="flex min-h-[50vh] items-center justify-center">
-      <div className="flex flex-col items-center gap-3">
-        <div className="h-9 w-9 animate-spin rounded-full border-3 border-orange-500/20 border-t-[#EE7C11]" />
-        <span className="text-xs font-semibold text-slate-400">جاري التحميل...</span>
-      </div>
+    <div className="flex min-h-[60vh] items-center justify-center">
+      <PencilLoader size={90} text="جاري تجهيز الصفحة..." />
     </div>
   );
 }
