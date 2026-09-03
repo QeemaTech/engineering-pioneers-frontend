@@ -83,6 +83,9 @@ function Settings() {
     socialTwitter: "",
     socialInstagram: "",
     socialLinkedin: "",
+    socialTelegram: "",
+    socialYoutube: "",
+    supportWhatsapp: "",
     enableRegistration: true,
     maintenanceMode: false,
     theme: "dark",
@@ -110,6 +113,9 @@ function Settings() {
       socialTwitter: g("SOCIAL_TWITTER_URL", prev.socialTwitter),
       socialInstagram: g("SOCIAL_INSTAGRAM_URL", prev.socialInstagram),
       socialLinkedin: g("SOCIAL_LINKEDIN_URL", prev.socialLinkedin),
+      socialTelegram: g("SOCIAL_TELEGRAM_URL", prev.socialTelegram),
+      socialYoutube: g("SOCIAL_YOUTUBE_URL", prev.socialYoutube),
+      supportWhatsapp: g("SUPPORT_WHATSAPP_URL", prev.supportWhatsapp),
       enableRegistration: settingToBool(rows.find((s) => s.key === "ENABLE_REGISTRATION")?.value, prev.enableRegistration),
       maintenanceMode: settingToBool(rows.find((s) => s.key === "MAINTENANCE_MODE")?.value, prev.maintenanceMode),
       theme: g("DEFAULT_THEME", prev.theme) || prev.theme,
@@ -131,6 +137,9 @@ function Settings() {
     SOCIAL_TWITTER_URL: settings.socialTwitter,
     SOCIAL_INSTAGRAM_URL: settings.socialInstagram,
     SOCIAL_LINKEDIN_URL: settings.socialLinkedin,
+    SOCIAL_TELEGRAM_URL: settings.socialTelegram,
+    SOCIAL_YOUTUBE_URL: settings.socialYoutube,
+    SUPPORT_WHATSAPP_URL: settings.supportWhatsapp,
     ENABLE_REGISTRATION: settings.enableRegistration,
     MAINTENANCE_MODE: settings.maintenanceMode,
     DEFAULT_THEME: settings.theme,
@@ -188,6 +197,11 @@ function Settings() {
             <SettingsInputField label="X (Twitter) URL" value={settings.socialTwitter} onChange={(v) => setSettings((p) => ({ ...p, socialTwitter: v }))} placeholder="https://x.com/..." type="url" />
             <SettingsInputField label="Instagram URL" value={settings.socialInstagram} onChange={(v) => setSettings((p) => ({ ...p, socialInstagram: v }))} placeholder="https://instagram.com/..." type="url" />
             <SettingsInputField label="LinkedIn URL" value={settings.socialLinkedin} onChange={(v) => setSettings((p) => ({ ...p, socialLinkedin: v }))} placeholder="https://linkedin.com/..." type="url" />
+          </div>
+          <div className="grid gap-6 sm:grid-cols-3">
+            <SettingsInputField label="WhatsApp Direct / Support" value={settings.supportWhatsapp} onChange={(v) => setSettings((p) => ({ ...p, supportWhatsapp: v }))} placeholder="https://wa.me/..." type="url" />
+            <SettingsInputField label="Telegram Channel / Group" value={settings.socialTelegram} onChange={(v) => setSettings((p) => ({ ...p, socialTelegram: v }))} placeholder="https://t.me/..." type="url" />
+            <SettingsInputField label="YouTube Channel URL" value={settings.socialYoutube} onChange={(v) => setSettings((p) => ({ ...p, socialYoutube: v }))} placeholder="https://youtube.com/@..." type="url" />
           </div>
         </SettingsSection>
 

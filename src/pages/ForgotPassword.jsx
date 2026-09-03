@@ -52,22 +52,7 @@ export default function ForgotPassword() {
       </Link>
 
       <div className="w-full max-w-md rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
-        {isProd ? (
-          <div className="text-center">
-            <h1 className="text-xl font-bold text-slate-900">{t("auth.forgotPassword.title")}</h1>
-            <p className="mt-3 text-sm leading-relaxed text-slate-600">
-              {t("auth.forgotPassword.noEmail", {
-                defaultValue: "Email password reset is not available. Sign in if you know your password, or contact the academy / open a support ticket after you can log in.",
-              })}
-            </p>
-            <Link
-              to="/login"
-              className="mt-8 inline-block text-sm font-semibold text-pioneer-orange-normal hover:underline"
-            >
-              {t("auth.forgotPassword.backToLogin")}
-            </Link>
-          </div>
-        ) : done ? (
+        {done ? (
           <div className="text-center">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-pioneer-orange-light">
               <Mail className="h-7 w-7 text-pioneer-orange-normal" />
